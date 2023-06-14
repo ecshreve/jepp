@@ -1,0 +1,26 @@
+version: "3"
+  
+dotenv: ['.env', '{{.ENV}}/.env.', '{{.HOME}}/.env']
+
+tasks:
+  default:
+    cmds:
+      - task --list-all
+
+  go:test:
+    cmds:
+      - go test github.com/ecshreve/jepp/...
+
+  go:build:scrape:
+    generates:
+      - bin/scrape
+    sources:
+      - ./cmd/scrape/*.go
+    cmds:
+      - go build -o bin/scrape github.com/ecshreve/jepp/cmd/scrape
+
+  scrape:
+    deps:
+      - go:build:scrape
+    cmds:
+      - bin/scrape {{.CLI_ARGS}}
