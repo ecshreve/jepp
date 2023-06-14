@@ -34,7 +34,7 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Info("inserted clue", "clue", c)
+		slog.Debug("inserted clue", "clue", c)
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package scraper
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/samsarahq/go/oops"
@@ -11,6 +12,10 @@ type Game struct {
 	GameID   int64     `db:"game_id"`
 	ShowNum  int64     `db:"show_num"`
 	GameDate time.Time `db:"game_date"`
+}
+
+func (g Game) String() string {
+	return fmt.Sprintf("ID: %d -- %d - %s", g.GameID, g.ShowNum, g.GameDate.Format(timeFormat))
 }
 
 func (db *JeppDB) InsertGame(g *Game) error {

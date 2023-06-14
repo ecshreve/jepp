@@ -25,14 +25,23 @@ var roundMap = map[string]Round{
 	"J":  Jeopardy,
 	"DJ": DoubleJeopardy,
 	"FJ": FinalJeopardy,
+	"TB": FinalJeopardy,
 }
 
 const timeFormat = "Monday, January 2, 2006"
 
 var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
 
-func (g Game) String() string {
-	return fmt.Sprintf("ID: %d\t %s", g.GameID, g.GameDate.Format(timeFormat))
+func ScrapeMany(gameIDs []int64) ([]Game, []Clue) {
+	games := []Game{}
+	clues := []Clue{}
+	for _, gameID := range gameIDs {
+		g, c := Scrape(gameID)
+		games = append(games, g)
+		clues = append(clues, c...)
+	}
+
+	return games, clues
 }
 
 func Scrape(gameID int64) (Game, []Clue) {
@@ -146,6 +155,9 @@ func helper(s string, cats map[Round][]string) string {
 
 	round := roundMap[tokens[1]]
 	if round == FinalJeopardy {
+		if tokens[1] == "TB" {
+			return cats[round][1]
+		}
 		return cats[round][0]
 	}
 

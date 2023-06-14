@@ -2,23 +2,28 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ecshreve/jepp/scraper"
 )
 
 func main() {
-	gid := int64(6822)
-
-	game, clues := scraper.Scrape(gid)
+	start := int64(6916)
+	end := int64(8000)
 
 	db := scraper.NewDB()
-	if err := db.InsertGame(&game); err != nil {
-		fmt.Println(err)
-	}
+	for i := start; i < end; i++ {
+		time.Sleep(1 * time.Second)
+		game, clues := scraper.Scrape(i)
 
-	for _, clue := range clues {
-		if err := db.InsertClue(&clue); err != nil {
+		if err := db.InsertGame(&game); err != nil {
 			fmt.Println(err)
+		}
+
+		for _, clue := range clues {
+			if err := db.InsertClue(&clue); err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 }
