@@ -16,6 +16,7 @@ tasks:
       - bin/scrape
     sources:
       - ./cmd/scrape/*.go
+      - ./scraper/*.go
     cmds:
       - go build -o bin/scrape github.com/ecshreve/jepp/cmd/scrape
 
