@@ -4,3 +4,4 @@ bin/
 .task/
 jepp_scraper/
 cache/
+.env

@@ -1,7 +1,9 @@
 package scraper
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -61,4 +63,17 @@ CREATE TABLE IF NOT EXISTS clue (
 
 	db.MustExec(game)
 	db.MustExec(clue)
+}
+
+func (db *JeppDB) Dump() error {
+	games, _ := db.GetAllGames()
+	fmt.Println(games[0])
+	file, _ := json.MarshalIndent(games, "", " ")
+	_ = ioutil.WriteFile("game-dump.json", file, 0644)
+
+	clues, _ := db.GetAllClues()
+	fmt.Println(clues[0])
+	file, _ = json.MarshalIndent(clues, "", " ")
+	_ = ioutil.WriteFile("clue-dump.json", file, 0644)
+	return nil
 }

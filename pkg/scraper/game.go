@@ -36,3 +36,17 @@ func (db *JeppDB) InsertGame(g *Game) error {
 	}
 	return nil
 }
+
+// GetAllGames returns all games in the database.
+func (db *JeppDB) GetAllGames() ([]*Game, error) {
+	var games []*Game
+	if err := db.Select(&games, "SELECT * FROM game"); err != nil {
+		return nil, oops.Wrapf(err, "could not get all games")
+	}
+
+	if len(games) == 0 {
+		return nil, nil
+	}
+
+	return games, nil
+}

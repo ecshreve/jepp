@@ -38,3 +38,17 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 	}
 	return nil
 }
+
+// GetAllClues eturns all clues in the database.
+func (db *JeppDB) GetAllClues() ([]*Clue, error) {
+	var clues []*Clue
+	if err := db.Select(&clues, "SELECT * FROM clue"); err != nil {
+		return nil, oops.Wrapf(err, "could not get all clues")
+	}
+
+	if len(clues) == 0 {
+		return nil, nil
+	}
+
+	return clues, nil
+}

@@ -11,17 +11,16 @@ tasks:
     cmds:
       - go test github.com/ecshreve/jepp/...
 
-  go:build:scrape:
+  go:build:
     generates:
-      - bin/scrape
+      - bin/jepp
     sources:
-      - ./cmd/scrape/*.go
-      - ./scraper/*.go
+      - ./**/*.go
     cmds:
-      - go build -o bin/scrape github.com/ecshreve/jepp/cmd/scrape
+      - go build -o bin/jepp github.com/ecshreve/jepp/cmd/jepp
 
-  scrape:
+  jepp:
     deps:
-      - go:build:scrape
+      - go:build
     cmds:
-      - bin/scrape {{.CLI_ARGS}}
+      - bin/jepp {{.CLI_ARGS}}
