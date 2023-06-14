@@ -1,5 +1,0 @@
-{
-	"image": "ecshreve/devcon-base",
-	"name": "jepp-box",
-	"runArgs": ["--hostname", "jepp-box", "--name", "jepp-box"]
-}

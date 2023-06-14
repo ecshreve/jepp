@@ -1,9 +1,7 @@
 package scraper
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"regexp"
 	"strconv"
@@ -128,22 +126,6 @@ func Scrape(gameID int64) (Game, []Clue) {
 	}
 
 	return g, clues
-}
-
-func DumpGameToFile(game Game) {
-	file, _ := json.MarshalIndent(game, "", " ")
-
-	fname := fmt.Sprintf("game-%d.json", game.GameID)
-	_ = ioutil.WriteFile(fname, file, 0644)
-}
-
-func dumpFileToGame(fname string) Game {
-	file, _ := ioutil.ReadFile(fname)
-
-	game := Game{}
-	_ = json.Unmarshal([]byte(file), &game)
-
-	return game
 }
 
 func helper(s string, cats map[Round][]string) string {
