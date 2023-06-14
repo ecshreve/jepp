@@ -7,11 +7,26 @@ import (
 	"log"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/kr/pretty"
 )
+
+type Round int // 0 = Jeopardy, 1 = Double Jeopardy, 2 = Final Jeopardy
+
+const (
+	Jeopardy Round = iota + 1
+	DoubleJeopardy
+	FinalJeopardy
+)
+
+var roundMap = map[string]Round{
+	"J":  Jeopardy,
+	"DJ": DoubleJeopardy,
+	"FJ": FinalJeopardy,
+}
 
 type Game struct {
 	GameID   int64
@@ -21,9 +36,11 @@ type Game struct {
 }
 
 type Clue struct {
-	ClueID string
-	Text   string
-	Answer string
+	GameID   int64
+	ClueID   string
+	Category string
+	Text     string
+	Answer   string
 }
 
 const timeFormat = "Monday, January 2, 2006"
@@ -36,20 +53,22 @@ func (g Game) String() string {
 
 func main() {
 	gid := int64(6821)
-	game := scrapeGame(gid)
+	game := scrape(gid)
+
 	dumpGameToFile(game)
-
 	tmp := dumpFileToGame("game-6821.json")
-
 	pretty.Print(tmp)
 }
 
-func scrapeGame(gameID int64) Game {
+func scrape(gameID int64) Game {
 	var showNum int64
 	var gameDate time.Time
 	clues := []Clue{}
+	cats := map[Round][]string{}
 
-	c := colly.NewCollector()
+	c := colly.NewCollector(
+		colly.CacheDir("./cache"),
+	)
 
 	// collect and parse the gameID and gameDate
 	c.OnHTML("div#game_title", func(e *colly.HTMLElement) {
@@ -80,7 +99,31 @@ func scrapeGame(gameID int64) Game {
 
 		clueText := e.ChildText(fmt.Sprintf("td#%s", cid))
 		clueAnswer := e.ChildText(fmt.Sprintf("td#%s_r em.correct_response", cid))
-		clues = append(clues, Clue{ClueID: cid, Text: clueText, Answer: clueAnswer})
+		clues = append(clues, Clue{ClueID: cid, GameID: gameID, Text: clueText, Answer: clueAnswer})
+	})
+
+	c.OnHTML("div[id=jeopardy_round]", func(e *colly.HTMLElement) {
+		cc := []string{}
+		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
+			cc = append(cc, el.Text)
+		})
+		cats[Jeopardy] = append(cats[Jeopardy], cc...)
+	})
+
+	c.OnHTML("div[id=double_jeopardy_round]", func(e *colly.HTMLElement) {
+		cc := []string{}
+		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
+			cc = append(cc, el.Text)
+		})
+		cats[DoubleJeopardy] = append(cats[DoubleJeopardy], cc...)
+	})
+
+	c.OnHTML("div[id=final_jeopardy_round]", func(e *colly.HTMLElement) {
+		cc := []string{}
+		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
+			cc = append(cc, el.Text)
+		})
+		cats[FinalJeopardy] = append(cats[FinalJeopardy], cc...)
 	})
 
 	// Before making a request print "Visiting ..."
@@ -89,6 +132,10 @@ func scrapeGame(gameID int64) Game {
 	})
 
 	c.Visit(fmt.Sprintf("https://www.j-archive.com/showgame.php?game_id=%d", gameID))
+
+	for i, clue := range clues {
+		clues[i].Category = helper(clue.ClueID, cats)
+	}
 
 	return Game{
 		GameID:   gameID,
@@ -112,6 +159,23 @@ func dumpFileToGame(fname string) Game {
 	_ = json.Unmarshal([]byte(file), &game)
 
 	return game
+}
+
+func helper(s string, cats map[Round][]string) string {
+	// clue_J_1_1
+	tokens := strings.Split(s, "_")
+	if len(tokens) > 4 || len(tokens) < 0 {
+		fmt.Println("Error parsing clueID")
+		return ""
+	}
+
+	round := roundMap[tokens[1]]
+	if round == FinalJeopardy {
+		return cats[round][0]
+	}
+
+	catIndex, _ := strconv.Atoi(tokens[2])
+	return cats[round][catIndex-1]
 }
 
 // On every a element which has href attribute call callback
