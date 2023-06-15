@@ -58,6 +58,26 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 	return nil
 }
 
+// UpdateClue updates a category in the database.
+func (db *JeppDB) UpdateClue(c *Clue) error {
+	if c == nil {
+		return nil
+	}
+
+	tx := db.MustBegin()
+	if _, err := tx.NamedExec("UPDATE clue SET category_id=:category_id, game_id=:game_id, question=:question, answer=:answer WHERE clue_id=:clue_id", c); err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return oops.Wrapf(rollbackErr, "could not rollback clue update: %v", c)
+		}
+	}
+
+	if err := tx.Commit(); err == nil {
+		slog.Info("updated clue", "clue", c)
+	}
+
+	return nil
+}
+
 // GetAllClues eturns all clues in the database.
 func (db *JeppDB) GetAllClues() ([]*Clue, error) {
 	var clues []*Clue

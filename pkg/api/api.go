@@ -40,7 +40,14 @@ func NewServer() *Server {
 // @Success 200 {object} map[string]interface{}
 // @Router /categories [get]
 func (s *Server) CategoriesHandler(c *gin.Context) {
-	cats, err := s.DB.GetCategoryCounts()
+	page, _ := c.Get("page")
+	size, _ := c.Get("size")
+
+	if page == nil || size == nil {
+		return
+	}
+
+	cats, err := s.DB.ListCategories(&models.PaginationParams{Page: page.(int), PageSize: size.(int)})
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get categories"))
 		c.JSON(500, gin.H{
@@ -50,7 +57,9 @@ func (s *Server) CategoriesHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"categories": cats,
+		"items": cats,
+		"page":  page,
+		"size":  size,
 	})
 }
 
@@ -177,7 +186,7 @@ func (s *Server) registerHandlers() {
 	s.Router.GET("/ping", s.PingHandler)
 	s.Router.GET("/games", pagination.Default(), s.GamesHandler)
 	s.Router.GET("/games/:gameID/clues", s.CluesForGameHandler)
-	s.Router.GET("/categories", s.CategoriesHandler)
+	s.Router.GET("/categories", pagination.Default(), s.CategoriesHandler)
 	s.Router.GET("/categories/:categoryID/clues", s.CluesForCategoryHandler)
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

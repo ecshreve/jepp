@@ -25,3 +25,26 @@ CREATE TABLE IF NOT EXISTS category (
     PRIMARY KEY (category_id, game_id),
     CONSTRAINT fk_category_game FOREIGN KEY (game_id) REFERENCES game(game_id)
 );`
+
+const COUNT_VIEW = `
+CREATE OR REPLACE VIEW category_counts AS
+SELECT cc.id,
+       cc.name,
+       game_count,
+       clue_count
+FROM
+  (SELECT category.category_id AS id,
+          category.name,
+          category.game_id AS gid,
+          count(*) AS clue_count
+   FROM clue
+   JOIN category ON clue.category_id = category.category_id
+   AND clue.game_id = category.game_id
+   GROUP BY category.name) AS cc
+JOIN
+  (SELECT category_id AS id,
+          name,
+          count(*) AS game_count
+   FROM category
+   GROUP BY category.name) AS gc ON cc.id = gc.id
+AND cc.name = gc.name;`
