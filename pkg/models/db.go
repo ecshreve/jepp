@@ -51,7 +51,7 @@ func (db *JeppDB) initDB() {
 }
 
 func (db *JeppDB) Dump() error {
-	games, _ := db.GetAllGames()
+	games, _ := db.ListGames(nil)
 	fmt.Println(games[0])
 	file, _ := json.MarshalIndent(games, "", " ")
 	_ = ioutil.WriteFile("game-dump.json", file, 0644)

@@ -1,0 +1,107 @@
+info:
+  contact:
+    email: eric@shreve.dev
+    name: shreve
+    url: http://github.com/ecshreve
+  license:
+    name: MIT
+    url: https://github.com/ecshreve/jepp/blob/main/LICENSE
+paths:
+  /:
+    get:
+      consumes:
+      - '*/*'
+      description: Show agailable endpoints.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Base handler.
+      tags:
+      - root
+  /categories:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a list of categories.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Returns a list of categories.
+      tags:
+      - category
+  /categories/:categoryID/clues:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a list of clues for a category.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Returns a list of clues.
+      tags:
+      - category
+      - clue
+  /games:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a list of games.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Returns a list of games.
+      tags:
+      - game
+  /games/:gameID/clues:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a list of clues for a game.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Returns a list of clues.
+      tags:
+      - game
+  /ping:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+swagger: "2.0"

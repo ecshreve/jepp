@@ -21,9 +21,14 @@ tasks:
       - go build -o bin/jepp github.com/ecshreve/jepp/cmd/jepp
       - go build -o bin/api github.com/ecshreve/jepp/cmd/api
 
+  api:docs:
+    cmds:
+      - swag init -d cmd/api,pkg/api
+
   api:
     deps:
       - go:build
+      - api:docs
     cmds:
       - bin/api {{.CLI_ARGS}}
 

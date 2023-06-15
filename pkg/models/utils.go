@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+type PaginationParams struct {
+	Page     int
+	PageSize int
+}
+
 // GetClueID converts a clue string to a clue ID.
 //
 // Clue strings have the format "clue_DJ_1_2", "clue_FJ"
