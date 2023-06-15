@@ -8,8 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gocolly/colly/v2"
 )
+
+var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
 
 type Round int // 0 = Jeopardy, 1 = Double Jeopardy, 2 = Final Jeopardy
 
@@ -26,13 +29,9 @@ var roundMap = map[string]Round{
 	"TB": FinalJeopardy,
 }
 
-const timeFormat = "Monday, January 2, 2006"
-
-var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
-
-func ScrapeMany(gameIDs []int64) ([]Game, []Clue) {
-	games := []Game{}
-	clues := []Clue{}
+func ScrapeMany(gameIDs []int64) ([]models.Game, []models.Clue) {
+	games := []models.Game{}
+	clues := []models.Clue{}
 	for _, gameID := range gameIDs {
 		g, c := Scrape(gameID)
 		games = append(games, g)
@@ -42,10 +41,10 @@ func ScrapeMany(gameIDs []int64) ([]Game, []Clue) {
 	return games, clues
 }
 
-func Scrape(gameID int64) (Game, []Clue) {
+func Scrape(gameID int64) (models.Game, []models.Clue) {
 	var showNum int64
 	var gameDate time.Time
-	clues := []Clue{}
+	clues := []models.Clue{}
 	cats := map[Round][]string{}
 
 	c := colly.NewCollector(
@@ -65,7 +64,7 @@ func Scrape(gameID int64) (Game, []Clue) {
 		}
 		showNum = sn
 
-		gd, err := time.Parse(timeFormat, tokens[2])
+		gd, err := time.Parse(models.TIME_FORMAT, tokens[2])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -81,7 +80,7 @@ func Scrape(gameID int64) (Game, []Clue) {
 
 		clueText := e.ChildText(fmt.Sprintf("td#%s", cid))
 		clueAnswer := e.ChildText(fmt.Sprintf("td#%s_r em.correct_response", cid))
-		clues = append(clues, Clue{ClueID: cid, GameID: gameID, Question: clueText, Answer: clueAnswer})
+		clues = append(clues, models.Clue{ClueID: cid, GameID: gameID, Question: clueText, Answer: clueAnswer})
 	})
 
 	c.OnHTML("div[id=jeopardy_round]", func(e *colly.HTMLElement) {
@@ -119,7 +118,7 @@ func Scrape(gameID int64) (Game, []Clue) {
 		clues[i].Category = helper(clue.ClueID, cats)
 	}
 
-	g := Game{
+	g := models.Game{
 		GameID:   gameID,
 		ShowNum:  showNum,
 		GameDate: gameDate,

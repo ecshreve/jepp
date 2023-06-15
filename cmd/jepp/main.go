@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/scraper"
 )
 
 func main() {
-	db := scraper.NewDB()
+	db := models.NewDB()
 	start := int64(8045)
 	end := int64(8096)
 
@@ -18,7 +19,7 @@ func main() {
 	}
 }
 
-func scrape(db *scraper.JeppDB, gid int64) {
+func scrape(db *models.JeppDB, gid int64) {
 	game, clues := scraper.Scrape(gid)
 
 	if err := db.InsertGame(&game); err != nil {

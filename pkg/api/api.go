@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/benbjohnson/clock"
-	"github.com/ecshreve/jepp/pkg/scraper"
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
@@ -12,7 +12,7 @@ type Server struct {
 	ID     string
 	Router *gin.Engine
 	Clock  clock.Clock
-	DB     *scraper.JeppDB
+	DB     *models.JeppDB
 }
 
 func NewServer() *Server {
@@ -20,7 +20,7 @@ func NewServer() *Server {
 		ID:     "SERVER",
 		Router: gin.Default(),
 		Clock:  clock.New(),
-		DB:     scraper.NewDB(),
+		DB:     models.NewDB(),
 	}
 
 	s.registerHandlers()

@@ -1,12 +1,17 @@
-package scraper
+package models
 
 import (
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/samsarahq/go/oops"
 	"golang.org/x/exp/slog"
 )
+
+const TIME_FORMAT = "Monday, January 2, 2006"
+
+var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
 
 type Game struct {
 	GameID   int64     `db:"game_id" json:"gameId"`
@@ -15,7 +20,7 @@ type Game struct {
 }
 
 func (g Game) String() string {
-	return fmt.Sprintf("ID: %d -- %d - %s", g.GameID, g.ShowNum, g.GameDate.Format(timeFormat))
+	return fmt.Sprintf("ID: %d -- %d - %s", g.GameID, g.ShowNum, g.GameDate.Format(TIME_FORMAT))
 }
 
 func (db *JeppDB) InsertGame(g *Game) error {
