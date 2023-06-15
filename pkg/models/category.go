@@ -63,7 +63,7 @@ func (db *JeppDB) GetAllCategories() ([]*Category, error) {
 func (db *JeppDB) GetCategoryCounts() ([]*CategoryCount, error) {
 	var categories []*CategoryCount
 
-	if err := db.Select(&categories, "SELECT category_id, name, count(*) AS game_count FROM category GROUP BY category_id, name ORDER BY game_count DESC"); err != nil {
+	if err := db.Select(&categories, "SELECT category_id, count(*) AS game_count FROM category GROUP BY category_id ORDER BY game_count DESC"); err != nil {
 		return nil, oops.Wrapf(err, "could not get categories")
 	}
 

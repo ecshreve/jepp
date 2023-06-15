@@ -1,19 +1,24 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/scraper"
+	"github.com/ecshreve/jepp/pkg/utils"
 )
 
 func main() {
 	db := models.NewDB()
-	start := int64(8000)
-	end := int64(8500)
+	start := int64(7040)
+	end := int64(8000)
 
 	for i := start; i < end; i++ {
+		if i%10 == 0 {
+			utils.SendGotification("jepp", fmt.Sprintf("scraping game %d", i))
+		}
 		scrapeAndUpdateDB(db, i)
 		time.Sleep(1 * time.Second)
 	}
