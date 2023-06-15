@@ -1,3 +1,58 @@
+definitions:
+  models.CategoryCount:
+    properties:
+      categoryId:
+        example: CATEGORYNAME0000
+        type: string
+      categoryName:
+        example: Category Name
+        type: string
+      clueCount:
+        example: 5
+        type: integer
+      gameCount:
+        example: 1
+        type: integer
+    type: object
+  models.Clue:
+    properties:
+      answer:
+        example: This is the answer.
+        type: string
+      categoryId:
+        example: CATEGORYNAME0000
+        type: string
+      clueId:
+        example: 804002032
+        type: integer
+      gameId:
+        example: 8040
+        type: integer
+      question:
+        example: This is the question.
+        type: string
+    type: object
+  models.Game:
+    properties:
+      gameDate:
+        example: "2019-01-01"
+        type: string
+      gameId:
+        example: 8040
+        type: integer
+      showNum:
+        example: 4532
+        type: integer
+    type: object
+  utils.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
 info:
   contact:
     email: eric@shreve.dev
@@ -28,63 +83,114 @@ paths:
       consumes:
       - '*/*'
       description: Returns a list of categories.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.CategoryCount'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of categories.
       tags:
       - category
-  /categories/:categoryID/clues:
+  /categories/{categoryID}/clues:
     get:
       consumes:
       - '*/*'
       description: Returns a list of clues for a category.
+      parameters:
+      - default: 10LETTERWORDS000
+        description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.Clue'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of clues.
       tags:
       - category
-      - clue
   /games:
     get:
       consumes:
       - '*/*'
       description: Returns a list of games.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.Game'
+            type: array
       summary: Returns a list of games.
       tags:
       - game
-  /games/:gameID/clues:
+  /games/{gameID}/clues:
     get:
       consumes:
       - '*/*'
       description: Returns a list of clues for a game.
+      parameters:
+      - default: "7000"
+        description: Game ID
+        in: path
+        name: gameID
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/models.Clue'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of clues.
       tags:
       - game

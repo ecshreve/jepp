@@ -7,6 +7,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+// TODO: this is silly, should fix it
 type Round int // 0 = Jeopardy, 1 = Double Jeopardy, 2 = Final Jeopardy
 
 const (
@@ -22,12 +23,13 @@ var RoundMap = map[string]Round{
 	"TB": FinalJeopardy,
 }
 
+// Clue represents a jeopardy clue in the database.
 type Clue struct {
-	ClueID     int64  `db:"clue_id" json:"clueId"`
-	GameID     int64  `db:"game_id" json:"gameId"`
-	CategoryID string `db:"category_id" json:"categoryId"`
-	Question   string `db:"question" json:"question"`
-	Answer     string `db:"answer" json:"answer"`
+	ClueID     int64  `db:"clue_id" json:"clueId" example:"804002032"`
+	GameID     int64  `db:"game_id" json:"gameId" example:"8040"`
+	CategoryID string `db:"category_id" json:"categoryId" example:"CATEGORYNAME0000"`
+	Question   string `db:"question" json:"question" example:"This is the question."`
+	Answer     string `db:"answer" json:"answer" example:"This is the answer."`
 }
 
 // String implements fmt.Stringer.
@@ -35,6 +37,7 @@ func (c *Clue) String() string {
 	return fmt.Sprintf("%d - %d - %s", c.GameID, c.ClueID, c.CategoryID)
 }
 
+// InsertClue inserts a clue into the database.
 func (db *JeppDB) InsertClue(c *Clue) error {
 	if c == nil {
 		return nil
@@ -106,10 +109,11 @@ func (db *JeppDB) GetCluesForGame(gameId string) ([]*Clue, error) {
 	return clues, nil
 }
 
-func (db *JeppDB) GetCluesForCategory(category string) ([]*Clue, error) {
+// GetCluesForCategory returns all clues for a given category.
+func (db *JeppDB) GetCluesForCategory(category_id string) ([]*Clue, error) {
 	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue WHERE category = ? ORDER BY clue_id ASC", category); err != nil {
-		return nil, oops.Wrapf(err, "could not get clues for category %s", category)
+	if err := db.Select(&clues, "SELECT * FROM clue WHERE category_id = ? ORDER BY clue_id ASC", category_id); err != nil {
+		return nil, oops.Wrapf(err, "could not get clues for category %s", category_id)
 	}
 
 	if len(clues) == 0 {

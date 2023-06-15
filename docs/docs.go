@@ -61,18 +61,42 @@ const docTemplate = `{
                     "category"
                 ],
                 "summary": "Returns a list of categories.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CategoryCount"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
                         }
                     }
                 }
             }
         },
-        "/categories/:categoryID/clues": {
+        "/categories/{categoryID}/clues": {
             "get": {
                 "description": "Returns a list of clues for a category.",
                 "consumes": [
@@ -82,16 +106,33 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "category",
-                    "clue"
+                    "category"
                 ],
                 "summary": "Returns a list of clues.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "10LETTERWORDS000",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Clue"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
                         }
                     }
                 }
@@ -110,18 +151,36 @@ const docTemplate = `{
                     "game"
                 ],
                 "summary": "Returns a list of games.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Game"
+                            }
                         }
                     }
                 }
             }
         },
-        "/games/:gameID/clues": {
+        "/games/{gameID}/clues": {
             "get": {
                 "description": "Returns a list of clues for a game.",
                 "consumes": [
@@ -134,12 +193,30 @@ const docTemplate = `{
                     "game"
                 ],
                 "summary": "Returns a list of clues.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "7000",
+                        "description": "Game ID",
+                        "name": "gameID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Clue"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
                         }
                     }
                 }
@@ -166,6 +243,84 @@ const docTemplate = `{
                             "additionalProperties": true
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.CategoryCount": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "string",
+                    "example": "CATEGORYNAME0000"
+                },
+                "categoryName": {
+                    "type": "string",
+                    "example": "Category Name"
+                },
+                "clueCount": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "gameCount": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "models.Clue": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string",
+                    "example": "This is the answer."
+                },
+                "categoryId": {
+                    "type": "string",
+                    "example": "CATEGORYNAME0000"
+                },
+                "clueId": {
+                    "type": "integer",
+                    "example": 804002032
+                },
+                "gameId": {
+                    "type": "integer",
+                    "example": 8040
+                },
+                "question": {
+                    "type": "string",
+                    "example": "This is the question."
+                }
+            }
+        },
+        "models.Game": {
+            "type": "object",
+            "properties": {
+                "gameDate": {
+                    "type": "string",
+                    "example": "2019-01-01"
+                },
+                "gameId": {
+                    "type": "integer",
+                    "example": 8040
+                },
+                "showNum": {
+                    "type": "integer",
+                    "example": 4532
+                }
+            }
+        },
+        "utils.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "message": {
+                    "type": "string",
+                    "example": "status bad request"
                 }
             }
         }

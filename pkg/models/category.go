@@ -1,31 +1,24 @@
 package models
 
 import (
-	"regexp"
-	"strings"
-
 	"github.com/samsarahq/go/oops"
 	"golang.org/x/exp/slog"
 )
 
+// Category represents a jeopardy category in the database.
 type Category struct {
-	CategoryID string `db:"category_id" json:"categoryId"`
-	Name       string `db:"name" json:"name"`
-	GameID     int64  `db:"game_id" json:"gameId"`
+	CategoryID string `db:"category_id" json:"categoryId" example:"CATEGORYNAME0000"`
+	Name       string `db:"name" json:"name" example:"Category Name"`
+	GameID     int64  `db:"game_id" json:"gameId" example:"8040"`
 }
 
+// CategoryCount represents a the number of times a category has appeared in
+// different games and clues.
 type CategoryCount struct {
-	CategoryID   string `db:"category_id" json:"categoryId"`
-	CategoryName string `db:"category_name" json:"categoryName"`
-	GameCount    int    `db:"game_count" json:"gameCount"`
-	ClueCount    int    `db:"clue_count" json:"clueCount"`
-}
-
-func GetCategoryID(s string) string {
-	clean := regexp.MustCompile(`[^a-zA-Z0-9]`).ReplaceAllString(s, "")
-	clean += "0000000000000000"
-	clean = strings.ToUpper(clean)
-	return clean[:16]
+	CategoryID   string `db:"category_id" json:"categoryId" example:"CATEGORYNAME0000"`
+	CategoryName string `db:"category_name" json:"categoryName" example:"Category Name"`
+	GameCount    int    `db:"game_count" json:"gameCount" example:"1"`
+	ClueCount    int    `db:"clue_count" json:"clueCount" example:"5"`
 }
 
 // InsertCategory inserts a category into the database.

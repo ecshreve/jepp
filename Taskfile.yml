@@ -7,11 +7,11 @@ tasks:
     cmds:
       - task --list-all
 
-  go:test:
+  test:
     cmds:
       - go test github.com/ecshreve/jepp/...
 
-  go:build:
+  build:
     generates:
       - bin/jepp
       - bin/api
@@ -23,17 +23,18 @@ tasks:
 
   api:docs:
     cmds:
-      - swag init -d cmd/api,pkg/api
+      - swag init -d cmd/api,pkg/api,pkg/models,pkg/utils
+      - swag fmt -d cmd/api,pkg/api,pkg/models,pkg/utils
 
   api:
     deps:
-      - go:build
+      - build
       - api:docs
     cmds:
       - bin/api {{.CLI_ARGS}}
 
   jepp:
     deps:
-      - go:build
+      - build
     cmds:
       - bin/jepp {{.CLI_ARGS}}

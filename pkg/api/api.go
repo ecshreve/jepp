@@ -1,9 +1,12 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/benbjohnson/clock"
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/pagination"
+	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
@@ -11,6 +14,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// Server is the API server.
 type Server struct {
 	ID     string
 	Router *gin.Engine
@@ -18,6 +22,7 @@ type Server struct {
 	DB     *models.JeppDB
 }
 
+// NewServer returns a new API server.
 func NewServer() *Server {
 	s := &Server{
 		ID:     "SERVER",
@@ -32,13 +37,18 @@ func NewServer() *Server {
 }
 
 // CategoriesHandler returns a list of categories.
-// @Summary Returns a list of categories.
-// @Description Returns a list of categories.
-// @Tags category
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /categories [get]
+//
+//	@Summary		Returns a list of categories.
+//	@Description	Returns a list of categories.
+//
+//	@Tags			category
+//	@Accept			*/*
+//	@Produce		json
+//	@Param			page	query		int	false	"Page number"	default(1)
+//	@Param			size	query		int	false	"Page size"		default(10)
+//	@Success		200		{array}		models.CategoryCount
+//	@Failure		500		{object}	utils.HTTPError
+//	@Router			/categories [get]
 func (s *Server) CategoriesHandler(c *gin.Context) {
 	page, _ := c.Get("page")
 	size, _ := c.Get("size")
@@ -50,77 +60,72 @@ func (s *Server) CategoriesHandler(c *gin.Context) {
 	cats, err := s.DB.ListCategories(&models.PaginationParams{Page: page.(int), PageSize: size.(int)})
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get categories"))
-		c.JSON(500, gin.H{
-			"message": "unable to get categories",
-		})
+		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"items": cats,
-		"page":  page,
-		"size":  size,
-	})
+	c.JSON(http.StatusOK, cats)
 }
 
 // CluesForCategoryHandler returns a list of clues for a given category.
-// @Summary Returns a list of clues.
-// @Description Returns a list of clues for a category.
-// @Tags category,clue
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /categories/:categoryID/clues [get]
+//
+//	@Summary		Returns a list of clues.
+//	@Description	Returns a list of clues for a category.
+//
+//	@Tags			category
+//	@Accept			*/*
+//	@Produce		json
+//	@Param			categoryID	path		string	true	"Category ID"	default(10LETTERWORDS000)
+//	@Success		200			{array}		models.Clue
+//	@Failure		500			{object}	utils.HTTPError
+//	@Router			/categories/{categoryID}/clues [get]
 func (s *Server) CluesForCategoryHandler(c *gin.Context) {
 	categoryID := c.Param("categoryID")
 	clues, err := s.DB.GetCluesForCategory(categoryID)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clues for category %s", categoryID))
-		c.JSON(500, gin.H{
-			"message": "unable to get clues",
-		})
+		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"categoryId": categoryID,
-		"clues":      clues,
-	})
+	c.JSON(200, clues)
 }
 
-// CluesForGameHandler returns a list of clues for a given game.
-// @Summary Returns a list of clues.
-// @Description Returns a list of clues for a game.
-// @Tags game
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /games/:gameID/clues [get]
+// CluesForGameHandler godoc
+//
+//	@Summary		Returns a list of clues.
+//	@Description	Returns a list of clues for a game.
+
+// @Tags			game
+// @Accept			*/*
+// @Produce		json
+// @Param			gameID	path		string	true	"Game ID"	default(7000)
+// @Success		200		{array}		models.Clue
+// @Failure		500		{object}	utils.HTTPError
+// @Router			/games/{gameID}/clues [get]
 func (s *Server) CluesForGameHandler(c *gin.Context) {
 	gameID := c.Param("gameID")
 	clues, err := s.DB.GetCluesForGame(gameID)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clues for game %s", gameID))
-		c.JSON(500, gin.H{
-			"message": "unable to get clues",
-		})
+		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"gameId": gameID,
-		"clues":  clues,
-	})
+	c.JSON(200, clues)
 }
 
-// GamesHandler returns a list of games.
-// @Summary Returns a list of games.
-// @Description Returns a list of games.
-// @Tags game
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /games [get]
+// GamesHandler godoc
+//
+//	@Summary		Returns a list of games
+//	@Description	Returns a list of games
+//	@Tags			game
+//	@Accept			*/*
+//	@Produce		json
+//	@Param			page	query	int	false	"Page number"	default(1)
+//	@Param			size	query	int	false	"Page size"		default(10)
+//	@Success		200		{array}	models.Game
+//	@Router			/games [get]
 func (s *Server) GamesHandler(c *gin.Context) {
 	page, _ := c.Get("page")
 	size, _ := c.Get("size")
@@ -132,27 +137,23 @@ func (s *Server) GamesHandler(c *gin.Context) {
 	games, err := s.DB.ListGames(&models.PaginationParams{Page: page.(int), PageSize: size.(int)})
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get games"))
-		c.JSON(500, gin.H{
-			"message": "unable to get games",
-		})
+		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"items": games,
-		"page":  c.MustGet("page"),
-		"size":  c.MustGet("size"),
-	})
+	c.JSON(200, games)
 }
 
 // BaseHandler godoc
-// @Summary Base handler.
-// @Description Show agailable endpoints.
-// @Tags root
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router / [get]
+//
+//	@Summary		Base handler
+//	@Description	Show available endpoints
+
+// @Tags			root
+// @Accept			*/*
+// @Produce		json
+// @Success		200	{object}	map[string]interface{}
+// @Router			/ [get]
 func (s *Server) BaseHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "api root",
@@ -168,19 +169,22 @@ func (s *Server) BaseHandler(c *gin.Context) {
 }
 
 // PingHandler godoc
-// @Summary Show the status of server.
-// @Description get the status of server.
-// @Tags root
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /ping [get]
+//
+//	@Summary		Show the status of server
+//	@Description	Get the status of server
+
+// @Tags			root
+// @Accept			*/*
+// @Produce		json
+// @Success		200	{object}	map[string]interface{}
+// @Router			/ping [get]
 func (s *Server) PingHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
 }
 
+// registerHandlers registers all the handlers for the server.
 func (s *Server) registerHandlers() {
 	s.Router.GET("/", s.BaseHandler)
 	s.Router.GET("/ping", s.PingHandler)
@@ -190,11 +194,14 @@ func (s *Server) registerHandlers() {
 	s.Router.GET("/categories/:categoryID/clues", s.CluesForCategoryHandler)
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	// This is not safe for production use but it's fine for playing
+	// around locally.
 	if err := s.Router.SetTrustedProxies(nil); err != nil {
 		log.Error(oops.Wrapf(err, "unable to set proxies"))
 	}
 }
 
+// Serve starts the server.
 func (s *Server) Serve() error {
 	err := s.Router.Run(":8880")
 	if err != nil {

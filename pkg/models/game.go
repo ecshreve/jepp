@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"regexp"
 	"time"
 
 	"github.com/samsarahq/go/oops"
@@ -11,18 +10,19 @@ import (
 
 const TIME_FORMAT = "Monday, January 2, 2006"
 
-var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
-
+// Game represents a single game of Jeopardy.
 type Game struct {
-	GameID   int64     `db:"game_id" json:"gameId"`
-	ShowNum  int64     `db:"show_num" json:"showNum"`
-	GameDate time.Time `db:"game_date" json:"gameDate"`
+	GameID   int64     `db:"game_id" json:"gameId" example:"8040"`
+	ShowNum  int64     `db:"show_num" json:"showNum" example:"4532"`
+	GameDate time.Time `db:"game_date" json:"gameDate" example:"2019-01-01"`
 }
 
+// String implements fmt.Stringer for the Game type.
 func (g Game) String() string {
 	return fmt.Sprintf("ID: %d -- %d - %s", g.GameID, g.ShowNum, g.GameDate.Format(TIME_FORMAT))
 }
 
+// InsertGame inserts a game into the database.
 func (db *JeppDB) InsertGame(g *Game) error {
 	if g == nil {
 		return nil

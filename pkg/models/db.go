@@ -16,6 +16,7 @@ type JeppDB struct {
 	*sqlx.DB
 }
 
+// NewDB returns a new database handle.
 func NewDB() *JeppDB {
 	dbname := "jeppdb"
 	addr := fmt.Sprintf("%s:3306", os.Getenv("DB_HOST"))
