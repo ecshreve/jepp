@@ -14,10 +14,18 @@ tasks:
   go:build:
     generates:
       - bin/jepp
+      - bin/api
     sources:
       - ./**/*.go
     cmds:
       - go build -o bin/jepp github.com/ecshreve/jepp/cmd/jepp
+      - go build -o bin/api github.com/ecshreve/jepp/cmd/api
+
+  api:
+    deps:
+      - go:build
+    cmds:
+      - bin/api {{.CLI_ARGS}}
 
   jepp:
     deps:

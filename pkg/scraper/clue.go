@@ -8,11 +8,11 @@ import (
 )
 
 type Clue struct {
-	ClueID   string `db:"clue_id"`
-	GameID   int64  `db:"game_id"`
-	Category string `db:"category"`
-	Question string `db:"question"`
-	Answer   string `db:"answer"`
+	ClueID   string `db:"clue_id" json:"clueId"`
+	GameID   int64  `db:"game_id" json:"gameId"`
+	Category string `db:"category" json:"category"`
+	Question string `db:"question" json:"question"`
+	Answer   string `db:"answer" json:"answer"`
 }
 
 // String implements fmt.Stringer.
@@ -44,6 +44,20 @@ func (db *JeppDB) GetAllClues() ([]*Clue, error) {
 	var clues []*Clue
 	if err := db.Select(&clues, "SELECT * FROM clue"); err != nil {
 		return nil, oops.Wrapf(err, "could not get all clues")
+	}
+
+	if len(clues) == 0 {
+		return nil, nil
+	}
+
+	return clues, nil
+}
+
+// GetCluesForGame returns all clues for a given game.
+func (db *JeppDB) GetCluesForGame(gameId string) ([]*Clue, error) {
+	var clues []*Clue
+	if err := db.Select(&clues, "SELECT * FROM clue WHERE game_id = ?", gameId); err != nil {
+		return nil, oops.Wrapf(err, "could not get clues for game_id %s", gameId)
 	}
 
 	if len(clues) == 0 {

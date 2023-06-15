@@ -9,9 +9,9 @@ import (
 )
 
 type Game struct {
-	GameID   int64     `db:"game_id"`
-	ShowNum  int64     `db:"show_num"`
-	GameDate time.Time `db:"game_date"`
+	GameID   int64     `db:"game_id" json:"gameId"`
+	ShowNum  int64     `db:"show_num" json:"showNum"`
+	GameDate time.Time `db:"game_date" json:"gameDate"`
 }
 
 func (g Game) String() string {
