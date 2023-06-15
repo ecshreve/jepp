@@ -32,6 +32,7 @@ func ScrapeMany(gameIDs []int64) ([]mod.Game, []mod.Clue, []mod.Category) {
 func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 	var showNum int64
 	var gameDate time.Time
+
 	clueMap := map[int64]mod.Clue{}
 	clueStrings := map[int64]string{}
 	cats := map[mod.Round][]string{}
@@ -109,7 +110,7 @@ func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 
 	clues := []mod.Clue{}
 	for clueId, clue := range clueMap {
-		clue.Category = helper(clueStrings[clueId], cats)
+		clue.CategoryID = helper(clueStrings[clueId], cats)
 		clues = append(clues, clue)
 	}
 
@@ -119,7 +120,7 @@ func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 
 	allCats := []mod.Category{}
 	for _, cat := range cc {
-		allCats = append(allCats, mod.Category{Name: cat, GameID: gameID})
+		allCats = append(allCats, mod.Category{CategoryID: mod.GetCategoryID(cat), Name: cat, GameID: gameID})
 	}
 
 	g := mod.Game{

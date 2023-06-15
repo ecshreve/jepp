@@ -9,7 +9,7 @@ import (
 //
 // Clue strings have the format "clue_DJ_1_2", "clue_FJ"
 func GetClueID(clueString string, gameId int64) int64 {
-	baseVal := gameId * 10000
+	baseVal := gameId * 100000
 	tokens := strings.Split(clueString, "_")
 	if len(tokens) == 2 {
 		if tokens[1] == "FJ" {

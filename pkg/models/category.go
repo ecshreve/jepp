@@ -1,18 +1,27 @@
 package models
 
 import (
+	"regexp"
+
 	"github.com/samsarahq/go/oops"
 	"golang.org/x/exp/slog"
 )
 
 type Category struct {
-	Name   string `db:"name" json:"name"`
-	GameID int64  `db:"game_id" json:"gameId"`
+	CategoryID string `db:"category_id" json:"categoryId"`
+	Name       string `db:"name" json:"name"`
+	GameID     int64  `db:"game_id" json:"gameId"`
 }
 
 type CategoryCount struct {
-	Name      string `db:"name" json:"name"`
-	GameCount int    `db:"game_count" json:"gameCount"`
+	CategoryID string `db:"category_id" json:"categoryId"`
+	GameCount  int    `db:"game_count" json:"gameCount"`
+}
+
+func GetCategoryID(s string) string {
+	clean := regexp.MustCompile(`[^a-zA-Z0-9]`).ReplaceAllString(s, "")
+	clean += "00000000"
+	return clean[:8]
 }
 
 // InsertCategory inserts a category into the database.
@@ -21,8 +30,10 @@ func (db *JeppDB) InsertCategory(c *Category) error {
 		return nil
 	}
 
+	c.CategoryID = GetCategoryID(c.Name)
+
 	tx := db.MustBegin()
-	_, err := db.NamedExec("INSERT INTO category (name, game_id) VALUES (:name, :game_id)", c)
+	_, err := db.NamedExec("INSERT INTO category (category_id, name, game_id) VALUES (:category_id, :name, :game_id)", c)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return oops.Wrapf(rollbackErr, "could not rollback category insert: %v", c)
@@ -30,7 +41,7 @@ func (db *JeppDB) InsertCategory(c *Category) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Debug("inserted category", "category", c)
+		slog.Info("inserted category", "category", c)
 	}
 	return nil
 }
@@ -52,7 +63,7 @@ func (db *JeppDB) GetAllCategories() ([]*Category, error) {
 func (db *JeppDB) GetCategoryCounts() ([]*CategoryCount, error) {
 	var categories []*CategoryCount
 
-	if err := db.Select(&categories, "SELECT name, count(*) AS game_count FROM category GROUP BY name ORDER BY game_count DESC"); err != nil {
+	if err := db.Select(&categories, "SELECT category_id, name, count(*) AS game_count FROM category GROUP BY category_id, name ORDER BY game_count DESC"); err != nil {
 		return nil, oops.Wrapf(err, "could not get categories")
 	}
 

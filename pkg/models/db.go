@@ -38,13 +38,16 @@ func NewDB() *JeppDB {
 	}
 
 	jdb := &JeppDB{db}
-	jdb.initDB()
 	return jdb
 }
 
+// InitDB initializes the database.
+//
+// Not currently used. I manually create tables in Adminer.
 func (db *JeppDB) initDB() {
 	db.MustExec(GAME_SCHEMA)
 	db.MustExec(CLUE_SCHEMA)
+	db.MustExec(CATEGORY_SCHEMA)
 }
 
 func (db *JeppDB) Dump() error {

@@ -23,16 +23,16 @@ var RoundMap = map[string]Round{
 }
 
 type Clue struct {
-	ClueID   int64  `db:"clue_id" json:"clueId"`
-	GameID   int64  `db:"game_id" json:"gameId"`
-	Category string `db:"category" json:"category"`
-	Question string `db:"question" json:"question"`
-	Answer   string `db:"answer" json:"answer"`
+	ClueID     int64  `db:"clue_id" json:"clueId"`
+	GameID     int64  `db:"game_id" json:"gameId"`
+	CategoryID string `db:"category_id" json:"categoryId"`
+	Question   string `db:"question" json:"question"`
+	Answer     string `db:"answer" json:"answer"`
 }
 
 // String implements fmt.Stringer.
 func (c *Clue) String() string {
-	return fmt.Sprintf("%d - %d - %s", c.GameID, c.ClueID, c.Category)
+	return fmt.Sprintf("%d - %d - %s", c.GameID, c.ClueID, c.CategoryID)
 }
 
 func (db *JeppDB) InsertClue(c *Clue) error {
@@ -40,8 +40,12 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 		return nil
 	}
 
+	if len(c.CategoryID) != 8 {
+		c.CategoryID = GetCategoryID(c.CategoryID)
+	}
+
 	tx := db.MustBegin()
-	_, err := db.NamedExec("INSERT INTO clue (clue_id, game_id, category, question, answer) VALUES (:clue_id, :game_id, :category, :question, :answer)", c)
+	_, err := db.NamedExec("INSERT INTO clue (clue_id, game_id, category_id, question, answer) VALUES (:clue_id, :game_id, :category_id, :question, :answer)", c)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return oops.Wrapf(rollbackErr, "could not rollback clue insert: %v", c)
@@ -49,7 +53,7 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Debug("inserted clue", "clue", c)
+		slog.Info("inserted clue", "clue", c)
 	}
 	return nil
 }
