@@ -71,8 +71,21 @@ func (db *JeppDB) GetAllClues() ([]*Clue, error) {
 // GetCluesForGame returns all clues for a given game.
 func (db *JeppDB) GetCluesForGame(gameId string) ([]*Clue, error) {
 	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue WHERE game_id = ? ORDER BY clueID ASC", gameId); err != nil {
+	if err := db.Select(&clues, "SELECT * FROM clue WHERE game_id = ? ORDER BY clue_id ASC", gameId); err != nil {
 		return nil, oops.Wrapf(err, "could not get clues for game_id %s", gameId)
+	}
+
+	if len(clues) == 0 {
+		return nil, nil
+	}
+
+	return clues, nil
+}
+
+func (db *JeppDB) GetCluesForCategory(category string) ([]*Clue, error) {
+	var clues []*Clue
+	if err := db.Select(&clues, "SELECT * FROM clue WHERE category = ? ORDER BY clue_id ASC", category); err != nil {
+		return nil, oops.Wrapf(err, "could not get clues for category %s", category)
 	}
 
 	if len(clues) == 0 {

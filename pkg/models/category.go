@@ -10,6 +10,11 @@ type Category struct {
 	GameID int64  `db:"game_id" json:"gameId"`
 }
 
+type CategoryCount struct {
+	Name      string `db:"name" json:"name"`
+	GameCount int    `db:"game_count" json:"gameCount"`
+}
+
 // InsertCategory inserts a category into the database.
 func (db *JeppDB) InsertCategory(c *Category) error {
 	if c == nil {
@@ -35,6 +40,20 @@ func (db *JeppDB) GetAllCategories() ([]*Category, error) {
 	var categories []*Category
 	if err := db.Select(&categories, "SELECT * FROM category"); err != nil {
 		return nil, oops.Wrapf(err, "could not get all categories")
+	}
+
+	if len(categories) == 0 {
+		return nil, nil
+	}
+
+	return categories, nil
+}
+
+func (db *JeppDB) GetCategoryCounts() ([]*CategoryCount, error) {
+	var categories []*CategoryCount
+
+	if err := db.Select(&categories, "SELECT name, count(*) AS game_count FROM category GROUP BY name ORDER BY game_count DESC"); err != nil {
+		return nil, oops.Wrapf(err, "could not get categories")
 	}
 
 	if len(categories) == 0 {

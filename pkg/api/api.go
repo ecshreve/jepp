@@ -28,6 +28,38 @@ func NewServer() *Server {
 	return s
 }
 
+func (s *Server) CategoriesHandler(c *gin.Context) {
+	cats, err := s.DB.GetCategoryCounts()
+	if err != nil {
+		log.Error(oops.Wrapf(err, "unable to get categories"))
+		c.JSON(500, gin.H{
+			"message": "unable to get categories",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"categories": cats,
+	})
+}
+
+func (s *Server) CluesForCategoryHandler(c *gin.Context) {
+	categoryID := c.Param("categoryID")
+	clues, err := s.DB.GetCluesForCategory(categoryID)
+	if err != nil {
+		log.Error(oops.Wrapf(err, "unable to get clues for category %s", categoryID))
+		c.JSON(500, gin.H{
+			"message": "unable to get clues",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"categoryId": categoryID,
+		"clues":      clues,
+	})
+}
+
 // CluesForGameHandler returns a list of clues for a given game.
 func (s *Server) CluesForGameHandler(c *gin.Context) {
 	gameID := c.Param("gameID")
@@ -41,8 +73,8 @@ func (s *Server) CluesForGameHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"game_id": gameID,
-		"clues":   clues,
+		"gameId": gameID,
+		"clues":  clues,
 	})
 }
 
@@ -84,6 +116,8 @@ func (s *Server) registerHandlers() {
 	s.Router.GET("/ping", s.PingHandler)
 	s.Router.GET("/games", s.GamesHandler)
 	s.Router.GET("/games/:gameID/clues", s.CluesForGameHandler)
+	s.Router.GET("/categories", s.CategoriesHandler)
+	s.Router.GET("/categories/:categoryID/clues", s.CluesForCategoryHandler)
 
 	if err := s.Router.SetTrustedProxies(nil); err != nil {
 		log.Error(oops.Wrapf(err, "unable to set proxies"))
