@@ -8,44 +8,34 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ecshreve/jepp/pkg/models"
+	mod "github.com/ecshreve/jepp/pkg/models"
 	"github.com/gocolly/colly/v2"
 )
 
 var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
 
-type Round int // 0 = Jeopardy, 1 = Double Jeopardy, 2 = Final Jeopardy
+func ScrapeMany(gameIDs []int64) ([]mod.Game, []mod.Clue, []mod.Category) {
+	games := []mod.Game{}
+	clues := []mod.Clue{}
+	cats := []mod.Category{}
 
-const (
-	Jeopardy Round = iota + 1
-	DoubleJeopardy
-	FinalJeopardy
-)
-
-var roundMap = map[string]Round{
-	"J":  Jeopardy,
-	"DJ": DoubleJeopardy,
-	"FJ": FinalJeopardy,
-	"TB": FinalJeopardy,
-}
-
-func ScrapeMany(gameIDs []int64) ([]models.Game, []models.Clue) {
-	games := []models.Game{}
-	clues := []models.Clue{}
 	for _, gameID := range gameIDs {
-		g, c := Scrape(gameID)
+		g, c, cc := Scrape(gameID)
 		games = append(games, g)
 		clues = append(clues, c...)
+		cats = append(cats, cc...)
 	}
 
-	return games, clues
+	return games, clues, cats
 }
 
-func Scrape(gameID int64) (models.Game, []models.Clue) {
+func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 	var showNum int64
 	var gameDate time.Time
-	clues := []models.Clue{}
-	cats := map[Round][]string{}
+	clueMap := map[int64]mod.Clue{}
+	clueStrings := map[int64]string{}
+	cats := map[mod.Round][]string{}
+	cc := []string{}
 
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -64,7 +54,7 @@ func Scrape(gameID int64) (models.Game, []models.Clue) {
 		}
 		showNum = sn
 
-		gd, err := time.Parse(models.TIME_FORMAT, tokens[2])
+		gd, err := time.Parse(mod.TIME_FORMAT, tokens[2])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -80,7 +70,10 @@ func Scrape(gameID int64) (models.Game, []models.Clue) {
 
 		clueText := e.ChildText(fmt.Sprintf("td#%s", cid))
 		clueAnswer := e.ChildText(fmt.Sprintf("td#%s_r em.correct_response", cid))
-		clues = append(clues, models.Clue{ClueID: cid, GameID: gameID, Question: clueText, Answer: clueAnswer})
+		clueId := mod.GetClueID(cid, gameID)
+
+		clueMap[clueId] = mod.Clue{ClueID: clueId, GameID: gameID, Question: clueText, Answer: clueAnswer}
+		clueStrings[clueId] = cid
 	})
 
 	c.OnHTML("div[id=jeopardy_round]", func(e *colly.HTMLElement) {
@@ -88,7 +81,7 @@ func Scrape(gameID int64) (models.Game, []models.Clue) {
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
 			cc = append(cc, el.Text)
 		})
-		cats[Jeopardy] = append(cats[Jeopardy], cc...)
+		cats[mod.Jeopardy] = append(cats[mod.Jeopardy], cc...)
 	})
 
 	c.OnHTML("div[id=double_jeopardy_round]", func(e *colly.HTMLElement) {
@@ -96,7 +89,7 @@ func Scrape(gameID int64) (models.Game, []models.Clue) {
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
 			cc = append(cc, el.Text)
 		})
-		cats[DoubleJeopardy] = append(cats[DoubleJeopardy], cc...)
+		cats[mod.DoubleJeopardy] = append(cats[mod.DoubleJeopardy], cc...)
 	})
 
 	c.OnHTML("div[id=final_jeopardy_round]", func(e *colly.HTMLElement) {
@@ -104,7 +97,7 @@ func Scrape(gameID int64) (models.Game, []models.Clue) {
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
 			cc = append(cc, el.Text)
 		})
-		cats[FinalJeopardy] = append(cats[FinalJeopardy], cc...)
+		cats[mod.FinalJeopardy] = append(cats[mod.FinalJeopardy], cc...)
 	})
 
 	// Before making a request print "Visiting ..."
@@ -114,28 +107,39 @@ func Scrape(gameID int64) (models.Game, []models.Clue) {
 
 	c.Visit(fmt.Sprintf("https://www.j-archive.com/showgame.php?game_id=%d", gameID))
 
-	for i, clue := range clues {
-		clues[i].Category = helper(clue.ClueID, cats)
+	clues := []mod.Clue{}
+	for clueId, clue := range clueMap {
+		clue.Category = helper(clueStrings[clueId], cats)
+		clues = append(clues, clue)
 	}
 
-	g := models.Game{
+	cc = append(cc, cats[mod.Jeopardy]...)
+	cc = append(cc, cats[mod.DoubleJeopardy]...)
+	cc = append(cc, cats[mod.FinalJeopardy]...)
+
+	allCats := []mod.Category{}
+	for _, cat := range cc {
+		allCats = append(allCats, mod.Category{Name: cat, GameID: gameID})
+	}
+
+	g := mod.Game{
 		GameID:   gameID,
 		ShowNum:  showNum,
 		GameDate: gameDate,
 	}
 
-	return g, clues
+	return g, clues, allCats
 }
 
-func helper(s string, cats map[Round][]string) string {
+func helper(s string, cats map[mod.Round][]string) string {
 	tokens := strings.Split(s, "_")
 	if len(tokens) > 4 || len(tokens) == 0 {
 		fmt.Println("Error parsing clueID")
 		return ""
 	}
 
-	round := roundMap[tokens[1]]
-	if round == FinalJeopardy {
+	round := mod.RoundMap[tokens[1]]
+	if round == mod.FinalJeopardy {
 		if tokens[1] == "TB" {
 			return cats[round][1]
 		}

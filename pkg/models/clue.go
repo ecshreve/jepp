@@ -7,8 +7,23 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+type Round int // 0 = Jeopardy, 1 = Double Jeopardy, 2 = Final Jeopardy
+
+const (
+	Jeopardy Round = iota + 1
+	DoubleJeopardy
+	FinalJeopardy
+)
+
+var RoundMap = map[string]Round{
+	"J":  Jeopardy,
+	"DJ": DoubleJeopardy,
+	"FJ": FinalJeopardy,
+	"TB": FinalJeopardy,
+}
+
 type Clue struct {
-	ClueID   string `db:"clue_id" json:"clueId"`
+	ClueID   int64  `db:"clue_id" json:"clueId"`
 	GameID   int64  `db:"game_id" json:"gameId"`
 	Category string `db:"category" json:"category"`
 	Question string `db:"question" json:"question"`
@@ -17,7 +32,7 @@ type Clue struct {
 
 // String implements fmt.Stringer.
 func (c *Clue) String() string {
-	return fmt.Sprintf("%d - %s", c.GameID, c.ClueID)
+	return fmt.Sprintf("%d - %d - %s", c.GameID, c.ClueID, c.Category)
 }
 
 func (db *JeppDB) InsertClue(c *Clue) error {
@@ -56,7 +71,7 @@ func (db *JeppDB) GetAllClues() ([]*Clue, error) {
 // GetCluesForGame returns all clues for a given game.
 func (db *JeppDB) GetCluesForGame(gameId string) ([]*Clue, error) {
 	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue WHERE game_id = ?", gameId); err != nil {
+	if err := db.Select(&clues, "SELECT * FROM clue WHERE game_id = ? ORDER BY clueID ASC", gameId); err != nil {
 		return nil, oops.Wrapf(err, "could not get clues for game_id %s", gameId)
 	}
 
