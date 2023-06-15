@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/ecshreve/jepp/docs"
 	"github.com/ecshreve/jepp/pkg/api"
+	log "github.com/sirupsen/logrus"
 )
 
 //	@contact.name	shreve
@@ -18,6 +19,9 @@ func main() {
 	docs.SwaggerInfo.Host = "10.35.220.99:8880"
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Schemes = []string{"http"}
+
+	log.SetLevel(log.DebugLevel)
+	log.Info("Starting Jepp API server...")
 
 	apiServer := api.NewServer()
 	apiServer.Serve()

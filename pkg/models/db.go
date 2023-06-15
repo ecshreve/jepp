@@ -1,9 +1,7 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -45,21 +43,8 @@ func NewDB() *JeppDB {
 // InitDB initializes the database.
 //
 // Not currently used. I manually create tables in Adminer.
-func (db *JeppDB) initDB() {
-	db.MustExec(GAME_SCHEMA)
-	db.MustExec(CLUE_SCHEMA)
-	db.MustExec(CATEGORY_SCHEMA)
-}
-
-func (db *JeppDB) Dump() error {
-	games, _ := db.ListGames(nil)
-	fmt.Println(games[0])
-	file, _ := json.MarshalIndent(games, "", " ")
-	_ = ioutil.WriteFile("game-dump.json", file, 0644)
-
-	clues, _ := db.GetAllClues()
-	fmt.Println(clues[0])
-	file, _ = json.MarshalIndent(clues, "", " ")
-	_ = ioutil.WriteFile("clue-dump.json", file, 0644)
-	return nil
-}
+// func (db *JeppDB) initDB() {
+// 	db.MustExec(GAME_SCHEMA)
+// 	db.MustExec(CLUE_SCHEMA)
+// 	db.MustExec(CATEGORY_SCHEMA)
+// }

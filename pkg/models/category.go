@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/samsarahq/go/oops"
-	"golang.org/x/exp/slog"
+	log "github.com/sirupsen/logrus"
 )
 
 // Category represents a jeopardy category in the database.
@@ -38,7 +38,7 @@ func (db *JeppDB) InsertCategory(c *Category) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Info("inserted category", "category", c)
+		log.Info("inserted category", "category", c)
 	}
 	return nil
 }
@@ -57,7 +57,7 @@ func (db *JeppDB) UpdateCategory(c *Category) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Info("updated category", "category", c)
+		log.Info("updated category", "category", c)
 	}
 
 	return nil

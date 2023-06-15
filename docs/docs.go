@@ -26,7 +26,6 @@ const docTemplate = `{
     "paths": {
         "/": {
             "get": {
-                "description": "Show agailable endpoints.",
                 "consumes": [
                     "*/*"
                 ],
@@ -36,7 +35,6 @@ const docTemplate = `{
                 "tags": [
                     "root"
                 ],
-                "summary": "Base handler.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -140,7 +138,7 @@ const docTemplate = `{
         },
         "/games": {
             "get": {
-                "description": "Returns a list of games.",
+                "description": "Returns a list of games",
                 "consumes": [
                     "*/*"
                 ],
@@ -150,7 +148,7 @@ const docTemplate = `{
                 "tags": [
                     "game"
                 ],
-                "summary": "Returns a list of games.",
+                "summary": "Returns a list of games",
                 "parameters": [
                     {
                         "type": "integer",
@@ -182,7 +180,6 @@ const docTemplate = `{
         },
         "/games/{gameID}/clues": {
             "get": {
-                "description": "Returns a list of clues for a game.",
                 "consumes": [
                     "*/*"
                 ],
@@ -192,7 +189,6 @@ const docTemplate = `{
                 "tags": [
                     "game"
                 ],
-                "summary": "Returns a list of clues.",
                 "parameters": [
                     {
                         "type": "string",
@@ -224,7 +220,6 @@ const docTemplate = `{
         },
         "/ping": {
             "get": {
-                "description": "get the status of server.",
                 "consumes": [
                     "*/*"
                 ],
@@ -234,7 +229,6 @@ const docTemplate = `{
                 "tags": [
                     "root"
                 ],
-                "summary": "Show the status of server.",
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -66,7 +66,6 @@ paths:
     get:
       consumes:
       - '*/*'
-      description: Show agailable endpoints.
       produces:
       - application/json
       responses:
@@ -75,7 +74,6 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Base handler.
       tags:
       - root
   /categories:
@@ -142,7 +140,7 @@ paths:
     get:
       consumes:
       - '*/*'
-      description: Returns a list of games.
+      description: Returns a list of games
       parameters:
       - default: 1
         description: Page number
@@ -163,14 +161,13 @@ paths:
             items:
               $ref: '#/definitions/models.Game'
             type: array
-      summary: Returns a list of games.
+      summary: Returns a list of games
       tags:
       - game
   /games/{gameID}/clues:
     get:
       consumes:
       - '*/*'
-      description: Returns a list of clues for a game.
       parameters:
       - default: "7000"
         description: Game ID
@@ -191,14 +188,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a list of clues.
       tags:
       - game
   /ping:
     get:
       consumes:
       - '*/*'
-      description: get the status of server.
       produces:
       - application/json
       responses:
@@ -207,7 +202,6 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Show the status of server.
       tags:
       - root
 swagger: "2.0"

@@ -96,13 +96,13 @@ func (s *Server) CluesForCategoryHandler(c *gin.Context) {
 //	@Summary		Returns a list of clues.
 //	@Description	Returns a list of clues for a game.
 
-// @Tags			game
-// @Accept			*/*
-// @Produce		json
-// @Param			gameID	path		string	true	"Game ID"	default(7000)
-// @Success		200		{array}		models.Clue
-// @Failure		500		{object}	utils.HTTPError
-// @Router			/games/{gameID}/clues [get]
+//	@Tags		game
+//	@Accept		*/*
+//	@Produce	json
+//	@Param		gameID	path		string	true	"Game ID"	default(7000)
+//	@Success	200		{array}		models.Clue
+//	@Failure	500		{object}	utils.HTTPError
+//	@Router		/games/{gameID}/clues [get]
 func (s *Server) CluesForGameHandler(c *gin.Context) {
 	gameID := c.Param("gameID")
 	clues, err := s.DB.GetCluesForGame(gameID)
@@ -149,11 +149,11 @@ func (s *Server) GamesHandler(c *gin.Context) {
 //	@Summary		Base handler
 //	@Description	Show available endpoints
 
-// @Tags			root
-// @Accept			*/*
-// @Produce		json
-// @Success		200	{object}	map[string]interface{}
-// @Router			/ [get]
+//	@Tags		root
+//	@Accept		*/*
+//	@Produce	json
+//	@Success	200	{object}	map[string]interface{}
+//	@Router		/ [get]
 func (s *Server) BaseHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "api root",
@@ -173,11 +173,11 @@ func (s *Server) BaseHandler(c *gin.Context) {
 //	@Summary		Show the status of server
 //	@Description	Get the status of server
 
-// @Tags			root
-// @Accept			*/*
-// @Produce		json
-// @Success		200	{object}	map[string]interface{}
-// @Router			/ping [get]
+//	@Tags		root
+//	@Accept		*/*
+//	@Produce	json
+//	@Success	200	{object}	map[string]interface{}
+//	@Router		/ping [get]
 func (s *Server) PingHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "pong",
