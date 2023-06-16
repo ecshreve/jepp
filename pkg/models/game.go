@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/samsarahq/go/oops"
@@ -62,4 +63,25 @@ func (db *JeppDB) ListGames(params *PaginationParams) ([]*Game, error) {
 	}
 
 	return games, nil
+}
+
+// GetGame returns a single game from the database.
+func (db *JeppDB) GetGame(gameID string) (*Game, error) {
+	var game Game
+	if err := db.Get(&game, "SELECT * FROM game WHERE game_id = ?", gameID); err != nil {
+		return nil, oops.Wrapf(err, "could not get game %s", gameID)
+	}
+
+	return &game, nil
+}
+
+// GetGame returns a single game from the database.
+func (db *JeppDB) GetRandomGame() (*Game, error) {
+	var allGameIDs []string
+	if err := db.Select(&allGameIDs, "SELECT game_id FROM game"); err != nil {
+		return nil, oops.Wrapf(err, "getting gid")
+	}
+
+	gameID := allGameIDs[rand.Int63n(int64(len(allGameIDs)))]
+	return db.GetGame(gameID)
 }

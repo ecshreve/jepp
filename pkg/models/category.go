@@ -1,6 +1,8 @@
 package models
 
 import (
+	"math/rand"
+
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 )
@@ -82,6 +84,27 @@ func (db *JeppDB) ListCategories(params *PaginationParams) ([]*CategoryCount, er
 	}
 
 	return categories, nil
+}
+
+// GetCategory returns the category with the given ID.
+func (db *JeppDB) GetCategory(categoryID string) (*CategoryCount, error) {
+	var category CategoryCount
+	if err := db.Get(&category, "SELECT * FROM category_counts WHERE category_id=?", categoryID); err != nil {
+		return nil, oops.Wrapf(err, "could not get category for id %s", categoryID)
+	}
+
+	return &category, nil
+}
+
+// GetRandomCategory returns a single category from the database.
+func (db *JeppDB) GetRandomCategory() (*CategoryCount, error) {
+	var allCategoryIDs []string
+	if err := db.Select(&allCategoryIDs, "SELECT category_id FROM category_counts"); err != nil {
+		return nil, oops.Wrapf(err, "getting category ids")
+	}
+
+	categoryID := allCategoryIDs[rand.Int63n(int64(len(allCategoryIDs)))]
+	return db.GetCategory(categoryID)
 }
 
 // GetCategoriesForGame returns all categories for a given game.

@@ -26,6 +26,7 @@ const docTemplate = `{
     "paths": {
         "/": {
             "get": {
+                "description": "Show available endpoints",
                 "consumes": [
                     "*/*"
                 ],
@@ -35,6 +36,7 @@ const docTemplate = `{
                 "tags": [
                     "root"
                 ],
+                "summary": "Base handler",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -94,6 +96,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/random": {
+            "get": {
+                "description": "Returns a random category",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category",
+                    "random"
+                ],
+                "summary": "Returns a random category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CategoryCount"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryID}": {
+            "get": {
+                "description": "Returns a category",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Returns a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "10LETTERWORDS000",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CategoryCount"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/categories/{categoryID}/clues": {
             "get": {
                 "description": "Returns a list of clues for a category.",
@@ -125,6 +196,120 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.Clue"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clues": {
+            "get": {
+                "description": "Returns a list of clues",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clue"
+                ],
+                "summary": "Returns a list of clues",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Clue"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clues/random": {
+            "get": {
+                "description": "Returns a random clue",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clue",
+                    "random"
+                ],
+                "summary": "Returns a random clue",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Clue"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/clues/{clueID}": {
+            "get": {
+                "description": "Returns a clue",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clue"
+                ],
+                "summary": "Returns a clues",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "708002056",
+                        "description": "Clue ID",
+                        "name": "clueID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Clue"
                         }
                     },
                     "500": {
@@ -178,8 +363,42 @@ const docTemplate = `{
                 }
             }
         },
-        "/games/{gameID}/clues": {
+        "/games/random": {
             "get": {
+                "description": "Returns a random game",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "game",
+                    "random"
+                ],
+                "summary": "Returns a random game",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Game"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/games/{gameID}": {
+            "get": {
+                "description": "Returns a game",
                 "consumes": [
                     "*/*"
                 ],
@@ -189,6 +408,46 @@ const docTemplate = `{
                 "tags": [
                     "game"
                 ],
+                "summary": "Returns a games",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "7000",
+                        "description": "Game ID",
+                        "name": "gameID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Game"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/games/{gameID}/clues": {
+            "get": {
+                "description": "Returns a list of clues for a game",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "game"
+                ],
+                "summary": "Returns a list of clues",
                 "parameters": [
                     {
                         "type": "string",
@@ -220,6 +479,7 @@ const docTemplate = `{
         },
         "/ping": {
             "get": {
+                "description": "Get the status of server",
                 "consumes": [
                     "*/*"
                 ],
@@ -229,6 +489,7 @@ const docTemplate = `{
                 "tags": [
                     "root"
                 ],
+                "summary": "Show the status of server",
                 "responses": {
                     "200": {
                         "description": "OK",

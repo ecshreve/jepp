@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/samsarahq/go/oops"
 	"golang.org/x/exp/slog"
@@ -121,4 +122,47 @@ func (db *JeppDB) GetCluesForCategory(category_id string) ([]*Clue, error) {
 	}
 
 	return clues, nil
+}
+
+// ListClues returns a list of clues in the database, defaults to returning
+// values ordered by game date, with most recent first.
+func (db *JeppDB) ListClues(params *PaginationParams) ([]*Clue, error) {
+	if params == nil {
+		params = &PaginationParams{Page: 1, PageSize: 10}
+	}
+
+	pageSize := params.PageSize
+	offset := params.Page * params.PageSize
+
+	var clues []*Clue
+	if err := db.Select(&clues, "SELECT * FROM clue ORDER BY clue_id DESC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
+		return nil, oops.Wrapf(err, "could not list clues")
+	}
+
+	if len(clues) == 0 {
+		return nil, nil
+	}
+
+	return clues, nil
+}
+
+// GetClue returns a single clue from the database.
+func (db *JeppDB) GetClue(clueID string) (*Clue, error) {
+	var clue Clue
+	if err := db.Get(&clue, "SELECT * FROM clue WHERE clue_id = ?", clueID); err != nil {
+		return nil, oops.Wrapf(err, "could not get clue %s", clueID)
+	}
+
+	return &clue, nil
+}
+
+// GetClue returns a single clue from the database.
+func (db *JeppDB) GetRandomClue() (*Clue, error) {
+	var allClueIDs []string
+	if err := db.Select(&allClueIDs, "SELECT clue_id FROM clue"); err != nil {
+		return nil, oops.Wrapf(err, "getting clue ids")
+	}
+
+	clueID := allClueIDs[rand.Int63n(int64(len(allClueIDs)))]
+	return db.GetClue(clueID)
 }
