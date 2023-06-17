@@ -269,8 +269,8 @@ const docTemplate = `{
                 "summary": "Returns a clues",
                 "parameters": [
                     {
-                        "type": "string",
-                        "default": "708002056",
+                        "type": "integer",
+                        "default": 708002056,
                         "description": "Clue ID",
                         "name": "clueID",
                         "in": "path",

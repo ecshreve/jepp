@@ -121,24 +121,30 @@ func (db *JeppDB) GetCluesForCategory(category_id string) ([]*Clue, error) {
 }
 
 type CluesParams struct {
-	GameID     string
-	CategoryID string
+	GameID     int64
+	CategoryID int64
 	*PaginationParams
 }
 
 // ListClues returns a list of clues in the database, defaults to returning
 // values ordered by game date, with most recent first.
 func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
+	if params.PaginationParams == nil {
+		params.PaginationParams = &PaginationParams{
+			Page:     1,
+			PageSize: 100,
+		}
+	}
 
 	queryArgs := []interface{}{}
 	baseQuery := "SELECT * FROM clue"
 
-	if params.GameID != "" {
+	if params.GameID != 0 {
 		baseQuery += " WHERE game_id = ?"
 		queryArgs = append(queryArgs, params.GameID)
 	}
 
-	if params.CategoryID != "" {
+	if params.CategoryID != 0 {
 		if len(queryArgs) > 0 {
 			baseQuery += " AND"
 		} else {
@@ -167,18 +173,22 @@ func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
 }
 
 // GetClue returns a single clue from the database.
-func (db *JeppDB) GetClue(clueID string) (*Clue, error) {
+func (db *JeppDB) GetClue(clueID int64) (*Clue, error) {
 	var clue Clue
 	if err := db.Get(&clue, "SELECT * FROM clue WHERE clue_id = ?", clueID); err != nil {
-		return nil, oops.Wrapf(err, "could not get clue %s", clueID)
+		return nil, oops.Wrapf(err, "could not get clue %d", clueID)
 	}
 
 	return &clue, nil
 }
 
 // GetClue returns a single clue from the database.
-func (db *JeppDB) GetRandomClue() (*Clue, error) {
-	var allClueIDs []string
+func (db *JeppDB) GetRandomClue(clueOptions []*Clue) (*Clue, error) {
+	if len(clueOptions) > 0 {
+		return clueOptions[rand.Intn(len(clueOptions))], nil
+	}
+
+	var allClueIDs []int64
 	if err := db.Select(&allClueIDs, "SELECT clue_id FROM clue"); err != nil {
 		return nil, oops.Wrapf(err, "getting clue ids")
 	}

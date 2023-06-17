@@ -27,8 +27,8 @@ import (
 //	@Failure		500			{object}	utils.HTTPError
 //	@Router			/clues [get]
 func (s *Server) CluesHandler(c *gin.Context) {
-	gameID := c.Query("game")
-	categoryID := c.Query("category")
+	gameID := c.GetInt64("game")
+	categoryID := c.GetInt64("category")
 	page := c.GetInt("page")
 	size := c.GetInt("limit")
 	paginationParams := models.PaginationParams{Page: page, PageSize: size}
@@ -60,12 +60,12 @@ func (s *Server) CluesHandler(c *gin.Context) {
 //	@Tags			clue
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			clueID	path		string	true	"Clue ID"	default(708002056)
+//	@Param			clueID	path		int64	true	"Clue ID"	default(708002056)
 //	@Success		200		{object}	models.Clue
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/clues/{clueID} [get]
 func (s *Server) ClueHandler(c *gin.Context) {
-	clueID := c.Param("clueID")
+	clueID := c.GetInt64("clueID")
 	clue, err := s.DB.GetClue(clueID)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clue %s", clueID))
@@ -88,7 +88,7 @@ func (s *Server) ClueHandler(c *gin.Context) {
 //	@Failure		500	{object}	utils.HTTPError
 //	@Router			/clues/random [get]
 func (s *Server) RandomClueHandler(c *gin.Context) {
-	clue, err := s.DB.GetRandomClue()
+	clue, err := s.DB.GetRandomClue(nil)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get random clue"))
 		utils.NewError(c, http.StatusBadRequest, err)

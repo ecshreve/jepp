@@ -206,12 +206,12 @@ paths:
       - '*/*'
       description: Returns a clue
       parameters:
-      - default: "708002056"
+      - default: 708002056
         description: Clue ID
         in: path
         name: clueID
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:

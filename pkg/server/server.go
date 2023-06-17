@@ -13,15 +13,20 @@ type Server struct {
 	Router *gin.Engine
 	Clock  clock.Clock
 	DB     *models.JeppDB
+	Stats  *models.Stats
 }
 
 // NewServer returns a new API server.
 func NewServer() *Server {
+	jdb := models.NewDB()
+	stats, _ := jdb.GetStats()
+
 	s := &Server{
 		ID:     "SERVER",
 		Router: gin.Default(),
 		Clock:  clock.New(),
-		DB:     models.NewDB(),
+		DB:     jdb,
+		Stats:  stats,
 	}
 
 	s.registerAPIHandlers()
