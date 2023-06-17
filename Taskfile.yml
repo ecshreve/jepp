@@ -11,30 +11,49 @@ tasks:
     cmds:
       - go test github.com/ecshreve/jepp/...
 
-  build:
+  go:build:scraper:
     generates:
-      - bin/jepp
+      - bin/scrape
+    sources:
+      - cmd/scrape/*.go
+    cmds:
+      - go build -o bin/jepp github.com/ecshreve/jepp/cmd/scrape
+
+  go:build:server:
+    generates:
       - bin/server
     sources:
-      - ./**/*.go
+      - pkg/**/*.go
+      - cmd/server/*.go
     cmds:
-      - go build -o bin/jepp github.com/ecshreve/jepp/cmd/jepp
       - go build -o bin/server github.com/ecshreve/jepp/cmd/server
 
   api:docs:
+    generates:
+      - docs/*
+    sources:
+      - cmd/server/main.go
+      - pkg/server/*.go
     cmds:
       - swag init -d cmd/server,pkg/server,pkg/models,pkg/utils
       - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
 
+  build:
+    deps:
+      - go:build:scraper
+      - go:build:server
+  
+  scrape:
+    deps:
+      - go:build:scraper
+    cmds:
+      - bin/scrape
+
   server:
     deps:
-      - build
+      - go:build:server
       - api:docs
+    sources:
+      - pkg/server/templates/*
     cmds:
-      - bin/server {{.CLI_ARGS}}
-
-  jepp:
-    deps:
-      - build
-    cmds:
-      - bin/jepp {{.CLI_ARGS}}
+      - bin/server

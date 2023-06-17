@@ -18,13 +18,16 @@ func (s *Server) registerUIHandlers() {
 func (s *Server) DebugUIHandler(c *gin.Context) {
 	clue, _ := s.DB.GetRandomClue()
 	game, _ := s.DB.GetGame(clue.GameID)
+	category, _ := s.DB.GetCategory(clue.CategoryID)
 
 	debug := struct {
 		*models.Clue
 		*models.Game
+		*models.CategoryCount
 	}{
-		Clue: clue,
-		Game: game,
+		Clue:          clue,
+		Game:          game,
+		CategoryCount: category,
 	}
 	c.HTML(200, "debug.html.tpl", debug)
 }

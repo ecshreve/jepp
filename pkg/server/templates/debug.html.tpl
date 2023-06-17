@@ -13,3 +13,10 @@
     <p><strong>ShowNum</strong>: <code>{{.Game.ShowNum}}</code></p>
     <p><strong>GameDate</strong>: <code>{{.Game.GameDate}}</code></p>
 </div>
+<div>
+    <h2>Category</h2>
+    <p><strong>CategoryID</strong>: <code>{{.CategoryCount.CategoryID}}</code></p>
+    <p><strong>CategoryName</strong>: <code>{{.CategoryCount.CategoryName}}</code></p>
+    <p><strong>GameCount</strong>: <code>{{.CategoryCount.GameCount}}</code></p>
+    <p><strong>ClueCount</strong>: <code>{{.CategoryCount.ClueCount}}</code></p>
+</div>

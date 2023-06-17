@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/ecshreve/jepp/pkg/models"
-	"github.com/ecshreve/jepp/pkg/scraper"
 )
 
 func main() {
@@ -89,7 +88,7 @@ func backfill(db *models.JeppDB) {
 }
 
 func scrapeAndUpdateDB(db *models.JeppDB, gid int64) {
-	game, clues, cats := scraper.Scrape(gid)
+	game, clues, cats := Scrape(gid)
 
 	if err := db.InsertGame(&game); err != nil {
 		log.Fatal(err)
