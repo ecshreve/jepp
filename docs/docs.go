@@ -165,48 +165,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories/{categoryID}/clues": {
-            "get": {
-                "description": "Returns a list of clues for a category.",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Returns a list of clues.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "10LETTERWORDS000",
-                        "description": "Category ID",
-                        "name": "categoryID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Clue"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
         "/clues": {
             "get": {
                 "description": "Returns a list of clues",
@@ -221,6 +179,18 @@ const docTemplate = `{
                 ],
                 "summary": "Returns a list of clues",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Game ID",
+                        "name": "game",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "category",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "default": 1,
@@ -424,48 +394,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Game"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/games/{gameID}/clues": {
-            "get": {
-                "description": "Returns a list of clues for a game",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "game"
-                ],
-                "summary": "Returns a list of clues",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "7000",
-                        "description": "Game ID",
-                        "name": "gameID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Clue"
-                            }
                         }
                     },
                     "500": {

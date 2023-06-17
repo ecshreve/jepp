@@ -17,7 +17,7 @@ func main() {
 	docs.SwaggerInfo.Description = "This is a simple jeopardy server."
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "10.35.220.99:8880"
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
 	log.SetLevel(log.DebugLevel)

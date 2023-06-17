@@ -136,34 +136,6 @@ paths:
       summary: Returns a category
       tags:
       - category
-  /categories/{categoryID}/clues:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a list of clues for a category.
-      parameters:
-      - default: 10LETTERWORDS000
-        description: Category ID
-        in: path
-        name: categoryID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Clue'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a list of clues.
-      tags:
-      - category
   /categories/random:
     get:
       consumes:
@@ -190,6 +162,14 @@ paths:
       - '*/*'
       description: Returns a list of clues
       parameters:
+      - description: Game ID
+        in: query
+        name: game
+        type: string
+      - description: Category ID
+        in: query
+        name: category
+        type: string
       - default: 1
         description: Page number
         in: query
@@ -312,34 +292,6 @@ paths:
           schema:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a games
-      tags:
-      - game
-  /games/{gameID}/clues:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a list of clues for a game
-      parameters:
-      - default: "7000"
-        description: Game ID
-        in: path
-        name: gameID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Clue'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a list of clues
       tags:
       - game
   /games/random:

@@ -68,7 +68,7 @@ func (db *JeppDB) UpdateCategory(c *Category) error {
 // ListCategories returns all categories in the database.
 func (db *JeppDB) ListCategories(params *PaginationParams) ([]*CategoryCount, error) {
 	if params == nil {
-		params = &PaginationParams{Page: 1, PageSize: 10}
+		params = &PaginationParams{Page: 0, PageSize: 10}
 	}
 
 	pageSize := params.PageSize

@@ -124,18 +124,45 @@ func (db *JeppDB) GetCluesForCategory(category_id string) ([]*Clue, error) {
 	return clues, nil
 }
 
+type CluesParams struct {
+	GameID     string
+	CategoryID string
+	*PaginationParams
+}
+
 // ListClues returns a list of clues in the database, defaults to returning
 // values ordered by game date, with most recent first.
-func (db *JeppDB) ListClues(params *PaginationParams) ([]*Clue, error) {
-	if params == nil {
-		params = &PaginationParams{Page: 1, PageSize: 10}
+func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
+	if params.PaginationParams == nil {
+		params.PaginationParams = &PaginationParams{Page: 1, PageSize: 100}
+	}
+
+	queryArgs := []interface{}{}
+	baseQuery := "SELECT * FROM clue"
+
+	if params.GameID != "" {
+		baseQuery += " WHERE game_id = ?"
+		queryArgs = append(queryArgs, params.GameID)
+	}
+
+	if params.CategoryID != "" {
+		if len(queryArgs) > 0 {
+			baseQuery += " AND"
+		} else {
+			baseQuery += " WHERE"
+		}
+
+		baseQuery += " category_id = ?"
+		queryArgs = append(queryArgs, params.CategoryID)
 	}
 
 	pageSize := params.PageSize
 	offset := params.Page * params.PageSize
+	queryArgs = append(queryArgs, pageSize, offset)
+	baseQuery += " ORDER BY clue_id DESC LIMIT ? OFFSET ?"
 
 	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue ORDER BY clue_id DESC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
+	if err := db.Select(&clues, baseQuery, queryArgs...); err != nil {
 		return nil, oops.Wrapf(err, "could not list clues")
 	}
 

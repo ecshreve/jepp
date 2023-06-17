@@ -11,10 +11,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *Server) registerCategoryHandlers() {
-	s.Router.GET("/categories", pagination.Default(), s.CategoriesHandler)
-	s.Router.GET("/categories/random", s.RandomCategoryHandler)
-	s.Router.GET("/categories/:categoryID", s.CategoryHandler)
+func (s *Server) registerCategoryHandlers(rg *gin.RouterGroup) {
+	category := rg.Group("/categories")
+	category.GET("/", pagination.Default(), s.CategoriesHandler)
+	category.GET("/random", s.RandomCategoryHandler)
+	category.GET("/:categoryID", s.CategoryHandler)
 }
 
 // CategoriesHandler returns a list of categories.

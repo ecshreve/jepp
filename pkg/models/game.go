@@ -47,7 +47,7 @@ func (db *JeppDB) InsertGame(g *Game) error {
 // values ordered by game date, with most recent first.
 func (db *JeppDB) ListGames(params *PaginationParams) ([]*Game, error) {
 	if params == nil {
-		params = &PaginationParams{Page: 1, PageSize: 10}
+		params = &PaginationParams{Page: 0, PageSize: 10}
 	}
 
 	pageSize := params.PageSize

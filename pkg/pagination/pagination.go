@@ -10,7 +10,7 @@ import (
 const (
 	DEFAULT_PAGE_TEXT    = "page"
 	DEFAULT_SIZE_TEXT    = "size"
-	DEFAULT_PAGE         = "1"
+	DEFAULT_PAGE         = "0"
 	DEFAULT_PAGE_SIZE    = "10"
 	DEFAULT_MIN_PAGESIZE = 10
 	DEFAULT_MAX_PAGESIZE = 100

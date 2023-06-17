@@ -10,12 +10,13 @@ import (
 
 // registerHandlers registers all the handlers for the server.
 func (s *Server) registerHandlers() {
-	s.Router.GET("/", s.BaseHandler)
-	s.Router.GET("/ping", s.PingHandler)
+	api := s.Router.Group("/api")
+	api.GET("/", s.BaseHandler)
+	api.GET("/ping", s.PingHandler)
 
-	s.registerGameHandlers()
-	s.registerCategoryHandlers()
-	s.registerClueHandlers()
+	s.registerGameHandlers(api)
+	s.registerCategoryHandlers(api)
+	s.registerClueHandlers(api)
 
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
@@ -40,19 +41,19 @@ func (s *Server) BaseHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "api root",
 		"available endpoints": []string{
-			"/",
-			"/ping",
-			"/games",
-			"/games/random",
-			"/games/:gameID",
-			"/games/:gameID/clues",
-			"/categories",
-			"/categories/random",
-			"/categories/:categoryID",
-			"/categories/:categoryID/clues",
-			"/clues",
-			"/clues/random",
-			"/clues/:clueID",
+			"/api",
+			"/api/ping",
+			"/api/games",
+			"/api/games/random",
+			"/api/games/:gameID",
+			"/api/games/:gameID/api/clues",
+			"/api/categories",
+			"/api/categories/random",
+			"/api/categories/:categoryID",
+			"/api/categories/:categoryID/api/clues",
+			"/api/clues",
+			"/api/clues/random",
+			"/api/clues/:clueID",
 		},
 	})
 }

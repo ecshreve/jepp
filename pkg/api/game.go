@@ -11,10 +11,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *Server) registerGameHandlers() {
-	s.Router.GET("/games", pagination.Default(), s.GamesHandler)
-	s.Router.GET("/games/random", s.RandomGameHandler)
-	s.Router.GET("/games/:gameID", s.GameHandler)
+func (s *Server) registerGameHandlers(rg *gin.RouterGroup) {
+	games := rg.Group("/games")
+	games.GET("/", pagination.Default(), s.GamesHandler)
+	games.GET("/random", s.RandomGameHandler)
+	games.GET("/:gameID", s.GameHandler)
 }
 
 // GamesHandler godoc
