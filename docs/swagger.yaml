@@ -1,18 +1,12 @@
 definitions:
-  models.CategoryCount:
+  models.Category:
     properties:
       categoryId:
-        example: CATEGORYNAME0000
-        type: string
-      categoryName:
+        example: 765
+        type: integer
+      name:
         example: Category Name
         type: string
-      clueCount:
-        example: 5
-        type: integer
-      gameCount:
-        example: 1
-        type: integer
     type: object
   models.Clue:
     properties:
@@ -20,8 +14,8 @@ definitions:
         example: This is the answer.
         type: string
       categoryId:
-        example: CATEGORYNAME0000
-        type: string
+        example: 804092001
+        type: integer
       clueId:
         example: 804002032
         type: integer
@@ -101,7 +95,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.CategoryCount'
+              $ref: '#/definitions/models.Category'
             type: array
         "500":
           description: Internal Server Error
@@ -116,19 +110,18 @@ paths:
       - '*/*'
       description: Returns a category
       parameters:
-      - default: 10LETTERWORDS000
-        description: Category ID
+      - description: Category ID
         in: path
         name: categoryID
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CategoryCount'
+            $ref: '#/definitions/models.Category'
         "500":
           description: Internal Server Error
           schema:
@@ -147,7 +140,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.CategoryCount'
+            $ref: '#/definitions/models.Category'
         "500":
           description: Internal Server Error
           schema:

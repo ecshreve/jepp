@@ -36,9 +36,7 @@ func ParseClueID(clueString string, gameId int64) int64 {
 
 // GetCategoryID converts a category string to a category ID.
 func GetCategoryID(s string) string {
-	clean := regexp.MustCompile(`[^a-zA-Z0-9]`).ReplaceAllString(s, "")
-	clean += "0000000000000000"
+	clean := regexp.MustCompile(`[^a-zA-Z0-9]`).ReplaceAllString(s, "0")
 	clean = strings.ToUpper(clean)
-
-	return clean[:16]
+	return clean
 }

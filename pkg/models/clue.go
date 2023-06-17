@@ -5,7 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/samsarahq/go/oops"
-	"golang.org/x/exp/slog"
+	log "github.com/sirupsen/logrus"
 )
 
 // TODO: this is silly, should fix it
@@ -28,24 +28,20 @@ var RoundMap = map[string]Round{
 type Clue struct {
 	ClueID     int64  `db:"clue_id" json:"clueId" example:"804002032"`
 	GameID     int64  `db:"game_id" json:"gameId" example:"8040"`
-	CategoryID string `db:"category_id" json:"categoryId" example:"CATEGORYNAME0000"`
+	CategoryID int64  `db:"category_id" json:"categoryId" example:"804092001"`
 	Question   string `db:"question" json:"question" example:"This is the question."`
 	Answer     string `db:"answer" json:"answer" example:"This is the answer."`
 }
 
 // String implements fmt.Stringer.
 func (c *Clue) String() string {
-	return fmt.Sprintf("%d - %d - %s", c.GameID, c.ClueID, c.CategoryID)
+	return fmt.Sprintf("%d - %d - %d", c.ClueID, c.ClueID, c.CategoryID)
 }
 
 // InsertClue inserts a clue into the database.
 func (db *JeppDB) InsertClue(c *Clue) error {
 	if c == nil {
 		return nil
-	}
-
-	if len(c.CategoryID) != 8 {
-		c.CategoryID = GetCategoryID(c.CategoryID)
 	}
 
 	tx := db.MustBegin()
@@ -57,7 +53,7 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Info("inserted clue", "clue", c)
+		log.Infof("inserted clue %+v", c)
 	}
 	return nil
 }
@@ -76,7 +72,7 @@ func (db *JeppDB) UpdateClue(c *Clue) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Info("updated clue", "clue", c)
+		log.Info("updated clue", "clue", c)
 	}
 
 	return nil

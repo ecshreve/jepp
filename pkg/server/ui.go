@@ -23,11 +23,11 @@ func (s *Server) DebugUIHandler(c *gin.Context) {
 	debug := struct {
 		*models.Clue
 		*models.Game
-		*models.CategoryCount
+		*models.Category
 	}{
-		Clue:          clue,
-		Game:          game,
-		CategoryCount: category,
+		Clue:     clue,
+		Game:     game,
+		Category: category,
 	}
 	c.HTML(200, "debug.html.tpl", debug)
 }

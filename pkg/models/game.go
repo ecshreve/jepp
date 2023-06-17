@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/samsarahq/go/oops"
-	"golang.org/x/exp/slog"
+	log "github.com/sirupsen/logrus"
 )
 
 const TIME_FORMAT = "Monday, January 2, 2006"
@@ -38,7 +38,7 @@ func (db *JeppDB) InsertGame(g *Game) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		slog.Info("inserted game", "game", g)
+		log.Info("inserted game", "game", g)
 	}
 	return nil
 }

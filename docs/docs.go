@@ -83,7 +83,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.CategoryCount"
+                                "$ref": "#/definitions/models.Category"
                             }
                         }
                     },
@@ -114,7 +114,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CategoryCount"
+                            "$ref": "#/definitions/models.Category"
                         }
                     },
                     "500": {
@@ -141,8 +141,7 @@ const docTemplate = `{
                 "summary": "Returns a category",
                 "parameters": [
                     {
-                        "type": "string",
-                        "default": "10LETTERWORDS000",
+                        "type": "integer",
                         "description": "Category ID",
                         "name": "categoryID",
                         "in": "path",
@@ -153,7 +152,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.CategoryCount"
+                            "$ref": "#/definitions/models.Category"
                         }
                     },
                     "500": {
@@ -431,24 +430,16 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.CategoryCount": {
+        "models.Category": {
             "type": "object",
             "properties": {
                 "categoryId": {
-                    "type": "string",
-                    "example": "CATEGORYNAME0000"
+                    "type": "integer",
+                    "example": 765
                 },
-                "categoryName": {
+                "name": {
                     "type": "string",
                     "example": "Category Name"
-                },
-                "clueCount": {
-                    "type": "integer",
-                    "example": 5
-                },
-                "gameCount": {
-                    "type": "integer",
-                    "example": 1
                 }
             }
         },
@@ -460,8 +451,8 @@ const docTemplate = `{
                     "example": "This is the answer."
                 },
                 "categoryId": {
-                    "type": "string",
-                    "example": "CATEGORYNAME0000"
+                    "type": "integer",
+                    "example": 804092001
                 },
                 "clueId": {
                     "type": "integer",

@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/pagination"
@@ -28,7 +29,7 @@ func (s *Server) registerCategoryHandlers(rg *gin.RouterGroup) {
 //	@Produce		json
 //	@Param			page	query		int	false	"Page number"	default(1)
 //	@Param			size	query		int	false	"Page size"		default(10)
-//	@Success		200		{array}		models.CategoryCount
+//	@Success		200		{array}		models.Category
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/categories [get]
 func (s *Server) CategoriesHandler(c *gin.Context) {
@@ -57,15 +58,16 @@ func (s *Server) CategoriesHandler(c *gin.Context) {
 //	@Tags			category
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			categoryID	path		string	true	"Category ID"	default(10LETTERWORDS000)
-//	@Success		200			{object}	models.CategoryCount
+//	@Param			categoryID	path		int	true	"Category ID"	default(10LETTERWORDS000)
+//	@Success		200			{object}	models.Category
 //	@Failure		500			{object}	utils.HTTPError
 //	@Router			/categories/{categoryID} [get]
 func (s *Server) CategoryHandler(c *gin.Context) {
-	categoryID := c.Param("categoryID")
+	categoryIDStr := c.Param("categoryID")
+	categoryID, _ := strconv.ParseInt(categoryIDStr, 10, 64)
 	category, err := s.DB.GetCategory(categoryID)
 	if err != nil {
-		log.Error(oops.Wrapf(err, "unable to get category %s", categoryID))
+		log.Error(oops.Wrapf(err, "unable to get category %d", categoryID))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
@@ -81,7 +83,7 @@ func (s *Server) CategoryHandler(c *gin.Context) {
 //	@Tags			category,random
 //	@Accept			*/*
 //	@Produce		json
-//	@Success		200	{object}	models.CategoryCount
+//	@Success		200	{object}	models.Category
 //	@Failure		500	{object}	utils.HTTPError
 //	@Router			/categories/random [get]
 func (s *Server) RandomCategoryHandler(c *gin.Context) {

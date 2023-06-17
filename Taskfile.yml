@@ -17,7 +17,7 @@ tasks:
     sources:
       - cmd/scrape/*.go
     cmds:
-      - go build -o bin/jepp github.com/ecshreve/jepp/cmd/scrape
+      - go build -o bin/scrape github.com/ecshreve/jepp/cmd/scrape
 
   go:build:server:
     generates:

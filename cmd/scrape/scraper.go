@@ -2,41 +2,25 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	mod "github.com/ecshreve/jepp/pkg/models"
+	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gocolly/colly/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 var re = regexp.MustCompile(`.*#([0-9]+) - (.*)$`)
 
-func ScrapeMany(gameIDs []int64) ([]mod.Game, []mod.Clue, []mod.Category) {
-	games := []mod.Game{}
-	clues := []mod.Clue{}
-	cats := []mod.Category{}
-
-	for _, gameID := range gameIDs {
-		g, c, cc := Scrape(gameID)
-		games = append(games, g)
-		clues = append(clues, c...)
-		cats = append(cats, cc...)
-	}
-
-	return games, clues, cats
-}
-
-func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
+func Scrape(gameID int64) (mod.Game, map[int64]*mod.Clue, map[int64]string) {
 	var showNum int64
 	var gameDate time.Time
 
-	clueMap := map[int64]mod.Clue{}
+	clueMap := map[int64]*mod.Clue{}
 	clueStrings := map[int64]string{}
 	cats := map[mod.Round][]string{}
-	cc := []string{}
 
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -73,7 +57,7 @@ func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 		clueAnswer := e.ChildText(fmt.Sprintf("td#%s_r em.correct_response", cid))
 		clueId := mod.ParseClueID(cid, gameID)
 
-		clueMap[clueId] = mod.Clue{ClueID: clueId, GameID: gameID, Question: clueText, Answer: clueAnswer}
+		clueMap[clueId] = &mod.Clue{ClueID: clueId, GameID: gameID, Question: clueText, Answer: clueAnswer}
 		clueStrings[clueId] = cid
 	})
 
@@ -108,19 +92,12 @@ func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 
 	c.Visit(fmt.Sprintf("https://www.j-archive.com/showgame.php?game_id=%d", gameID))
 
-	clues := []mod.Clue{}
-	for clueId, clue := range clueMap {
-		clue.CategoryID = helper(clueStrings[clueId], cats)
-		clues = append(clues, clue)
-	}
+	catMap := map[int64]string{}
 
-	cc = append(cc, cats[mod.Jeopardy]...)
-	cc = append(cc, cats[mod.DoubleJeopardy]...)
-	cc = append(cc, cats[mod.FinalJeopardy]...)
-
-	allCats := []mod.Category{}
-	for _, cat := range cc {
-		allCats = append(allCats, mod.Category{CategoryID: mod.GetCategoryID(cat), Name: cat, GameID: gameID})
+	for clueId, clueStr := range clueStrings {
+		rd, col := utils.ParseRoundAndColumn(clueStr)
+		catName := cats[mod.Round(rd)][col-1]
+		catMap[clueId] = catName
 	}
 
 	g := mod.Game{
@@ -129,24 +106,5 @@ func Scrape(gameID int64) (mod.Game, []mod.Clue, []mod.Category) {
 		GameDate: gameDate,
 	}
 
-	return g, clues, allCats
-}
-
-func helper(s string, cats map[mod.Round][]string) string {
-	tokens := strings.Split(s, "_")
-	if len(tokens) > 4 || len(tokens) == 0 {
-		fmt.Println("Error parsing clueID")
-		return ""
-	}
-
-	round := mod.RoundMap[tokens[1]]
-	if round == mod.FinalJeopardy {
-		if tokens[1] == "TB" {
-			return cats[round][1]
-		}
-		return cats[round][0]
-	}
-
-	catIndex, _ := strconv.Atoi(tokens[2])
-	return cats[round][catIndex-1]
+	return g, clueMap, catMap
 }
