@@ -1,6 +1,8 @@
 # jepp
 have fun with jeopardy
 
+<img width="707" alt="Screenshot 2023-06-17 at 12 42 42 PM" src="https://github.com/ecshreve/jepp/assets/1425775/11739d2c-d37f-414c-8599-4a67690a2e85">
+
 ## docs
 
 `task api`
