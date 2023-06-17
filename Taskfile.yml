@@ -14,24 +14,24 @@ tasks:
   build:
     generates:
       - bin/jepp
-      - bin/api
+      - bin/server
     sources:
       - ./**/*.go
     cmds:
       - go build -o bin/jepp github.com/ecshreve/jepp/cmd/jepp
-      - go build -o bin/api github.com/ecshreve/jepp/cmd/api
+      - go build -o bin/server github.com/ecshreve/jepp/cmd/server
 
   api:docs:
     cmds:
-      - swag init -d cmd/api,pkg/api,pkg/models,pkg/utils
-      - swag fmt -d cmd/api,pkg/api,pkg/models,pkg/utils
+      - swag init -d cmd/server,pkg/server,pkg/models,pkg/utils
+      - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
 
-  api:
+  server:
     deps:
       - build
       - api:docs
     cmds:
-      - bin/api {{.CLI_ARGS}}
+      - bin/server {{.CLI_ARGS}}
 
   jepp:
     deps:

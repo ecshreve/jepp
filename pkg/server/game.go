@@ -1,7 +1,8 @@
-package api
+package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/pagination"
@@ -61,7 +62,14 @@ func (s *Server) GamesHandler(c *gin.Context) {
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/games/{gameID} [get]
 func (s *Server) GameHandler(c *gin.Context) {
-	gameID := c.Param("gameID")
+	gameIDStr := c.Param("gameID")
+	gameID, err := strconv.ParseInt(gameIDStr, 10, 64)
+	if err != nil {
+		log.Error(oops.Wrapf(err, "unable to parse gameID %s", gameIDStr))
+		utils.NewError(c, http.StatusBadRequest, err)
+		return
+	}
+
 	game, err := s.DB.GetGame(gameID)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get game %s", gameID))

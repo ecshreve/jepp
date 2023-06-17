@@ -1,4 +1,4 @@
-package api
+package server
 
 import (
 	"github.com/benbjohnson/clock"
@@ -24,7 +24,8 @@ func NewServer() *Server {
 		DB:     models.NewDB(),
 	}
 
-	s.registerHandlers()
+	s.registerAPIHandlers()
+	s.registerUIHandlers()
 
 	return s
 }

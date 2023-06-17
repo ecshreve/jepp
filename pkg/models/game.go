@@ -66,10 +66,10 @@ func (db *JeppDB) ListGames(params *PaginationParams) ([]*Game, error) {
 }
 
 // GetGame returns a single game from the database.
-func (db *JeppDB) GetGame(gameID string) (*Game, error) {
+func (db *JeppDB) GetGame(gameID int64) (*Game, error) {
 	var game Game
 	if err := db.Get(&game, "SELECT * FROM game WHERE game_id = ?", gameID); err != nil {
-		return nil, oops.Wrapf(err, "could not get game %s", gameID)
+		return nil, oops.Wrapf(err, "could not get game %d", gameID)
 	}
 
 	return &game, nil
@@ -77,7 +77,7 @@ func (db *JeppDB) GetGame(gameID string) (*Game, error) {
 
 // GetGame returns a single game from the database.
 func (db *JeppDB) GetRandomGame() (*Game, error) {
-	var allGameIDs []string
+	var allGameIDs []int64
 	if err := db.Select(&allGameIDs, "SELECT game_id FROM game"); err != nil {
 		return nil, oops.Wrapf(err, "getting gid")
 	}

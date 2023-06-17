@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ecshreve/jepp/docs"
-	"github.com/ecshreve/jepp/pkg/api"
+	"github.com/ecshreve/jepp/pkg/server"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,6 +23,6 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	log.Info("Starting Jepp API server...")
 
-	apiServer := api.NewServer()
-	apiServer.Serve()
+	srv := server.NewServer()
+	srv.Serve()
 }

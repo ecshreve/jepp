@@ -1,15 +1,13 @@
-package api
+package server
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // registerHandlers registers all the handlers for the server.
-func (s *Server) registerHandlers() {
+func (s *Server) registerAPIHandlers() {
 	api := s.Router.Group("/api")
 	api.GET("/", s.BaseHandler)
 	api.GET("/ping", s.PingHandler)
@@ -17,8 +15,6 @@ func (s *Server) registerHandlers() {
 	s.registerGameHandlers(api)
 	s.registerCategoryHandlers(api)
 	s.registerClueHandlers(api)
-
-	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// This is not safe for production use but it's fine for playing
 	// around locally.
