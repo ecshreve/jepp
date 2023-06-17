@@ -5,19 +5,12 @@ import (
 	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
-	"github.com/ecshreve/jepp/pkg/pagination"
+	"github.com/ecshreve/jepp/pkg/server/pagination"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 )
-
-func (s *Server) registerGameHandlers(rg *gin.RouterGroup) {
-	games := rg.Group("/games")
-	games.GET("/", pagination.Default(), s.GamesHandler)
-	games.GET("/random", s.RandomGameHandler)
-	games.GET("/:gameID", s.GameHandler)
-}
 
 // GamesHandler godoc
 //
@@ -27,26 +20,27 @@ func (s *Server) registerGameHandlers(rg *gin.RouterGroup) {
 //	@Tags			game
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			page	query	int	false	"Page number"	default(1)
-//	@Param			size	query	int	false	"Page size"		default(10)
-//	@Success		200		{array}	models.Game
-//	@Router			/games [get]
+//	@Param			page	query		int	false	"Page number"	default(1)
+//	@Param			size	query		int	false	"Page size"		default(10)
+//	@Success		200		{object}	pagination.Response
+
+//	@Router	/games [get]
 func (s *Server) GamesHandler(c *gin.Context) {
-	page, _ := c.Get("page")
-	size, _ := c.Get("size")
+	page := c.GetInt("page")
+	size := c.GetInt("limit")
+	paginationParams := models.PaginationParams{Page: page, PageSize: size}
 
-	if page == nil || size == nil {
-		return
-	}
-
-	games, err := s.DB.ListGames(&models.PaginationParams{Page: page.(int), PageSize: size.(int)})
+	games, err := s.DB.ListGames(&paginationParams)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get games"))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(200, games)
+	c.JSON(http.StatusOK, &pagination.Response{
+		Data:  games,
+		Links: pagination.GetLinks(c, int64(len(games)), &paginationParams),
+	})
 }
 
 // GameHandler godoc
@@ -57,7 +51,7 @@ func (s *Server) GamesHandler(c *gin.Context) {
 //	@Tags			game
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			gameID	path		string	true	"Game ID"	default(7000)
+//	@Param			gameID	path		string	true	"Game ID"	default(7040)
 //	@Success		200		{object}	models.Game
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/games/{gameID} [get]
@@ -72,7 +66,7 @@ func (s *Server) GameHandler(c *gin.Context) {
 
 	game, err := s.DB.GetGame(gameID)
 	if err != nil {
-		log.Error(oops.Wrapf(err, "unable to get game %s", gameID))
+		log.Error(oops.Wrapf(err, "unable to get game %d", gameID))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}

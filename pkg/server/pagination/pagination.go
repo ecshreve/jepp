@@ -1,9 +1,12 @@
 package pagination
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -65,4 +68,45 @@ func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, m
 
 		c.Next()
 	}
+}
+
+// Response is the response for pagination query request
+type Response struct {
+	Data  any   `json:"data"`
+	Links links `json:"_links,omitempty"`
+}
+
+type links struct {
+	Next string `json:"next,omitempty"`
+	Prev string `json:"prev,omitempty"`
+}
+
+func GetLinks(ctx *gin.Context, total int64, q *models.PaginationParams) links {
+	url := fmt.Sprintf("%v", ctx.Request.URL)
+	baseURL := strings.Split(url, "?")[0]
+	l := links{}
+	if int64(total) == int64(q.PageSize) {
+		l.Next = fmt.Sprintf(
+			"%s?page=%d&size=%d",
+			baseURL,
+			q.Page+1,
+			q.PageSize,
+		)
+	}
+
+	if q.Page != 1 {
+		prevStart := q.Page - 1
+		if prevStart < 0 {
+			prevStart = 0
+		}
+
+		l.Prev = fmt.Sprintf(
+			"%s?page=%d&size=%d",
+			baseURL,
+			q.Page,
+			q.PageSize,
+		)
+	}
+
+	return l
 }

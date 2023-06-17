@@ -5,19 +5,12 @@ import (
 	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
-	"github.com/ecshreve/jepp/pkg/pagination"
+	"github.com/ecshreve/jepp/pkg/server/pagination"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 )
-
-func (s *Server) registerCategoryHandlers(rg *gin.RouterGroup) {
-	category := rg.Group("/categories")
-	category.GET("/", pagination.Default(), s.CategoriesHandler)
-	category.GET("/random", s.RandomCategoryHandler)
-	category.GET("/:categoryID", s.CategoryHandler)
-}
 
 // CategoriesHandler returns a list of categories.
 //
@@ -29,25 +22,25 @@ func (s *Server) registerCategoryHandlers(rg *gin.RouterGroup) {
 //	@Produce		json
 //	@Param			page	query		int	false	"Page number"	default(1)
 //	@Param			size	query		int	false	"Page size"		default(10)
-//	@Success		200		{array}		models.Category
+//	@Success		200		{object}	pagination.Response
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/categories [get]
 func (s *Server) CategoriesHandler(c *gin.Context) {
-	page, _ := c.Get("page")
-	size, _ := c.Get("size")
+	page := c.GetInt("page")
+	size := c.GetInt("limit")
+	paginationParams := models.PaginationParams{Page: page, PageSize: size}
 
-	if page == nil || size == nil {
-		return
-	}
-
-	cats, err := s.DB.ListCategories(&models.PaginationParams{Page: page.(int), PageSize: size.(int)})
+	cats, err := s.DB.GetCategories(paginationParams)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get categories"))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, cats)
+	c.JSON(http.StatusOK, &pagination.Response{
+		Data:  cats,
+		Links: pagination.GetLinks(c, int64(len(cats)), &paginationParams),
+	})
 }
 
 // CategoryHandler godoc

@@ -46,12 +46,8 @@ func (db *JeppDB) InsertGame(g *Game) error {
 // ListGames returns a list of games in the database, defaults to returning
 // values ordered by game date, with most recent first.
 func (db *JeppDB) ListGames(params *PaginationParams) ([]*Game, error) {
-	if params == nil {
-		params = &PaginationParams{Page: 0, PageSize: 10}
-	}
-
 	pageSize := params.PageSize
-	offset := params.Page * params.PageSize
+	offset := (params.Page - 1) * params.PageSize
 
 	var games []*Game
 	if err := db.Select(&games, "SELECT * FROM game ORDER BY game_date DESC LIMIT ? OFFSET ?", pageSize, offset); err != nil {

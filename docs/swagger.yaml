@@ -38,6 +38,19 @@ definitions:
         example: 4532
         type: integer
     type: object
+  pagination.Response:
+    properties:
+      _links:
+        $ref: '#/definitions/pagination.links'
+      data: {}
+    type: object
+  pagination.links:
+    properties:
+      next:
+        type: string
+      prev:
+        type: string
+    type: object
   utils.HTTPError:
     properties:
       code:
@@ -94,9 +107,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Category'
-            type: array
+            $ref: '#/definitions/pagination.Response'
         "500":
           description: Internal Server Error
           schema:
@@ -180,8 +191,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Clue'
+              $ref: '#/definitions/pagination.Response'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of clues
       tags:
       - clue
@@ -235,39 +250,14 @@ paths:
       - random
   /games:
     get:
-      consumes:
-      - '*/*'
-      description: Returns a list of games
-      parameters:
-      - default: 1
-        description: Page number
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        name: size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Game'
-            type: array
-      summary: Returns a list of games
-      tags:
-      - game
+      responses: {}
   /games/{gameID}:
     get:
       consumes:
       - '*/*'
       description: Returns a game
       parameters:
-      - default: "7000"
+      - default: "7040"
         description: Game ID
         in: path
         name: gameID

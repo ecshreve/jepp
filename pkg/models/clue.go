@@ -129,9 +129,6 @@ type CluesParams struct {
 // ListClues returns a list of clues in the database, defaults to returning
 // values ordered by game date, with most recent first.
 func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
-	if params.PaginationParams == nil {
-		params.PaginationParams = &PaginationParams{Page: 1, PageSize: 100}
-	}
 
 	queryArgs := []interface{}{}
 	baseQuery := "SELECT * FROM clue"
@@ -153,7 +150,7 @@ func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
 	}
 
 	pageSize := params.PageSize
-	offset := params.Page * params.PageSize
+	offset := (params.Page - 1) * params.PageSize
 	queryArgs = append(queryArgs, pageSize, offset)
 	baseQuery += " ORDER BY clue_id DESC LIMIT ? OFFSET ?"
 

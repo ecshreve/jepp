@@ -4,19 +4,12 @@ import (
 	"net/http"
 
 	"github.com/ecshreve/jepp/pkg/models"
-	"github.com/ecshreve/jepp/pkg/pagination"
+	"github.com/ecshreve/jepp/pkg/server/pagination"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 )
-
-func (s *Server) registerClueHandlers(rg *gin.RouterGroup) {
-	clue := rg.Group("/clues")
-	clue.GET("/", pagination.Default(), s.CluesHandler)
-	clue.GET("/random", s.RandomClueHandler)
-	clue.GET("/:clueID", s.ClueHandler)
-}
 
 // CluesHandler godoc
 //
@@ -26,26 +19,19 @@ func (s *Server) registerClueHandlers(rg *gin.RouterGroup) {
 //	@Tags			clue
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			game		query	string	false	"Game ID"
-//	@Param			category	query	string	false	"Category ID"
-//	@Param			page		query	int		false	"Page number"	default(1)
-//	@Param			size		query	int		false	"Page size"		default(10)
-//	@Success		200			{array}	models.Clue
+//	@Param			game		query		string	false	"Game ID"
+//	@Param			category	query		string	false	"Category ID"
+//	@Param			page		query		int		false	"Page number"	default(1)
+//	@Param			size		query		int		false	"Page size"		default(10)
+//	@Success		200			{array}		pagination.Response
+//	@Failure		500			{object}	utils.HTTPError
 //	@Router			/clues [get]
 func (s *Server) CluesHandler(c *gin.Context) {
 	gameID := c.Query("game")
 	categoryID := c.Query("category")
-
-	// TODO: fix pagination handling
-	var paginationParams models.PaginationParams
-
-	if page, _ := c.Get("page"); page != nil {
-		paginationParams.Page = page.(int)
-	}
-
-	if size, _ := c.Get("size"); size != nil {
-		paginationParams.PageSize = size.(int)
-	}
+	page := c.GetInt("page")
+	size := c.GetInt("limit")
+	paginationParams := models.PaginationParams{Page: page, PageSize: size}
 
 	cluesParams := &models.CluesParams{
 		GameID:           gameID,
@@ -60,7 +46,10 @@ func (s *Server) CluesHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, clues)
+	c.JSON(http.StatusOK, &pagination.Response{
+		Data:  clues,
+		Links: pagination.GetLinks(c, int64(len(clues)), &paginationParams),
+	})
 }
 
 // ClueHandler godoc

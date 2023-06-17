@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/ecshreve/jepp/pkg/server/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
@@ -12,9 +13,22 @@ func (s *Server) registerAPIHandlers() {
 	api.GET("/", s.BaseHandler)
 	api.GET("/ping", s.PingHandler)
 
-	s.registerGameHandlers(api)
-	s.registerCategoryHandlers(api)
-	s.registerClueHandlers(api)
+	listPaginator := pagination.New("page", "limit", "1", "25", 1, 100)
+
+	clue := api.Group("/clues")
+	clue.GET("", listPaginator, s.CluesHandler)
+	clue.GET("/random", s.RandomClueHandler)
+	clue.GET("/:clueID", s.ClueHandler)
+
+	games := api.Group("/games")
+	games.GET("/", listPaginator, s.GamesHandler)
+	games.GET("/random", s.RandomGameHandler)
+	games.GET("/:gameID", s.GameHandler)
+
+	category := api.Group("/categories")
+	category.GET("", listPaginator, s.CategoriesHandler)
+	category.GET("/random", s.RandomCategoryHandler)
+	category.GET("/:categoryID", s.CategoryHandler)
 
 	// This is not safe for production use but it's fine for playing
 	// around locally.

@@ -81,10 +81,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Category"
-                            }
+                            "$ref": "#/definitions/pagination.Response"
                         }
                     },
                     "500": {
@@ -211,8 +208,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Clue"
+                                "$ref": "#/definitions/pagination.Response"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
                         }
                     }
                 }
@@ -292,44 +295,7 @@ const docTemplate = `{
         },
         "/games": {
             "get": {
-                "description": "Returns a list of games",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "game"
-                ],
-                "summary": "Returns a list of games",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Game"
-                            }
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/games/random": {
@@ -381,7 +347,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "default": "7000",
+                        "default": "7040",
                         "description": "Game ID",
                         "name": "gameID",
                         "in": "path",
@@ -482,6 +448,26 @@ const docTemplate = `{
                 "showNum": {
                     "type": "integer",
                     "example": 4532
+                }
+            }
+        },
+        "pagination.Response": {
+            "type": "object",
+            "properties": {
+                "_links": {
+                    "$ref": "#/definitions/pagination.links"
+                },
+                "data": {}
+            }
+        },
+        "pagination.links": {
+            "type": "object",
+            "properties": {
+                "next": {
+                    "type": "string"
+                },
+                "prev": {
+                    "type": "string"
                 }
             }
         },

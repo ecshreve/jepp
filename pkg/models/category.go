@@ -54,30 +54,27 @@ func (db *JeppDB) UpdateCategory(c *Category) error {
 	}
 
 	tx := db.MustBegin()
-	if _, err := tx.NamedExec("UPDATE category SET category_id=:category_id WHERE name=:name AND game_id=:game_id", c); err != nil {
+	if _, err := tx.NamedExec("UPDATE category SET name=:name WHERE category_id=:category_id", c); err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return oops.Wrapf(rollbackErr, "could not rollback category update: %v", c)
 		}
 	}
 
 	if err := tx.Commit(); err == nil {
-		log.Info("updated category", "category", c)
+		log.Infof("updated category %+v", c)
 	}
 
 	return nil
 }
 
-// ListCategories returns all categories in the database.
-func (db *JeppDB) ListCategories(params *PaginationParams) ([]*Category, error) {
-	if params == nil {
-		params = &PaginationParams{Page: 0, PageSize: 10}
-	}
-
+// GetCategories returns all categories in the database.
+func (db *JeppDB) GetCategories(params PaginationParams) ([]*Category, error) {
 	pageSize := params.PageSize
-	offset := params.Page * params.PageSize
+	offset := (params.Page - 1) * params.PageSize
+	// TODO: validate params
 
 	var categories []*Category
-	if err := db.Select(&categories, "SELECT * FROM category ORDER BY category_id ASC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
+	if err := db.Select(&categories, "SELECT * FROM category ORDER BY name ASC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
 		return nil, oops.Wrapf(err, "could not get all categories")
 	}
 
@@ -87,14 +84,6 @@ func (db *JeppDB) ListCategories(params *PaginationParams) ([]*Category, error) 
 
 	return categories, nil
 }
-
-// func (db *JeppDB) GetCategoryCount(categoryID int64) (*CategoryCount, error) {
-// 	var category CategoryCount
-// 	if err := db.Get(&category, "SELECT * FROM category_counts WHERE category_id=?", categoryID); err != nil {
-// 		return nil, oops.Wrapf(err, "could not get category for id %d", categoryID)
-// 	}
-// 	return &category, nil
-// }
 
 // GetCategory returns the category with the given ID.
 func (db *JeppDB) GetCategory(categoryID int64) (*Category, error) {
