@@ -13,13 +13,27 @@ type Category struct {
 	Name       string `db:"name" json:"name" example:"Category Name"`
 }
 
-// CategoryCount represents a the number of times a category has appeared in
-// different games and clues.
-type CategoryCount struct {
-	CategoryID   int64  `db:"category_id" json:"categoryId" example:"804001001"`
-	CategoryName string `db:"category_name" json:"categoryName" example:"Category Name"`
-	GameCount    int    `db:"game_count" json:"gameCount" example:"1"`
-	ClueCount    int    `db:"clue_count" json:"clueCount" example:"5"`
+// GetCategoryGameCount returns the number of games a category has appeared in.
+func (db *JeppDB) GetCategoryGameCount(categoryID int64) (int64, error) {
+	var count int64
+	err := db.Get(&count, "SELECT COUNT(DISTINCT game_id) FROM clue WHERE category_id = ?", categoryID)
+	if err != nil {
+		return 0, oops.Wrapf(err, "could not get category game count")
+	}
+
+	return count, nil
+}
+
+// GetCategoryClueCount returns the number of clues a category has appeared in.
+func (db *JeppDB) GetCategoryClueCount(categoryID int64) (int64, error) {
+	var count int64
+
+	err := db.Get(&count, "SELECT COUNT(*) FROM clue WHERE category_id = ?", categoryID)
+	if err != nil {
+		return 0, oops.Wrapf(err, "could not get category clue count")
+	}
+
+	return count, nil
 }
 
 // InsertCategory inserts a category into the database.

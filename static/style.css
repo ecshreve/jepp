@@ -38,6 +38,11 @@
   width: 300px;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.5);
   border-radius: 5px;
+  flex: 2;
+}
+
+.pretext {
+  overflow: auto;
 }
 
 .card {
@@ -45,10 +50,11 @@
   box-shadow: 0 12px 12px 0 rgba(0,0,0,0.5);
   transition: 0.3s;
   border-radius: 15px; /* 5px rounded corners */
-  width: 300px;
+  /* widtxh: 300px; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1;
 }
 
 /* Add rounded corners to the top left and the top right corner of the image */

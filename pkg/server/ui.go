@@ -5,6 +5,7 @@ import (
 
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
+	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -13,6 +14,7 @@ import (
 // registerUIHandlers registers route handlers for the UI.
 func (s *Server) registerUIHandlers() {
 	s.Router.StaticFile("style.css", "./static/style.css")
+	s.Router.StaticFile("favicon.ico", "./static/favicon.ico")
 
 	s.Router.LoadHTMLGlob("pkg/server/templates/*")
 
@@ -48,8 +50,26 @@ func (s *Server) PostFormHandler(trigger string, clueIdStr string) ([]*models.Cl
 }
 
 func (s *Server) RandomUIHandler(c *gin.Context) {
-	var clues []*models.Clue
+	if clueIDStr := c.PostForm("json-button"); clueIDStr != "" {
+		clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
 
+		clue, _ := s.DB.GetClue(clueID)
+		cat, _ := s.DB.GetCategory(clue.CategoryID)
+		game, _ := s.DB.GetGame(clue.GameID)
+
+		c.JSON(200, gin.H{
+			"clueID":       clue.ClueID,
+			"categoryID":   clue.CategoryID,
+			"categoryName": cat.Name,
+			"gameID":       clue.GameID,
+			"gameDate":     game.GameDate,
+			"question":     clue.Question,
+			"answer":       clue.Answer,
+		})
+		return
+	}
+
+	var clues []*models.Clue
 	rolls := []string{"game-roll", "cat-roll", "clue-roll"}
 	for _, roll := range rolls {
 		if clueID := c.PostForm(roll); clueID != "" {
@@ -61,17 +81,33 @@ func (s *Server) RandomUIHandler(c *gin.Context) {
 	clue, _ := s.DB.GetRandomClue(clues)
 	game, _ := s.DB.GetGame(clue.GameID)
 	category, _ := s.DB.GetCategory(clue.CategoryID)
+	gc, _ := s.DB.GetCategoryGameCount(clue.CategoryID)
+	cc, _ := s.DB.GetCategoryClueCount(clue.CategoryID)
 
 	random := struct {
 		*models.Clue
 		*models.Game
 		*models.Category
 		*models.Stats
+		CategoryGamesCount int64
+		CategoryCluesCount int64
+		ClueJSON           string
 	}{
-		Clue:     clue,
-		Game:     game,
-		Category: category,
-		Stats:    s.Stats,
+		Clue:               clue,
+		Game:               game,
+		Category:           category,
+		Stats:              s.Stats,
+		CategoryGamesCount: gc,
+		CategoryCluesCount: cc,
+		ClueJSON: pretty.Sprint(gin.H{
+			"clueID":       clue.ClueID,
+			"gameID":       clue.GameID,
+			"gameDate":     game.GameDate,
+			"categoryID":   clue.CategoryID,
+			"categoryName": category.Name,
+			"question":     clue.Question,
+			"answer":       clue.Answer,
+		}),
 	}
 	c.HTML(200, "random.html.tpl", random)
 }

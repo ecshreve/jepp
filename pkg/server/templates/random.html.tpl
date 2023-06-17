@@ -6,17 +6,28 @@
 <div class="card-container">
   <div class="card-boring">
     <div class="container">
+      <h2>Stats</h2>
+      <hr>
+      <h3>Totals</h3>
       <div>
-        <h3>Games</h3>
-        <p><strong>Total</strong>: <code>{{.Stats.TotalGames}}</code></p>
+        <p><em>Games</em>: <code>{{.Stats.TotalGames}}</code></p>
       </div>
       <div>
-        <h3>Categories</h3>
-        <p><strong>Total</strong>: <code>{{.Stats.TotalCategories}}</code></p>
+       <p><em>Categories</em>: <code>{{.Stats.TotalCategories}}</code></p>
       </div>
       <div>
-        <h3>CLUES</h3>
-        <p><strong>Total</strong>: <code>{{.Stats.TotalClues}}</code></p>
+        <p><em>Clues</em>: <code>{{.Stats.TotalClues}}</code></p>
+      </div>
+      <hr>
+        <h3>Category Details</h3>
+        <p><em>CategoryID</em>: {{ .Clue.CategoryID }}</p>
+        <p><em>CategoryName</em>: {{ .Category.Name }}</p>
+        <p><em>CategoryGamesCount</em>: {{ .CategoryGamesCount }}</p>
+        <p><em>CategoryCluesCount</em>: {{ .CategoryCluesCount }}</p>
+      <hr>
+        <h3>JSON</h3>
+      <div class="pretext">
+        <pre>{{.ClueJSON}}</pre>  
       </div>
     </div>
   </div>
