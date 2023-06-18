@@ -7,8 +7,20 @@ import (
 )
 
 type Option struct {
-	ClueID   int64
-	Selected bool
+	OptionKey string
+	OptionVal string
+	Selected  bool
+}
+
+type NavLinks struct {
+	PrevClue string
+	NextClue string
+}
+
+type Options struct {
+	ClueID          int64
+	Links           NavLinks
+	CategoryOptions []Option
 }
 
 // PaginationParams is a struct that holds pagination parameters.

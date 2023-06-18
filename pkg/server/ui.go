@@ -1,11 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/kr/pretty"
+	log "github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -20,7 +22,7 @@ func (s *Server) registerUIHandlers() {
 	// s.Router.GET("/", s.BaseUIHandler)
 	// s.Router.POST("/", s.BaseUIHandler)
 	s.Router.GET("/:clueID", s.ClueUIHandler)
-	s.Router.POST("/", s.ClueUIPOSTHandler)
+	s.Router.POST("/:clueID", s.ClueUIPOSTHandler)
 
 	s.Router.GET("/debug", s.DebugUIHandler)
 
@@ -29,10 +31,37 @@ func (s *Server) registerUIHandlers() {
 
 // ClueUIPOSTHandler godoc
 func (s *Server) ClueUIPOSTHandler(c *gin.Context) {
-	clueIDStr := c.PostForm("clue-sel")
-	c.Params = gin.Params{gin.Param{Key: "clueID", Value: clueIDStr}}
+	clueIDStr := c.Param("clueID")
+	clueID, err := strconv.ParseInt(clueIDStr, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid clueID"})
+		return
+	}
+
+	clue, err := s.DB.GetClue(clueID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch clue for clueID"})
+		return
+	}
+
+	categoryIDStr := c.PostForm("cat-sel")
+	categoryID, err := strconv.ParseInt(categoryIDStr, 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid categoryID"})
+		return
+	}
+
+	clues, err := s.DB.ListClues(models.CluesParams{GameID: clue.GameID, CategoryID: categoryID})
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch clues for categoryID"})
+		return
+	}
+	log.Infof("clues: %s", pretty.Sprint(clues))
+
+	newClueIDStr := fmt.Sprintf("%d", clues[0].ClueID)
+	c.Params = gin.Params{gin.Param{Key: "clueIDStr", Value: newClueIDStr}}
 	c.Request.Method = "GET"
-	c.Redirect(302, "/"+clueIDStr)
+	c.Redirect(302, "/"+newClueIDStr)
 }
 
 // ClueUIHandler godoc
@@ -44,42 +73,73 @@ func (s *Server) ClueUIHandler(c *gin.Context) {
 
 	clueID, err := strconv.ParseInt(c.Param("clueID"), 10, 64)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		c.JSON(400, gin.H{"error": "invalid clueID"})
 		return
 	}
 
 	clue, err := s.DB.GetClue(clueID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		c.JSON(400, gin.H{"error": "couldn't fetch clue for clueID"})
 		return
 	}
 
 	game, err := s.DB.GetGame(clue.GameID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		c.JSON(400, gin.H{"error": "couldn't fetch game for clue"})
 		return
 	}
 
 	category, err := s.DB.GetCategory(clue.CategoryID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
 		return
 	}
 
 	clueJSON := s.jsonHelper(clue)
 
-	cluesForCategory, err := s.DB.GetCluesForCategory(clue.CategoryID)
+	categoriesForGame, err := s.DB.GetCategoriesForGame(clue.GameID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		c.JSON(400, gin.H{"error": "couldn't fetch categories for game"})
 		return
 	}
 
-	options := []*models.Option{}
-	for _, c := range cluesForCategory {
-		options = append(options, &models.Option{
-			ClueID:   c.ClueID,
-			Selected: c.ClueID == clueID,
+	catOpts := []models.Option{}
+	for _, c := range categoriesForGame {
+		catOpts = append(catOpts, models.Option{
+			OptionKey: fmt.Sprintf("%d", c.CategoryID),
+			OptionVal: c.Name,
+			Selected:  c.CategoryID == clue.CategoryID,
 		})
+	}
+
+	cluesForGame, err := s.DB.ListClues(models.CluesParams{GameID: clue.GameID})
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch clues for game"})
+		return
+	}
+
+	nextClue := models.Clue{}
+	prevClue := models.Clue{}
+	for i, c := range cluesForGame {
+		if c.ClueID == clue.ClueID {
+			if i > 0 {
+				prevClue = *cluesForGame[i+1]
+			}
+			if i < len(cluesForGame)-1 {
+				nextClue = *cluesForGame[i-1]
+			}
+		}
+	}
+
+	navLinks := models.NavLinks{
+		NextClue: fmt.Sprintf("%d", nextClue.ClueID),
+		PrevClue: fmt.Sprintf("%d", prevClue.ClueID),
+	}
+
+	options := &models.Options{
+		ClueID:          clue.ClueID,
+		Links:           navLinks,
+		CategoryOptions: catOpts,
 	}
 
 	debug := struct {
@@ -87,7 +147,7 @@ func (s *Server) ClueUIHandler(c *gin.Context) {
 		Game     *models.Game
 		Category *models.Category
 		Stats    *models.Stats
-		Options  []*models.Option
+		Options  *models.Options
 		ClueJSON string
 	}{
 		Clue:     clue,
@@ -98,30 +158,6 @@ func (s *Server) ClueUIHandler(c *gin.Context) {
 		ClueJSON: pretty.Sprint(clueJSON),
 	}
 	c.HTML(200, "base.html.tpl", debug)
-}
-
-func (s *Server) PostFormHandler(trigger string, clueIdStr string) ([]*models.Clue, error) {
-	clueId, _ := strconv.ParseInt(clueIdStr, 10, 64)
-	clue, _ := s.DB.GetClue(clueId)
-	var params models.CluesParams
-
-	switch trigger {
-	case "cat-roll":
-		params = models.CluesParams{
-			GameID: clue.GameID,
-		}
-	case "clue-roll":
-		params = models.CluesParams{
-			GameID:     clue.GameID,
-			CategoryID: clue.CategoryID,
-		}
-	case "game-roll":
-	default:
-		params = models.CluesParams{}
-	}
-
-	clues, _ := s.DB.ListClues(params)
-	return clues, nil
 }
 
 func (s *Server) jsonHelper(clue *models.Clue) map[string]interface{} {

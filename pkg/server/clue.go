@@ -68,7 +68,7 @@ func (s *Server) ClueHandler(c *gin.Context) {
 	clueID := c.GetInt64("clueID")
 	clue, err := s.DB.GetClue(clueID)
 	if err != nil {
-		log.Error(oops.Wrapf(err, "unable to get clue %s", clueID))
+		log.Error(oops.Wrapf(err, "unable to get clue %d", clueID))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}

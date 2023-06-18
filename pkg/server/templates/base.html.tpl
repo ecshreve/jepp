@@ -2,7 +2,7 @@
   <title>Clue Explorer</title>
   <link rel="stylesheet" href="/style.css">
 </head>
-<h1>Explorer</h1>
+<h1>Clue Explorer -- <small><em>game: {{.Clue.GameID}} -- clue: {{.Clue.ClueID}}</em></small></h1>
 {{template "picker" .Options}}
 <div class="card-container">
   <div class="card-boring">

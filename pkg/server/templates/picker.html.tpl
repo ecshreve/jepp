@@ -1,15 +1,19 @@
 {{define "picker"}}
 <form
   method="POST"
-  action="/"
+  action="/{{.ClueID}}"
 >
-  <label for="cars">Clues:</label>
-  <select name="clue-sel" id="clue-sel">
-    {{range .}}
-      <option value={{.ClueID}} {{if .Selected}}selected{{end}}>{{.ClueID}}</option>
+  <label for="cats">Categories:</label>
+  <select name="cat-sel" id="cat-sel">
+    {{range .CategoryOptions}}
+      <option value={{.OptionKey}} {{if .Selected}}selected{{end}}>{{.OptionVal}}</option>
     {{end}}
   </select>
-  <br><br>
+
   <input type="submit" value="Submit">
 </form>
+
+<a id="prev-clue" href="http://10.35.220.99:8880/{{.Links.PrevClue}}"><< prev</a>
+<a id="next-clue" href="http://10.35.220.99:8880/{{.Links.NextClue}}">next >></a>
+
 {{end}}
