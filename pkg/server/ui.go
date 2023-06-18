@@ -18,8 +18,9 @@ func (s *Server) registerUIHandlers() {
 
 	s.Router.LoadHTMLGlob("pkg/server/templates/*")
 
-	s.Router.GET("/", s.RandomUIHandler)
-	s.Router.POST("/", s.RandomUIHandler)
+	s.Router.GET("/", s.BaseUIHandler)
+	s.Router.POST("/", s.BaseUIHandler)
+
 	s.Router.GET("/debug", s.DebugUIHandler)
 
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
@@ -49,7 +50,7 @@ func (s *Server) PostFormHandler(trigger string, clueIdStr string) ([]*models.Cl
 	return clues, nil
 }
 
-func (s *Server) RandomUIHandler(c *gin.Context) {
+func (s *Server) BaseUIHandler(c *gin.Context) {
 	if clueIDStr := c.PostForm("json-button"); clueIDStr != "" {
 		clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
 
@@ -109,7 +110,7 @@ func (s *Server) RandomUIHandler(c *gin.Context) {
 			"answer":       clue.Answer,
 		}),
 	}
-	c.HTML(200, "random.html.tpl", random)
+	c.HTML(200, "base.html.tpl", random)
 }
 
 func (s *Server) DebugUIHandler(c *gin.Context) {
