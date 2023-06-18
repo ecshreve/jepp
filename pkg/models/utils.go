@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+type Option struct {
+	ClueID   int64
+	Selected bool
+}
+
 // PaginationParams is a struct that holds pagination parameters.
 // These apply to both API responses and database queries.
 type PaginationParams struct {

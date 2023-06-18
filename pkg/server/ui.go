@@ -19,34 +19,82 @@ func (s *Server) registerUIHandlers() {
 
 	// s.Router.GET("/", s.BaseUIHandler)
 	// s.Router.POST("/", s.BaseUIHandler)
-	s.Router.GET("/:gameID/:categoryID/:clueID", s.ClueUIHandler)
+	s.Router.GET("/:clueID", s.ClueUIHandler)
+	s.Router.POST("/", s.ClueUIPOSTHandler)
 
 	s.Router.GET("/debug", s.DebugUIHandler)
 
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
 
-func (s *Server) ClueUIHandler(c *gin.Context) {
-	gameID, _ := strconv.ParseInt(c.Param("gameID"), 10, 64)
-	categoryID, _ := strconv.ParseInt(c.Param("categoryID"), 10, 64)
-	clueID, _ := strconv.ParseInt(c.Param("clueID"), 10, 64)
+// ClueUIPOSTHandler godoc
+func (s *Server) ClueUIPOSTHandler(c *gin.Context) {
+	clueIDStr := c.PostForm("clue-sel")
+	c.Params = gin.Params{gin.Param{Key: "clueID", Value: clueIDStr}}
+	c.Request.Method = "GET"
+	c.Redirect(302, "/"+clueIDStr)
+}
 
-	clue, _ := s.DB.GetClue(clueID)
-	game, _ := s.DB.GetGame(gameID)
-	category, _ := s.DB.GetCategory(categoryID)
+// ClueUIHandler godoc
+func (s *Server) ClueUIHandler(c *gin.Context) {
+	if c.Request.Method == "POST" {
+		s.ClueUIPOSTHandler(c)
+		return
+	}
+
+	clueID, err := strconv.ParseInt(c.Param("clueID"), 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		return
+	}
+
+	clue, err := s.DB.GetClue(clueID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		return
+	}
+
+	game, err := s.DB.GetGame(clue.GameID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		return
+	}
+
+	category, err := s.DB.GetCategory(clue.CategoryID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		return
+	}
+
 	clueJSON := s.jsonHelper(clue)
 
+	cluesForCategory, err := s.DB.GetCluesForCategory(clue.CategoryID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid gameID, categoryID, or clueID"})
+		return
+	}
+
+	options := []*models.Option{}
+	for _, c := range cluesForCategory {
+		options = append(options, &models.Option{
+			ClueID:   c.ClueID,
+			Selected: c.ClueID == clueID,
+		})
+	}
+
 	debug := struct {
-		*models.Clue
-		*models.Game
-		*models.Category
-		*models.Stats
+		Clue     *models.Clue
+		Game     *models.Game
+		Category *models.Category
+		Stats    *models.Stats
+		Options  []*models.Option
 		ClueJSON string
 	}{
 		Clue:     clue,
 		Game:     game,
 		Category: category,
 		Stats:    s.Stats,
+		Options:  options,
 		ClueJSON: pretty.Sprint(clueJSON),
 	}
 	c.HTML(200, "base.html.tpl", debug)
