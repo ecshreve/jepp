@@ -126,9 +126,9 @@ type CluesParams struct {
 	*PaginationParams
 }
 
-// ListClues returns a list of clues in the database, defaults to returning
+// GetClues returns a list of clues in the database, defaults to returning
 // values ordered by game date, with most recent first.
-func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
+func (db *JeppDB) GetClues(params CluesParams) ([]*Clue, error) {
 	if params.PaginationParams == nil {
 		params.PaginationParams = &PaginationParams{
 			Page:     1,

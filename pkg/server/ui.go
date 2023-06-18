@@ -45,44 +45,44 @@ func (s *Server) PostFormHandler(trigger string, clueIdStr string) ([]*models.Cl
 		params = models.CluesParams{}
 	}
 
-	clues, _ := s.DB.ListClues(params)
+	clues, _ := s.DB.GetClues(params)
 	return clues, nil
 }
 
 func (s *Server) RandomUIHandler(c *gin.Context) {
-	if clueIDStr := c.PostForm("json-button"); clueIDStr != "" {
-		clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
-
-		clue, _ := s.DB.GetClue(clueID)
-		cat, _ := s.DB.GetCategory(clue.CategoryID)
-		game, _ := s.DB.GetGame(clue.GameID)
-
-		c.JSON(200, gin.H{
-			"clueID":       clue.ClueID,
-			"categoryID":   clue.CategoryID,
-			"categoryName": cat.Name,
-			"gameID":       clue.GameID,
-			"gameDate":     game.GameDate,
-			"question":     clue.Question,
-			"answer":       clue.Answer,
-		})
-		return
-	}
-
+	chooseRandom := false
 	var clues []*models.Clue
 	rolls := []string{"game-roll", "cat-roll", "clue-roll"}
 	for _, roll := range rolls {
 		if clueID := c.PostForm(roll); clueID != "" {
 			clues, _ = s.PostFormHandler(roll, clueID)
+			chooseRandom = true
 			log.Info(roll)
+			break
 		}
 	}
 
-	clue, _ := s.DB.GetRandomClue(clues)
+	var clue *models.Clue
+	if chooseRandom {
+		clue, _ = s.DB.GetRandomClue(clues)
+	} else {
+		clueIDStr := c.PostForm("clue-select")
+		if clueIDStr != "" {
+			clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
+			clue, _ = s.DB.GetClue(clueID)
+		}
+	}
+
 	game, _ := s.DB.GetGame(clue.GameID)
 	category, _ := s.DB.GetCategory(clue.CategoryID)
 	gc, _ := s.DB.GetCategoryGameCount(clue.CategoryID)
 	cc, _ := s.DB.GetCategoryClueCount(clue.CategoryID)
+
+	categoriesForGame, _ := s.DB.GetCategoriesForGame(clue.GameID)
+	cluesForCategoryAndGame, _ := s.DB.GetClues(models.CluesParams{
+		GameID:     clue.GameID,
+		CategoryID: clue.CategoryID,
+	})
 
 	random := struct {
 		*models.Clue
@@ -92,6 +92,8 @@ func (s *Server) RandomUIHandler(c *gin.Context) {
 		CategoryGamesCount int64
 		CategoryCluesCount int64
 		ClueJSON           string
+		GameCategories     []*models.Category
+		CategoryClues      []*models.Clue
 	}{
 		Clue:               clue,
 		Game:               game,
@@ -99,6 +101,8 @@ func (s *Server) RandomUIHandler(c *gin.Context) {
 		Stats:              s.Stats,
 		CategoryGamesCount: gc,
 		CategoryCluesCount: cc,
+		GameCategories:     categoriesForGame,
+		CategoryClues:      cluesForCategoryAndGame,
 		ClueJSON: pretty.Sprint(gin.H{
 			"clueID":       clue.ClueID,
 			"gameID":       clue.GameID,

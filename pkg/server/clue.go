@@ -39,7 +39,7 @@ func (s *Server) CluesHandler(c *gin.Context) {
 		PaginationParams: &paginationParams,
 	}
 
-	clues, err := s.DB.ListClues(*cluesParams)
+	clues, err := s.DB.GetClues(*cluesParams)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clues"))
 		utils.NewError(c, http.StatusBadRequest, err)

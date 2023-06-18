@@ -62,6 +62,19 @@
           <div style="display: flex;">
             <h2>Category</h2>
           </div>
+          <div>
+            <form
+              method="POST"
+              action="/"
+            >
+              <select name="cat-select" id="cat-select">
+                {{ $clue_cat := .Clue.CategoryID }}
+                {{ range .GameCategories }}
+                <option value={{ .CategoryID }} {{if eq .CategoryID $clue_cat}}selected{{end}}>{{ .Name }}</option>
+                {{ end }}
+              </select> 
+            </form>
+          </div>
           <div style="display: flex;">
           <form
               method="POST"
@@ -76,13 +89,30 @@
       </div>
       <div class="details">
         <div style="display: flex; flex-direction: row;justify-content: space-between;align-items: center;">
-          <h2>CLUE</h2>
-          <form
-            method="POST"
-            action="/"
-          >
-            <button id="clue-roll" name="clue-roll" type="submit" class="btn-custom" value={{ .Clue.ClueID }}>roll 🎲</button>
-          </form>
+          <div>
+            <h2>CLUE</h2>
+          </div>
+           <div>
+            <form
+              method="POST"
+              action="/"
+            >
+              <select name="clue-select" id="clue-select">
+                {{ $clue_id := .Clue.ClueID }}
+                {{ range .CategoryClues }}
+                <option value={{ .ClueID }} {{if eq .ClueID $clue_id}}selected{{end}}>{{ .ClueID }}</option>
+                {{ end }}
+              </select> 
+            </form>
+          </div>
+          <div>
+            <form
+              method="POST"
+              action="/"
+            >
+              <button id="clue-roll" name="clue-roll" type="submit" class="btn-custom" value={{ .Clue.ClueID }}>roll 🎲</button>
+            </form>
+          </div>
         </div>
         <p><strong>ClueID</strong>: <code>{{.Clue.ClueID}}</code></p>
         <p><strong>GameID</strong>: <code>{{.Clue.GameID}}</code></p>

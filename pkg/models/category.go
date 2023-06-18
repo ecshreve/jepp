@@ -132,8 +132,8 @@ func (db *JeppDB) GetRandomCategory() (*Category, error) {
 // GetCategoriesForGame returns all categories for a given game.
 func (db *JeppDB) GetCategoriesForGame(gameID int64) ([]*Category, error) {
 	var categories []*Category
-	if err := db.Select(&categories, "SELECT * FROM category WHERE game_id=?", gameID); err != nil {
-		return nil, oops.Wrapf(err, "could not get categories for game %d", gameID)
+	if err := db.Select(&categories, "SELECT category.category_id, category.name FROM clue JOIN category ON clue.category_id = category.category_id WHERE game_id = ? GROUP BY category_id", gameID); err != nil {
+		return nil, oops.Wrapf(err, "could not get categories")
 	}
 
 	if len(categories) == 0 {
