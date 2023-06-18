@@ -21,8 +21,7 @@
         {{template "game" .Game}}
       </div>
       <div class="details">
-        {{template "category-header" .Clue.ClueID}}
-        {{template "category-content" .Category}}
+        {{template "category" .Category}}
       </div>
       <div class="details">
         {{template "clue" .Clue}}
