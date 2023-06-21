@@ -13,14 +13,16 @@ const TIME_FORMAT = "Monday, January 2, 2006"
 
 // Game represents a single game of Jeopardy.
 type Game struct {
-	GameID   int64     `db:"game_id" json:"gameId" example:"8040"`
-	ShowNum  int64     `db:"show_num" json:"showNum" example:"4532"`
-	GameDate time.Time `db:"game_date" json:"gameDate" example:"2019-01-01"`
+	GameID    int64     `db:"game_id" json:"gameId" example:"8040"`
+	SeasonID  int64     `db:"season_id" json:"seasonId" example:"38"`
+	ShowNum   int64     `db:"show_num" json:"showNum" example:"4532"`
+	GameDate  time.Time `db:"game_date" json:"gameDate" example:"2019-01-01"`
+	TapedDate time.Time `db:"taped_date" json:"tapedDate" example:"2019-01-01"`
 }
 
 // String implements fmt.Stringer for the Game type.
 func (g Game) String() string {
-	return fmt.Sprintf("ID: %d -- %d - %s", g.GameID, g.ShowNum, g.GameDate.Format(TIME_FORMAT))
+	return fmt.Sprintf("ID: %d -- Show: %d - Aired: %s", g.GameID, g.ShowNum, g.GameDate.Format(TIME_FORMAT))
 }
 
 // InsertGame inserts a game into the database.
@@ -30,7 +32,7 @@ func (db *JeppDB) InsertGame(g *Game) error {
 	}
 
 	tx := db.MustBegin()
-	_, err := db.NamedExec("INSERT INTO game (game_id, show_num, game_date) VALUES (:game_id, :show_num, :game_date)", g)
+	_, err := db.NamedExec("INSERT INTO game (game_id, season_id, show_num, game_date, taped_date) VALUES (:game_id, :season_id, :show_num, :game_date, :taped_date)", g)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			return oops.Wrapf(rollbackErr, "could not rollback game insert: %v", g)
@@ -52,6 +54,20 @@ func (db *JeppDB) ListGames(params *PaginationParams) ([]*Game, error) {
 	var games []*Game
 	if err := db.Select(&games, "SELECT * FROM game ORDER BY game_date DESC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
 		return nil, oops.Wrapf(err, "could not list games")
+	}
+
+	if len(games) == 0 {
+		return nil, nil
+	}
+
+	return games, nil
+}
+
+// GetGamesBySeason returns a list of games in the database for a given season.
+func (db *JeppDB) GetGamesBySeason(seasonID int64) ([]*Game, error) {
+	var games []*Game
+	if err := db.Select(&games, "SELECT * FROM game WHERE season_id = ?", seasonID); err != nil {
+		return nil, oops.Wrapf(err, "could not get games for season %d", seasonID)
 	}
 
 	if len(games) == 0 {

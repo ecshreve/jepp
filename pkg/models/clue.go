@@ -33,9 +33,16 @@ type Clue struct {
 	Answer     string `db:"answer" json:"answer" example:"This is the answer."`
 }
 
+func truncate(s string, n int) string {
+	if len(s) > n {
+		return s[:n]
+	}
+	return s
+}
+
 // String implements fmt.Stringer.
 func (c *Clue) String() string {
-	return fmt.Sprintf("%d - %d - %d", c.ClueID, c.ClueID, c.CategoryID)
+	return fmt.Sprintf("%d - %d -- Q: %s - A: %s", c.ClueID, c.GameID, truncate(c.Question, 20), truncate(c.Answer, 20))
 }
 
 // InsertClue inserts a clue into the database.

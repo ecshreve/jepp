@@ -1,41 +1,25 @@
 package main
 
 import (
-	"log"
-	"time"
-
 	"github.com/ecshreve/jepp/pkg/models"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 	db := models.NewDB()
-	start := int64(7050)
-	end := int64(8000)
 
-	// var cnt int64
-	for i := start; i < end; i++ {
-		// if err := db.Get(&cnt, "SELECT COUNT(DISTINCT game_id) FROM category"); err != nil {
-		// 	log.Fatal(err)
-		// }
-		// if cnt > 10 {
-		// 	utils.SendGotification("jepp", "done")
-		// 	return
-		// }
+	gamesForSeason, err := db.GetGamesBySeason(37)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		// if i%10 == 0 {
-		// 	utils.SendGotification("jepp", fmt.Sprintf("scraping game %d", i))
-		// }
-		scrapeAndUpdateDB(db, i)
-		time.Sleep(1 * time.Second)
+	for _, game := range gamesForSeason {
+		scrapeAndUpdateDB(db, game.GameID)
 	}
 }
 
 func scrapeAndUpdateDB(db *models.JeppDB, gid int64) {
-	game, clues, cats := Scrape(gid)
-
-	if err := db.InsertGame(&game); err != nil {
-		log.Fatal(err)
-	}
+	clues, cats := ScrapeGameClues(gid)
 
 	for clueID, clue := range clues {
 		actual, _ := db.GetCategoryByName(cats[clueID])
@@ -56,4 +40,6 @@ func scrapeAndUpdateDB(db *models.JeppDB, gid int64) {
 			log.Fatal(err)
 		}
 	}
+
+	log.Infof("inserted %d clues for game %d", len(clues), gid)
 }

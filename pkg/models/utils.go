@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -56,4 +57,9 @@ func GetCategoryID(s string) string {
 	clean := regexp.MustCompile(`[^a-zA-Z0-9]`).ReplaceAllString(s, "0")
 	clean = strings.ToUpper(clean)
 	return clean
+}
+
+// GetSeasonURL returns the scrape URL for the given season.
+func GetSeasonURL(seasonID int64) string {
+	return fmt.Sprintf("http://www.j-archive.com/showseason.php?season=%d", seasonID)
 }
