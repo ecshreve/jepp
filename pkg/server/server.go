@@ -7,6 +7,13 @@ import (
 	"github.com/samsarahq/go/oops"
 )
 
+type QuizSession struct {
+	Clues     []*models.Clue
+	Correct   int64
+	Incorrect int64
+	Total     int64
+}
+
 // Server is the API server.
 type Server struct {
 	ID     string
@@ -14,6 +21,7 @@ type Server struct {
 	Clock  clock.Clock
 	DB     *models.JeppDB
 	Stats  *models.Stats
+	QZ     *QuizSession
 }
 
 // NewServer returns a new API server.
@@ -27,6 +35,12 @@ func NewServer() *Server {
 		Clock:  clock.New(),
 		DB:     jdb,
 		Stats:  stats,
+		QZ: &QuizSession{
+			Clues:     make([]*models.Clue, 0),
+			Correct:   0,
+			Incorrect: 0,
+			Total:     0,
+		},
 	}
 
 	s.registerAPIHandlers()

@@ -35,10 +35,10 @@
 
 .card-boring {
   border-radius: 15px; 
-  width: 300px;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.5);
   border-radius: 5px;
-  flex: 2;
+  max-width: 300px;
+  flex: 1;
 }
 
 .pretext {
@@ -72,3 +72,18 @@ img {
 .container {
   padding: 2px 16px;
 }
+
+.quizclue {
+  padding: 10px;
+}
+
+.answer {
+  padding: 10px;
+}
+
+.quizclue:hover {
+  cursor: pointer;
+  box-shadow: 0 20px 20px 0 rgba(0,0,0,0.9);
+
+}
+

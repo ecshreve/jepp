@@ -445,9 +445,17 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 8040
                 },
+                "seasonId": {
+                    "type": "integer",
+                    "example": 38
+                },
                 "showNum": {
                     "type": "integer",
                     "example": 4532
+                },
+                "tapedDate": {
+                    "type": "string",
+                    "example": "2019-01-01"
                 }
             }
         },

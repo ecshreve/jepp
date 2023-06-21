@@ -23,10 +23,47 @@ func (s *Server) registerUIHandlers() {
 	// s.Router.POST("/", s.BaseUIHandler)
 	s.Router.GET("/:clueID", s.ClueUIHandler)
 	s.Router.POST("/:clueID", s.ClueUIPOSTHandler)
+	s.Router.GET("/quiz", s.QuizHandler)
+	s.Router.POST("/quiz", s.QuizHandler)
 
 	s.Router.GET("/debug", s.DebugUIHandler)
 
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+}
+
+func (s *Server) QuizHandler(c *gin.Context) {
+	if c.Request.Method == "POST" {
+		cor := c.PostForm("correct")
+		inc := c.PostForm("incorrect")
+
+		correct := len(cor) > len(inc)
+		if correct {
+			s.QZ.Correct++
+		} else {
+			s.QZ.Incorrect++
+		}
+		s.QZ.Total++
+	}
+
+	clue, err := s.DB.GetRandomClue(nil)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch random clue"})
+		return
+	}
+
+	cat, err := s.DB.GetCategory(clue.CategoryID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
+		return
+	}
+
+	s.QZ.Clues = append(s.QZ.Clues, clue)
+
+	c.HTML(200, "quiz.html.tpl", gin.H{
+		"Clue":     clue,
+		"Category": cat,
+		"Session":  s.QZ,
+	})
 }
 
 // ClueUIPOSTHandler godoc

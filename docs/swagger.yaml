@@ -34,9 +34,15 @@ definitions:
       gameId:
         example: 8040
         type: integer
+      seasonId:
+        example: 38
+        type: integer
       showNum:
         example: 4532
         type: integer
+      tapedDate:
+        example: "2019-01-01"
+        type: string
     type: object
   pagination.Response:
     properties:
