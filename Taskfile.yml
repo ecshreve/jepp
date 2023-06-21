@@ -12,6 +12,7 @@ tasks:
       - go test github.com/ecshreve/jepp/...
 
   go:build:scraper:
+    desc: Builds the scraper binary.
     generates:
       - bin/scrape
     sources:
@@ -20,6 +21,7 @@ tasks:
       - go build -o bin/scrape github.com/ecshreve/jepp/cmd/scrape
 
   go:build:server:
+    desc: Builds the server binary.
     generates:
       - bin/server
     sources:
@@ -29,6 +31,7 @@ tasks:
       - go build -o bin/server github.com/ecshreve/jepp/cmd/server
 
   api:docs:
+    desc: Generates swagger docs for the API.
     generates:
       - docs/*
     sources:
@@ -39,17 +42,20 @@ tasks:
       - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
 
   build:
+    desc: Builds both the scraper and server binaries.
     deps:
       - go:build:scraper
       - go:build:server
   
   scrape:
+    desc: Runs the scraper.
     deps:
       - go:build:scraper
     cmds:
       - bin/scrape
 
-  server:
+  serve:
+    desc: Runs the server.
     deps:
       - go:build:server
       - api:docs
