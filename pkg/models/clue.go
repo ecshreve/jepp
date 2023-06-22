@@ -60,7 +60,7 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		log.Infof("inserted clue %+v", c)
+		log.Debugf("inserted clue %+v", c)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (db *JeppDB) UpdateClue(c *Clue) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		log.Info("updated clue", "clue", c)
+		log.Debugf("updated clue %+v", c)
 	}
 
 	return nil

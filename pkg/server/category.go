@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
-	"github.com/ecshreve/jepp/pkg/server/pagination"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -22,7 +21,7 @@ import (
 //	@Produce		json
 //	@Param			page	query		int	false	"Page number"	default(1)
 //	@Param			size	query		int	false	"Page size"		default(10)
-//	@Success		200		{object}	pagination.Response
+//	@Success		200		{array}		models.Category
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/categories [get]
 func (s *Server) CategoriesHandler(c *gin.Context) {
@@ -37,10 +36,7 @@ func (s *Server) CategoriesHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &pagination.Response{
-		Data:  cats,
-		Links: pagination.GetLinks(c, int64(len(cats)), &paginationParams),
-	})
+	c.JSON(http.StatusOK, cats)
 }
 
 // CategoryHandler godoc
@@ -73,7 +69,7 @@ func (s *Server) CategoryHandler(c *gin.Context) {
 //	@Summary		Returns a random category
 //	@Description	Returns a random category
 //
-//	@Tags			category,random
+//	@Tags			category
 //	@Accept			*/*
 //	@Produce		json
 //	@Success		200	{object}	models.Category

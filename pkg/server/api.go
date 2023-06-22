@@ -13,7 +13,7 @@ func (s *Server) registerAPIHandlers() {
 	api.GET("/", s.BaseHandler)
 	api.GET("/ping", s.PingHandler)
 
-	listPaginator := pagination.New("page", "limit", "1", "25", 1, 100)
+	listPaginator := pagination.New("page", "size", "1", "10", 1, 100)
 
 	clue := api.Group("/clues")
 	clue.GET("", listPaginator, s.CluesHandler)
@@ -21,7 +21,7 @@ func (s *Server) registerAPIHandlers() {
 	clue.GET("/:clueID", s.ClueHandler)
 
 	games := api.Group("/games")
-	games.GET("/", listPaginator, s.GamesHandler)
+	games.GET("", listPaginator, s.GamesHandler)
 	games.GET("/random", s.RandomGameHandler)
 	games.GET("/:gameID", s.GameHandler)
 
@@ -56,11 +56,9 @@ func (s *Server) BaseHandler(c *gin.Context) {
 			"/api/games",
 			"/api/games/random",
 			"/api/games/:gameID",
-			"/api/games/:gameID/api/clues",
 			"/api/categories",
 			"/api/categories/random",
 			"/api/categories/:categoryID",
-			"/api/categories/:categoryID/api/clues",
 			"/api/clues",
 			"/api/clues/random",
 			"/api/clues/:clueID",

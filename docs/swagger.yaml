@@ -44,19 +44,6 @@ definitions:
         example: "2019-01-01"
         type: string
     type: object
-  pagination.Response:
-    properties:
-      _links:
-        $ref: '#/definitions/pagination.links'
-      data: {}
-    type: object
-  pagination.links:
-    properties:
-      next:
-        type: string
-      prev:
-        type: string
-    type: object
   utils.HTTPError:
     properties:
       code:
@@ -113,7 +100,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pagination.Response'
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
         "500":
           description: Internal Server Error
           schema:
@@ -165,7 +154,6 @@ paths:
       summary: Returns a random category
       tags:
       - category
-      - random
   /clues:
     get:
       consumes:
@@ -197,7 +185,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/pagination.Response'
+              $ref: '#/definitions/models.Clue'
             type: array
         "500":
           description: Internal Server Error
@@ -229,7 +217,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a clues
+      summary: Returns a clue
       tags:
       - clue
   /clues/random:
@@ -253,15 +241,42 @@ paths:
       summary: Returns a random clue
       tags:
       - clue
-      - random
   /games:
     get:
-      responses: {}
+      consumes:
+      - '*/*'
+      description: Returns a list of games
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Game'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Returns a list of games
+      tags:
+      - game
   /games/{gameID}:
     get:
       consumes:
       - '*/*'
-      description: Returns a game
       parameters:
       - default: "7040"
         description: Game ID
@@ -280,7 +295,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a games
       tags:
       - game
   /games/random:
@@ -304,7 +318,6 @@ paths:
       summary: Returns a random game
       tags:
       - game
-      - random
   /ping:
     get:
       consumes:

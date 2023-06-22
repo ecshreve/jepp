@@ -40,8 +40,9 @@ func (db *JeppDB) InsertGame(g *Game) error {
 	}
 
 	if err := tx.Commit(); err == nil {
-		log.Info("inserted game", "game", g)
+		log.Infof("inserted game %+v", g)
 	}
+
 	return nil
 }
 

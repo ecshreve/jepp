@@ -70,21 +70,15 @@ func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, m
 	}
 }
 
-// Response is the response for pagination query request
-type Response struct {
-	Data  any   `json:"data"`
-	Links links `json:"_links,omitempty"`
+type Links struct {
+	Next string `json:"next,omitempty" example:"/api/clues?page=3&size=10"`
+	Prev string `json:"prev,omitempty" example:"/api/clues?page=1&size=10"`
 }
 
-type links struct {
-	Next string `json:"next,omitempty"`
-	Prev string `json:"prev,omitempty"`
-}
-
-func GetLinks(ctx *gin.Context, total int64, q *models.PaginationParams) links {
+func GetLinks(ctx *gin.Context, total int64, q *models.PaginationParams) Links {
 	url := fmt.Sprintf("%v", ctx.Request.URL)
 	baseURL := strings.Split(url, "?")[0]
-	l := links{}
+	l := Links{}
 	if int64(total) == int64(q.PageSize) {
 		l.Next = fmt.Sprintf(
 			"%s?page=%d&size=%d",

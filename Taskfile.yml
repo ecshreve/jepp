@@ -33,7 +33,9 @@ tasks:
   api:docs:
     desc: Generates swagger docs for the API.
     generates:
-      - docs/*
+      - docs/swagger.json
+      - docs/swagger.yaml
+      - docs/docs.go
     sources:
       - cmd/server/main.go
       - pkg/server/*.go
@@ -61,5 +63,6 @@ tasks:
       - api:docs
     sources:
       - pkg/server/templates/*
+      - pkg/server/*.go
     cmds:
       - bin/server

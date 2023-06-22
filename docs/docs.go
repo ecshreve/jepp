@@ -81,7 +81,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pagination.Response"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Category"
+                            }
                         }
                     },
                     "500": {
@@ -103,8 +106,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "category",
-                    "random"
+                    "category"
                 ],
                 "summary": "Returns a random category",
                 "responses": {
@@ -208,7 +210,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/pagination.Response"
+                                "$ref": "#/definitions/models.Clue"
                             }
                         }
                     },
@@ -231,8 +233,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clue",
-                    "random"
+                    "clue"
                 ],
                 "summary": "Returns a random clue",
                 "responses": {
@@ -266,7 +267,7 @@ const docTemplate = `{
                 "tags": [
                     "clue"
                 ],
-                "summary": "Returns a clues",
+                "summary": "Returns a clue",
                 "parameters": [
                     {
                         "type": "integer",
@@ -295,7 +296,50 @@ const docTemplate = `{
         },
         "/games": {
             "get": {
-                "responses": {}
+                "description": "Returns a list of games",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "game"
+                ],
+                "summary": "Returns a list of games",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Game"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
             }
         },
         "/games/random": {
@@ -308,8 +352,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "game",
-                    "random"
+                    "game"
                 ],
                 "summary": "Returns a random game",
                 "responses": {
@@ -333,7 +376,6 @@ const docTemplate = `{
         },
         "/games/{gameID}": {
             "get": {
-                "description": "Returns a game",
                 "consumes": [
                     "*/*"
                 ],
@@ -343,7 +385,6 @@ const docTemplate = `{
                 "tags": [
                     "game"
                 ],
-                "summary": "Returns a games",
                 "parameters": [
                     {
                         "type": "string",
@@ -456,26 +497,6 @@ const docTemplate = `{
                 "tapedDate": {
                     "type": "string",
                     "example": "2019-01-01"
-                }
-            }
-        },
-        "pagination.Response": {
-            "type": "object",
-            "properties": {
-                "_links": {
-                    "$ref": "#/definitions/pagination.links"
-                },
-                "data": {}
-            }
-        },
-        "pagination.links": {
-            "type": "object",
-            "properties": {
-                "next": {
-                    "type": "string"
-                },
-                "prev": {
-                    "type": "string"
                 }
             }
         },

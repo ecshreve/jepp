@@ -34,6 +34,14 @@ CREATE TABLE IF NOT EXISTS clue (
     CONSTRAINT fk_clue_category FOREIGN KEY (category_id) REFERENCES category(category_id)
 );`
 
+const QUIZ_SESSION_SCHEMA = `
+CREATE TABLE IF NOT EXISTS quiz_session (
+    session_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    correct_count BIGINT NOT NULL,
+    incorrect_count BIGINT NOT NULL,
+    total_count BIGINT NOT NULL
+);`
+
 const COUNT_VIEW = `
 CREATE OR REPLACE VIEW category_counts AS
 SELECT cc.id,

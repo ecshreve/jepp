@@ -2,9 +2,9 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/ecshreve/jepp/pkg/models"
-	"github.com/ecshreve/jepp/pkg/server/pagination"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -23,7 +23,7 @@ import (
 //	@Param			category	query		string	false	"Category ID"
 //	@Param			page		query		int		false	"Page number"	default(1)
 //	@Param			size		query		int		false	"Page size"		default(10)
-//	@Success		200			{array}		pagination.Response
+//	@Success		200			{array}		models.Clue
 //	@Failure		500			{object}	utils.HTTPError
 //	@Router			/clues [get]
 func (s *Server) CluesHandler(c *gin.Context) {
@@ -46,15 +46,12 @@ func (s *Server) CluesHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &pagination.Response{
-		Data:  clues,
-		Links: pagination.GetLinks(c, int64(len(clues)), &paginationParams),
-	})
+	c.JSON(http.StatusOK, clues)
 }
 
 // ClueHandler godoc
 //
-//	@Summary		Returns a clues
+//	@Summary		Returns a clue
 //	@Description	Returns a clue
 //
 //	@Tags			clue
@@ -65,7 +62,8 @@ func (s *Server) CluesHandler(c *gin.Context) {
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/clues/{clueID} [get]
 func (s *Server) ClueHandler(c *gin.Context) {
-	clueID := c.GetInt64("clueID")
+	clueIDStr := c.Param("clueID")
+	clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
 	clue, err := s.DB.GetClue(clueID)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clue %d", clueID))
@@ -81,7 +79,7 @@ func (s *Server) ClueHandler(c *gin.Context) {
 //	@Summary		Returns a random clue
 //	@Description	Returns a random clue
 //
-//	@Tags			clue,random
+//	@Tags			clue
 //	@Accept			*/*
 //	@Produce		json
 //	@Success		200	{array}		models.Clue

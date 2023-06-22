@@ -8,17 +8,22 @@ import (
 func main() {
 	db := models.NewDB()
 
-	gamesForSeason, err := db.GetGamesBySeason(37)
-	if err != nil {
-		log.Fatal(err)
-	}
+	for i := 35; i > 33; i-- {
+		log.Infof("scraping season %d ", i)
+		gamesForSeason, err := db.GetGamesBySeason(int64(i))
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	for _, game := range gamesForSeason {
-		scrapeAndUpdateDB(db, game.GameID)
+		cluesForSeason := 0
+		for _, game := range gamesForSeason {
+			cluesForSeason += scrapeAndUpdateDB(db, game.GameID)
+		}
+		log.Infof("inserted %d clues and %d games for season %d", cluesForSeason, len(gamesForSeason), i)
 	}
 }
 
-func scrapeAndUpdateDB(db *models.JeppDB, gid int64) {
+func scrapeAndUpdateDB(db *models.JeppDB, gid int64) int {
 	clues, cats := ScrapeGameClues(gid)
 
 	for clueID, clue := range clues {
@@ -42,4 +47,5 @@ func scrapeAndUpdateDB(db *models.JeppDB, gid int64) {
 	}
 
 	log.Infof("inserted %d clues for game %d", len(clues), gid)
+	return len(clues)
 }
