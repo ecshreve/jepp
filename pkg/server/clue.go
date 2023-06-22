@@ -86,13 +86,12 @@ func (s *Server) ClueHandler(c *gin.Context) {
 //	@Tags			clue
 //	@Accept			*/*
 //	@Produce		json
-//	@Success		200	{array}		models.Clue
+//	@Success		200	{object}	models.Clue
 //	@Failure		500	{object}	utils.HTTPError
 //	@Router			/clues/random [get]
 func (s *Server) RandomClueHandler(c *gin.Context) {
-	clue, err := s.DB.GetRandomClue(nil)
+	clue, err := s.DB.GetRandomClue()
 	if err != nil {
-		log.Error(oops.Wrapf(err, "unable to get random clue"))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}

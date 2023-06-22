@@ -4,25 +4,15 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/samsarahq/go/oops"
+	log "github.com/sirupsen/logrus"
 )
-
-// registerUIHandlers registers route handlers for the UI.
-func (s *Server) registerUIHandlers() {
-	s.Router.StaticFile("style.css", "./static/style.css")
-	s.Router.StaticFile("favicon.ico", "./static/favicon.ico")
-
-	s.Router.LoadHTMLGlob("pkg/server/templates/prod/*")
-
-	s.Router.GET("/", s.BaseUIHandler)
-	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-}
 
 // BaseUIHandler handles the base UI route.
 func (s *Server) BaseUIHandler(c *gin.Context) {
-	clue, err := s.DB.GetRandomClue(nil)
+	clue, err := s.DB.GetRandomClue()
 	if err != nil {
+		log.Error(oops.Wrapf(err, "couldn't fetch random clue"))
 		c.JSON(400, gin.H{"error": "couldn't fetch random clue"})
 		return
 	}

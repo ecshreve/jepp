@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 
 	"github.com/samsarahq/go/oops"
@@ -90,11 +89,10 @@ func (db *JeppDB) GetGame(gameID int64) (*Game, error) {
 
 // GetGame returns a single game from the database.
 func (db *JeppDB) GetRandomGame() (*Game, error) {
-	var allGameIDs []int64
-	if err := db.Select(&allGameIDs, "SELECT game_id FROM game"); err != nil {
-		return nil, oops.Wrapf(err, "getting gid")
+	var g Game
+	if err := db.Get(&g, "SELECT * FROM game ORDER BY RAND() LIMIT 1"); err != nil {
+		return nil, oops.Wrapf(err, "getting random game")
 	}
 
-	gameID := allGameIDs[rand.Int63n(int64(len(allGameIDs)))]
-	return db.GetGame(gameID)
+	return &g, nil
 }

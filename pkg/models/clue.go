@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
@@ -190,16 +189,12 @@ func (db *JeppDB) GetClue(clueID int64) (*Clue, error) {
 }
 
 // GetClue returns a single clue from the database.
-func (db *JeppDB) GetRandomClue(clueOptions []*Clue) (*Clue, error) {
-	if len(clueOptions) > 0 {
-		return clueOptions[rand.Intn(len(clueOptions))], nil
+func (db *JeppDB) GetRandomClue() (*Clue, error) {
+	var clue Clue
+	if err := db.Get(&clue, "SELECT * FROM clue ORDER BY RAND() LIMIT 1"); err != nil {
+		return nil, oops.Wrapf(err, "getting random clue")
 	}
+	log.Debug("got random clue: ", clue)
 
-	var allClueIDs []int64
-	if err := db.Select(&allClueIDs, "SELECT clue_id FROM clue"); err != nil {
-		return nil, oops.Wrapf(err, "getting clue ids")
-	}
-
-	clueID := allClueIDs[rand.Int63n(int64(len(allClueIDs)))]
-	return db.GetClue(clueID)
+	return &clue, nil
 }

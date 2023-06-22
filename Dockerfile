@@ -12,6 +12,6 @@ COPY . ./
 
 RUN go build -o bin/server github.com/ecshreve/jepp/cmd/server
 
-EXPOSE 8880
+EXPOSE 80 443
 
 CMD [ "./bin/server" ]
