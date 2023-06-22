@@ -26,7 +26,7 @@ import (
 //	@Router			/categories [get]
 func (s *Server) CategoriesHandler(c *gin.Context) {
 	page := c.GetInt("page")
-	size := c.GetInt("limit")
+	size := c.GetInt("size")
 	paginationParams := models.PaginationParams{Page: page, PageSize: size}
 
 	cats, err := s.DB.GetCategories(paginationParams)

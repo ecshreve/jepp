@@ -30,7 +30,7 @@ func (s *Server) CluesHandler(c *gin.Context) {
 	gameID := c.GetInt64("game")
 	categoryID := c.GetInt64("category")
 	page := c.GetInt("page")
-	size := c.GetInt("limit")
+	size := c.GetInt("size")
 	paginationParams := models.PaginationParams{Page: page, PageSize: size}
 
 	cluesParams := &models.CluesParams{

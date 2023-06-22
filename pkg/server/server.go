@@ -51,7 +51,8 @@ func NewServer() *Server {
 
 // Serve starts the server.
 func (s *Server) Serve() error {
-	err := s.Router.Run(":8880")
+	// err := s.Router.Run(":8880")
+	err := s.Router.RunTLS(":8880", "pkg/server/certs/server.pem", "pkg/server/certs/server.key")
 	if err != nil {
 		return oops.Wrapf(err, "gin server returned error")
 	}

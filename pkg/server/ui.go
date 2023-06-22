@@ -19,7 +19,7 @@ func (s *Server) registerUIHandlers() {
 
 	s.Router.LoadHTMLGlob("pkg/server/templates/*")
 
-	// s.Router.GET("/", s.BaseUIHandler)
+	s.Router.GET("/", s.BaseUIHandler)
 	// s.Router.POST("/", s.BaseUIHandler)
 	s.Router.GET("/:clueID", s.ClueUIHandler)
 	s.Router.POST("/:clueID", s.ClueUIPOSTHandler)
@@ -29,6 +29,11 @@ func (s *Server) registerUIHandlers() {
 	s.Router.GET("/debug", s.DebugUIHandler)
 
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+}
+
+// BaseUIHandler handles the base UI route.
+func (s *Server) BaseUIHandler(c *gin.Context) {
+	c.HTML(200, "landing.html.tpl", s.Stats)
 }
 
 func (s *Server) QuizHandler(c *gin.Context) {
