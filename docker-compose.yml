@@ -9,6 +9,7 @@ services:
       DB_HOST: db
       API_HOST: jepp.app
       JEPP_LOCAL_DEV: false
+      DB_PASS: ${MYSQL_USER_PASS}
     ports:
       - 443:8880
     depends_on:

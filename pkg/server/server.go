@@ -8,6 +8,7 @@ import (
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
 )
 
 type QuizSession struct {
@@ -31,15 +32,20 @@ type Server struct {
 func NewServer() *Server {
 	dbname := "jeppdb"
 	dbuser := "jepp-user"
-	dbpass := os.Getenv("MYSQL_USER_PASS")
+	dbpass := os.Getenv("DB_PASS")
 	dbaddr := fmt.Sprintf("%s:3306", os.Getenv("DB_HOST"))
 
 	jdb := models.NewDB(dbname, dbuser, dbpass, dbaddr)
 	stats, _ := jdb.GetStats()
 
+	// Expose prometheus metrics on /metrics.
+	r := gin.Default()
+	p := ginprometheus.NewPrometheus("gin")
+	p.Use(r)
+
 	s := &Server{
 		ID:     "SERVER",
-		Router: gin.Default(),
+		Router: r,
 		Clock:  clock.New(),
 		DB:     jdb,
 		Stats:  stats,
