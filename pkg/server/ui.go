@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -26,7 +27,7 @@ func (s *Server) registerUIHandlers() {
 	s.Router.GET("/quiz", s.QuizHandler)
 	s.Router.POST("/quiz", s.QuizHandler)
 
-	s.Router.GET("/debug", s.DebugUIHandler)
+	s.Router.GET("/debug/:clueID", s.DebugUIHandler)
 
 	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
@@ -51,9 +52,12 @@ func (s *Server) BaseUIHandler(c *gin.Context) {
 		return
 	}
 
+	clueJSON, _ := json.Marshal(clue)
+
 	c.HTML(200, "landing.html.tpl", gin.H{
 		"Stats":    s.Stats,
 		"Clue":     clue,
+		"ClueJSON": string(clueJSON),
 		"Game":     game,
 		"Category": cat,
 	})
@@ -249,11 +253,17 @@ func (s *Server) jsonHelper(clue *models.Clue) map[string]interface{} {
 }
 
 func (s *Server) DebugUIHandler(c *gin.Context) {
-	clue, _ := s.DB.GetRandomClue(nil)
+	clueID, err := strconv.ParseInt(c.Param("clueID"), 10, 64)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "invalid clueID"})
+		return
+	}
+
+	clue, _ := s.DB.GetClue(clueID)
 	game, _ := s.DB.GetGame(clue.GameID)
 	category, _ := s.DB.GetCategory(clue.CategoryID)
 
-	debug := struct {
+	dat := struct {
 		*models.Clue
 		*models.Game
 		*models.Category
@@ -262,5 +272,5 @@ func (s *Server) DebugUIHandler(c *gin.Context) {
 		Game:     game,
 		Category: category,
 	}
-	c.HTML(200, "debug.html.tpl", debug)
+	c.HTML(200, "debug.html.tpl", dat)
 }

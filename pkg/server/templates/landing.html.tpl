@@ -2,21 +2,35 @@
   <title>Jepp</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css"/>
 </head>
-<h1>Jepp</h1>
-<div>
-  <p>access <strong>{{.Stats.TotalClues}}</strong> jeopardy clues via rest api</p>
-  <a href="/swagger/index.html">view api documentation</a>
+<div style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
+  <h1>Jepp</h1>
+  <p>access to <strong>{{.Stats.TotalClues}}</strong> jeopardy clues via rest api</p>
+  <a href="https://github.com/ecshreve/jepp">view project on github <i class="fa fa-brands fa-github"></i></a>
 </div>
-<div class="card-container" style="justify-content: left;">
-   <div class="card" style="max-width: 500px;">
+<hr>
+<div class="card-container">
+  <div class="card-boring">
+    <div class="container">
+      {{template "swagger"}}
+    </div>
+  </div>
+  <div>
+   <div class="card">
+      <h2 style="text-align: center;">Example: Random Clue</h2>
       <div class="rand-cont">
-        <h2>Random Clue</h2>
+        <pre>GET /api/clues/random</pre>
         <a class="rand-clue" onclick="window.location.reload()"><i class="fa fa-refresh"></i></a>
       </div>
       <hr>
-    <div class="container">
-      {{template "clue-table" .}}
+      <div class="container">
+        {{template "clue-table" .}}
+      </div>
+      <div class="container">
+        {{template "clue-json" .ClueJSON}}
+      </div>
     </div>
   </div>
 </div>

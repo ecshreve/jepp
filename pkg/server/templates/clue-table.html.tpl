@@ -1,22 +1,17 @@
 {{define "clue-table"}}
-<table>
+<table class="rand-tbl">
   <tr>
     <th>ClueID</th>
-    <td>{{.Clue.ClueID}}</td>
+    <td><a href="/debug/{{.Clue.ClueID}}">{{.Clue.ClueID}}</a></td>
   </tr>
   <tr>
-    <th>Game</th>
-    <td>{{.Game.GameID}}</td>
-    <td>{{.Game.GameDate}}</td>
+    <th>GameID</th>
+    <td>{{.Clue.GameID}}</td>
   </tr>
   <tr>
-    <th>Category</th>
+    <th>CategoryID</th>
     <td>{{.Category.CategoryID}}</td>
-    <td>{{.Category.Name}}</td>
   </tr>
-</table>
-<hr>
-<table>
   <tr>
     <th>Question</th>
     <td>{{.Clue.Question}}</td>
