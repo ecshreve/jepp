@@ -4,13 +4,11 @@ services:
   app:
     build: 
       context: .
-      dockerfile: ./docker/app.dockerfile
-    restart: no
+    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: jeppdb
-      MYSQL_USER: jepp-user
-      MYSQL_PASSWORD: password
       DB_HOST: db
+    ports:
+      - 80:8880
     depends_on:
       - db
     networks:
@@ -18,7 +16,7 @@ services:
     container_name: jepp-app
     
   db:
-    image: mariadb:10.6
+    image: mariadb:10.11.3
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: password
