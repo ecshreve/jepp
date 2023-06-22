@@ -1,9 +1,7 @@
 package models
 
 import (
-	"fmt"
 	"log"
-	"os"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -15,16 +13,13 @@ type JeppDB struct {
 }
 
 // NewDB returns a new database handle.
-func NewDB() *JeppDB {
-	dbname := "jeppdb"
-	addr := fmt.Sprintf("%s:3306", os.Getenv("DB_HOST"))
-
+func NewDB(dbname, dbuser, dbpass, dbaddr string) *JeppDB {
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:                 "jepp-user",
-		Passwd:               "password",
+		User:                 dbuser,
+		Passwd:               dbpass,
 		Net:                  "tcp",
-		Addr:                 addr,
+		Addr:                 dbaddr,
 		DBName:               dbname,
 		AllowNativePasswords: true,
 		ParseTime:            true,

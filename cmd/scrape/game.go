@@ -6,10 +6,11 @@ import (
 	mod "github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gocolly/colly/v2"
+	log "github.com/sirupsen/logrus"
 )
 
-// ScrapeGame scrapes a game from j-archive.com
-func ScrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
+// scrapeGame scrapes a game from j-archive.com
+func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 	clueMap := map[int64]*mod.Clue{}
 	clueStrings := map[int64]string{}
 	cats := map[mod.Round][]string{}
@@ -73,4 +74,31 @@ func ScrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 	}
 
 	return clueMap, catMap
+}
+
+func scrapeAndFillCluesForGame(db *mod.JeppDB, gid int64) int {
+	clues, cats := scrapeGameClues(gid)
+
+	for clueID, clue := range clues {
+		actual, _ := db.GetCategoryByName(cats[clueID])
+		if actual != nil {
+			clue.CategoryID = actual.CategoryID
+			continue
+		}
+
+		inserted, err := db.InsertCategory(cats[clueID])
+		if err != nil {
+			log.Fatal(err)
+		}
+		clue.CategoryID = inserted.CategoryID
+	}
+
+	for _, clue := range clues {
+		if err := db.InsertClue(clue); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	log.Infof("inserted %d clues for game %d", len(clues), gid)
+	return len(clues)
 }

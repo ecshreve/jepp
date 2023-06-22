@@ -7,8 +7,9 @@ services:
     restart: unless-stopped
     environment:
       DB_HOST: db
+      API_HOST: jepp.app
+      JEPP_LOCAL_DEV: false
     ports:
-      - 80:8880
       - 443:8880
     depends_on:
       - db
@@ -20,10 +21,10 @@ services:
     image: mariadb:10.11.3
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: jeppdb
       MYSQL_USER: jepp-user
-      MYSQL_PASSWORD: password
+      MYSQL_PASSWORD: ${MYSQL_USER_PASS}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
     ports:
       - 3306:3306
     networks:
@@ -31,15 +32,15 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
-  # adminer:
-  #   image: adminer
-  #   restart: unless-stopped
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - 8080:8080
-  #   networks:
-  #     - jepp-net
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+    networks:
+      - jepp-net
 
 networks:
   jepp-net:

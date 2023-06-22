@@ -163,11 +163,11 @@ paths:
       - description: Game ID
         in: query
         name: game
-        type: string
+        type: integer
       - description: Category ID
         in: query
         name: category
-        type: string
+        type: integer
       - default: 1
         description: Page number
         in: query

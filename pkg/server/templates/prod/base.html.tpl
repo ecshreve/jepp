@@ -6,7 +6,7 @@
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css"/>
 </head>
 <div style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 10px;">
-  <h1>Jepp</h1>
+  <a href="/" style="text-decoration: none; color: black;"><h1>Jepp</h1></a>
   <p>access to <strong>{{.Stats.TotalClues}}</strong> jeopardy clues via rest api</p>
   <a href="https://github.com/ecshreve/jepp">view project on github <i class="fa fa-brands fa-github"></i></a>
 </div>

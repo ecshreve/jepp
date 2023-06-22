@@ -19,16 +19,20 @@ import (
 //	@Tags			clue
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			game		query		string	false	"Game ID"
-//	@Param			category	query		string	false	"Category ID"
+//	@Param			game		query		int64	false	"Game ID"
+//	@Param			category	query		int64	false	"Category ID"
 //	@Param			page		query		int		false	"Page number"	default(1)
 //	@Param			size		query		int		false	"Page size"		default(10)
 //	@Success		200			{array}		models.Clue
 //	@Failure		500			{object}	utils.HTTPError
 //	@Router			/clues [get]
 func (s *Server) CluesHandler(c *gin.Context) {
-	gameID := c.GetInt64("game")
-	categoryID := c.GetInt64("category")
+	gameIDStr := c.Query("game")
+	gameID, _ := strconv.ParseInt(gameIDStr, 10, 64)
+
+	categoryIDStr := c.Query("category")
+	categoryID, _ := strconv.ParseInt(categoryIDStr, 10, 64)
+
 	page := c.GetInt("page")
 	size := c.GetInt("size")
 	paginationParams := models.PaginationParams{Page: page, PageSize: size}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/ecshreve/jepp/docs"
 	"github.com/ecshreve/jepp/pkg/server"
 	log "github.com/sirupsen/logrus"
@@ -16,8 +18,7 @@ func main() {
 	docs.SwaggerInfo.Title = "Jepp API Documentation"
 	docs.SwaggerInfo.Description = "This is a simple api to access jeopardy data."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "jepp.app"
-	// docs.SwaggerInfo.Host = "10.35.220.99:8880"
+	docs.SwaggerInfo.Host = os.Getenv("API_HOST")
 	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Schemes = []string{"https"}
 

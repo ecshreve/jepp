@@ -178,13 +178,13 @@ const docTemplate = `{
                 "summary": "Returns a list of clues",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Game ID",
                         "name": "game",
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Category ID",
                         "name": "category",
                         "in": "query"

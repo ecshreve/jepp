@@ -1,6 +1,9 @@
 package server
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/benbjohnson/clock"
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
@@ -26,7 +29,12 @@ type Server struct {
 
 // NewServer returns a new API server.
 func NewServer() *Server {
-	jdb := models.NewDB()
+	dbname := "jeppdb"
+	dbuser := "jepp-user"
+	dbpass := os.Getenv("MYSQL_USER_PASS")
+	dbaddr := fmt.Sprintf("%s:3306", os.Getenv("DB_HOST"))
+
+	jdb := models.NewDB(dbname, dbuser, dbpass, dbaddr)
 	stats, _ := jdb.GetStats()
 
 	s := &Server{
@@ -35,16 +43,14 @@ func NewServer() *Server {
 		Clock:  clock.New(),
 		DB:     jdb,
 		Stats:  stats,
-		QZ: &QuizSession{
-			Clues:     make([]*models.Clue, 0),
-			Correct:   0,
-			Incorrect: 0,
-			Total:     0,
-		},
 	}
 
 	s.registerAPIHandlers()
 	s.registerUIHandlers()
+
+	if os.Getenv("JEPP_LOCAL_DEV") == "true" {
+		s.registerDevHandlers()
+	}
 
 	return s
 }

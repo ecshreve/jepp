@@ -15,7 +15,7 @@ import (
 var SeasonRE = regexp.MustCompile(`Season ([0-9]+)`)
 var SeasonDateRE = regexp.MustCompile(`([0-9]{4}-[0-9]{2}-[0-9]{2}) to ([0-9]{4}-[0-9]{2}-[0-9]{2})`)
 
-func ScrapeSeasons() ([]*mod.Season, error) {
+func scrapeSeasons() ([]*mod.Season, error) {
 	seasonURLs := map[string]string{}
 	seasonDates := map[int64][]string{}
 
@@ -70,10 +70,8 @@ func ScrapeSeasons() ([]*mod.Season, error) {
 	return seasons, nil
 }
 
-func FillSeasons() {
-	db := mod.NewDB()
-
-	seasons, err := ScrapeSeasons()
+func fillSeasons(db *mod.JeppDB) {
+	seasons, err := scrapeSeasons()
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +83,7 @@ func FillSeasons() {
 	}
 }
 
-func ScrapeSeasonGames(seasonID int64) ([]*mod.Game, error) {
+func scrapeSeasonGames(seasonID int64) ([]*mod.Game, error) {
 	var gameRE = regexp.MustCompile(`game_id=([0-9]+)`)
 	var metaRE = regexp.MustCompile(`#([0-9]+),.*aired.*([0-9]{4}-[0-9]{2}-[0-9]{2})`)
 	var tapedRE = regexp.MustCompile(`Taped.*([0-9]{4}-[0-9]{2}-[0-9]{2})`)
@@ -151,10 +149,8 @@ func ScrapeSeasonGames(seasonID int64) ([]*mod.Game, error) {
 	return games, nil
 }
 
-func FillSeasonGames(seasonID int64) {
-	db := mod.NewDB()
-
-	games, err := ScrapeSeasonGames(seasonID)
+func fillSeasonGames(db *mod.JeppDB, seasonID int64) {
+	games, err := scrapeSeasonGames(seasonID)
 	if err != nil {
 		log.Fatal(err)
 	}
