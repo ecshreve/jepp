@@ -117,7 +117,7 @@ func (db *JeppDB) GetCluesForGame(gameId string) ([]*Clue, error) {
 func (db *JeppDB) GetCluesForCategory(category_id int64) ([]*Clue, error) {
 	var clues []*Clue
 	if err := db.Select(&clues, "SELECT * FROM clue WHERE category_id = ? ORDER BY clue_id ASC", category_id); err != nil {
-		return nil, oops.Wrapf(err, "could not get clues for category %s", category_id)
+		return nil, oops.Wrapf(err, "could not get clues for category %d", category_id)
 	}
 
 	if len(clues) == 0 {

@@ -57,12 +57,20 @@ func (s *Server) QuizHandler(c *gin.Context) {
 		return
 	}
 
+	game, err := s.DB.GetGame(clue.GameID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch game for clue"})
+		return
+	}
+
 	s.QZ.Clues = append(s.QZ.Clues, clue)
 
 	c.HTML(200, "quiz.html.tpl", gin.H{
 		"Clue":     clue,
 		"Category": cat,
 		"Session":  s.QZ,
+		"Game":     game,
+		"Viz":      Viz(*s.QZ),
 	})
 }
 
