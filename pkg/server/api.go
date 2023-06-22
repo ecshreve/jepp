@@ -30,8 +30,6 @@ func (s *Server) registerAPIHandlers() {
 	category.GET("/random", s.RandomCategoryHandler)
 	category.GET("/:categoryID", s.CategoryHandler)
 
-	// This is not safe for production use but it's fine for playing
-	// around locally.
 	if err := s.Router.SetTrustedProxies(nil); err != nil {
 		log.Error(oops.Wrapf(err, "unable to set proxies"))
 	}

@@ -94,3 +94,28 @@ img {
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.5);
   transition: 0.3s;
 }
+
+th {
+  text-align: left;
+  padding: 5px;
+  border: 1px solid black;
+}
+.rand-cont {
+  display: flex;
+  justify-content: space-between;
+  background-color: aliceblue;
+  padding: 10px;
+  border-radius: 15px;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+.rand-clue {
+  font-size: x-large;
+  padding: 10px;
+  align-items: center;
+}
+
+.rand-clue:hover {
+  cursor: pointer;
+}

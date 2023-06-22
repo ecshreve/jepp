@@ -33,7 +33,30 @@ func (s *Server) registerUIHandlers() {
 
 // BaseUIHandler handles the base UI route.
 func (s *Server) BaseUIHandler(c *gin.Context) {
-	c.HTML(200, "landing.html.tpl", s.Stats)
+	clue, err := s.DB.GetRandomClue(nil)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch random clue"})
+		return
+	}
+
+	cat, err := s.DB.GetCategory(clue.CategoryID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
+		return
+	}
+
+	game, err := s.DB.GetGame(clue.GameID)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "couldn't fetch game for clue"})
+		return
+	}
+
+	c.HTML(200, "landing.html.tpl", gin.H{
+		"Stats":    s.Stats,
+		"Clue":     clue,
+		"Game":     game,
+		"Category": cat,
+	})
 }
 
 func (s *Server) QuizHandler(c *gin.Context) {

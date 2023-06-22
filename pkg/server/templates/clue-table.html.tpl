@@ -1,0 +1,29 @@
+{{define "clue-table"}}
+<table>
+  <tr>
+    <th>ClueID</th>
+    <td>{{.Clue.ClueID}}</td>
+  </tr>
+  <tr>
+    <th>Game</th>
+    <td>{{.Game.GameID}}</td>
+    <td>{{.Game.GameDate}}</td>
+  </tr>
+  <tr>
+    <th>Category</th>
+    <td>{{.Category.CategoryID}}</td>
+    <td>{{.Category.Name}}</td>
+  </tr>
+</table>
+<hr>
+<table>
+  <tr>
+    <th>Question</th>
+    <td>{{.Clue.Question}}</td>
+  </tr>
+  <tr>
+    <th>Answer</th>
+    <td>{{.Clue.Answer}}</td>
+  </tr>
+</table>
+{{end}}

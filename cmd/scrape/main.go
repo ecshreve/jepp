@@ -8,7 +8,7 @@ import (
 func main() {
 	db := models.NewDB()
 
-	for i := 35; i > 33; i-- {
+	for i := 33; i > 32; i-- {
 		log.Infof("scraping season %d ", i)
 		gamesForSeason, err := db.GetGamesBySeason(int64(i))
 		if err != nil {
