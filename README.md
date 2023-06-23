@@ -1,7 +1,7 @@
 # jepp
 api fun with jeopardy!
 
-![jepp](static/jepp-ui.png)
+![jepp](static/repo/jepp-ui.png)
 
 ## api
 
@@ -62,7 +62,7 @@ the scraping happened in a few passes to get all the data
 - this is an example of a simple web app that uses a local copy of the database and a simple
   web ui to display the data
 
-![drop](static/drop.gif)
+![drop](static/repo/drop.gif)
 
 
 ## references

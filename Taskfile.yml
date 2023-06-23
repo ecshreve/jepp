@@ -64,3 +64,23 @@ tasks:
       - docs/*
     cmds:
       - bin/server
+
+  docker:build:
+    desc: Builds the docker image.
+    deps:
+      - go:build:server
+    sources:
+      - Dockerfile
+      - docker-compose.yml
+    cmds:
+      - docker compose build
+
+  docker:run:
+    desc: Runs the docker image.
+    deps:
+      - docker:build
+    sources:
+      - Dockerfile
+      - docker-compose.yml
+    cmds:
+      - docker compose up -d

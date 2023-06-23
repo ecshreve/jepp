@@ -8,7 +8,10 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY . ./
+COPY ./cmd/server ./cmd/server
+COPY ./pkg ./pkg
+COPY ./docs ./docs
+COPY ./static/site ./static
 
 RUN go build -o bin/server github.com/ecshreve/jepp/cmd/server
 
