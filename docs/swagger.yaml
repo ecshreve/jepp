@@ -65,11 +65,11 @@ info:
   title: Jepp API Documentation
   version: "1.0"
 paths:
-  /:
+  /api:
     get:
       consumes:
       - '*/*'
-      description: Show available endpoints
+      description: List available endpoints
       produces:
       - application/json
       responses:
@@ -78,9 +78,9 @@ paths:
           schema:
             additionalProperties: true
             type: object
-      summary: Base handler
+      summary: Base api handler
       tags:
-      - root
+      - api
   /categories:
     get:
       consumes:
@@ -182,7 +182,7 @@ paths:
             type: object
       summary: Show the status of server
       tags:
-      - root
+      - api
   /random/category:
     get:
       consumes:

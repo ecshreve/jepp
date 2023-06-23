@@ -22,9 +22,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/": {
+        "/api": {
             "get": {
-                "description": "Show available endpoints",
+                "description": "List available endpoints",
                 "consumes": [
                     "*/*"
                 ],
@@ -32,9 +32,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "api"
                 ],
-                "summary": "Base handler",
+                "summary": "Base api handler",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -188,7 +188,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "api"
                 ],
                 "summary": "Show the status of server",
                 "responses": {

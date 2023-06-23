@@ -44,7 +44,9 @@ func registerHandlers() *gin.Engine {
 
 	r.LoadHTMLGlob("pkg/server/templates/prod/*")
 
+	r.GET("/", BaseUIHandler)
 	r.GET("/ui", BaseUIHandler)
+
 	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	api := r.Group("/api")

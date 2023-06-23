@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"net/http"
 
 	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
@@ -13,29 +14,30 @@ import (
 func BaseUIHandler(c *gin.Context) {
 	clue, err := mods.GetRandomClue()
 	if err != nil {
-		c.JSON(400, gin.H{"error": "couldn't fetch random clue"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "couldn't fetch random clue"})
 		return
 	}
 
 	cat, err := mods.GetCategory(clue.CategoryID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "couldn't fetch category for clue"})
 		return
 	}
 
 	game, err := mods.GetGame(clue.GameID)
 	if err != nil {
-		utils.NewError(c, 400, oops.Wrapf(err, "couldn't fetch game for clue"))
+		utils.NewError(c, http.StatusBadRequest, oops.Wrapf(err, "couldn't fetch game for clue"))
 		return
 	}
 
+	// TODO: validation
 	clueJSON, _ := json.Marshal(clue)
 	numClues, _ := mods.NumClues()
 
 	c.HTML(200, "base.html.tpl", gin.H{
 		"NumClues": numClues,
 		"Clue":     clue,
-		"ClueJSON": string(clueJSON),
+		"ClueJSON": string(clueJSON), // FIX: this is ugly
 		"Game":     game,
 		"Category": cat,
 	})

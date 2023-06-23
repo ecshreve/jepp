@@ -18,9 +18,9 @@
     "host": "jepp.app",
     "basePath": "/api",
     "paths": {
-        "/": {
+        "/api": {
             "get": {
-                "description": "Show available endpoints",
+                "description": "List available endpoints",
                 "consumes": [
                     "*/*"
                 ],
@@ -28,9 +28,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "api"
                 ],
-                "summary": "Base handler",
+                "summary": "Base api handler",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -184,7 +184,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "api"
                 ],
                 "summary": "Show the status of server",
                 "responses": {
