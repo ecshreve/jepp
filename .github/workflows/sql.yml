@@ -34,7 +34,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: dump.sql.gz
-        asset_name: mysqldump-${{tag}}.sql.gz
         tag: ${{ github.ref }}
         overwrite: true
 
