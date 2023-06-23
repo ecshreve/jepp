@@ -1,4 +1,11 @@
 # jepp
+
+[![Go](https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg)](https://github.com/ecshreve/jepp/actions/workflows/go.yml)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ecshreve/jepp)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ecshreve/jepp)](https://goreportcard.com/report/github.com/ecshreve/jepp)
+
+---
+
 api fun with jeopardy!
 
 ![jepp](static/repo/jepp-ui.png)
