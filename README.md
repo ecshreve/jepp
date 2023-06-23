@@ -1,4 +1,4 @@
-# jepp
+# [jepp api](https://jepp.app)
 
 [![Go](https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg)](https://github.com/ecshreve/jepp/actions/workflows/go.yml)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ecshreve/jepp)
