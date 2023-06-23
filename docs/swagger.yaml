@@ -54,7 +54,6 @@ definitions:
         example: status bad request
         type: string
     type: object
-host: jepp.app
 info:
   contact:
     name: shreve
@@ -65,7 +64,7 @@ info:
   title: Jepp API Documentation
   version: "1.0"
 paths:
-  /api:
+  /:
     get:
       consumes:
       - '*/*'
@@ -106,7 +105,7 @@ paths:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of categories.
       tags:
-      - category
+      - list
   /clues:
     get:
       consumes:
@@ -140,7 +139,7 @@ paths:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of clues
       tags:
-      - clue
+      - list
   /games:
     get:
       consumes:
@@ -166,7 +165,7 @@ paths:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of games
       tags:
-      - game
+      - list
   /ping:
     get:
       consumes:

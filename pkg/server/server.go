@@ -38,8 +38,8 @@ func NewServer() *Server {
 
 func registerHandlers() *gin.Engine {
 	r := gin.Default()
-	r.StaticFile("style.css", "./static/style.css")
-	r.StaticFile("favicon.ico", "./static/favicon.ico")
+	r.StaticFile("style.css", "./static/site/style.css")
+	r.StaticFile("favicon.ico", "./static/site/favicon.ico")
 	r.StaticFile("swagger.json", "./docs/swagger.json")
 
 	r.LoadHTMLGlob("pkg/server/templates/prod/*")
@@ -50,7 +50,7 @@ func registerHandlers() *gin.Engine {
 	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	api := r.Group("/api")
-	api.GET("", BaseHandler)
+	api.GET("/", BaseHandler)
 	api.GET("/ping", PingHandler)
 
 	api.GET("/clues", CluesHandler)

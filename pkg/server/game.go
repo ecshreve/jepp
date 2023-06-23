@@ -16,7 +16,7 @@ import (
 //	@Summary		Returns a list of games
 //	@Description	Returns a list of games
 //
-//	@Tags			game
+//	@Tags			list
 //	@Accept			*/*
 //	@Produce		json
 //	@Param			id	query		int64	false	"Game ID"

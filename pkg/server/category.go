@@ -16,7 +16,7 @@ import (
 //	@Summary		Returns a list of categories.
 //	@Description	Returns a list of categories.
 //
-//	@Tags			category
+//	@Tags			list
 //	@Accept			*/*
 //	@Produce		json
 //	@Param			id	query		int64	false	"Category ID"
