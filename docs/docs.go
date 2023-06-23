@@ -37,10 +37,12 @@ const docTemplate = `{
                 "summary": "Base api handler",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "list of available endpoints",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -195,8 +197,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "string"
                         }
                     }
                 }
@@ -375,7 +376,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
 	BasePath:         "/api",
-	Schemes:          []string{"https"},
+	Schemes:          []string{"http"},
 	Title:            "Jepp API Documentation",
 	Description:      "This is a simple api to access jeopardy data.",
 	InfoInstanceName: "swagger",

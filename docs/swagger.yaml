@@ -73,10 +73,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: list of available endpoints
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              type: string
+            type: array
       summary: Base api handler
       tags:
       - api
@@ -177,8 +178,7 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            type: string
       summary: Show the status of server
       tags:
       - api
@@ -240,5 +240,5 @@ paths:
       tags:
       - random
 schemes:
-- https
+- http
 swagger: "2.0"
