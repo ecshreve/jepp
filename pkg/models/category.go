@@ -10,7 +10,7 @@ import (
 // Category represents a jeopardy category in the database.
 type Category struct {
 	CategoryID int64  `db:"category_id" json:"categoryId" example:"765"`
-	Name       string `db:"name" json:"name" example:"Category Name"`
+	Name       string `db:"name" json:"name" example:"State Capitals"`
 }
 
 // GetCategoryGameCount returns the number of games a category has appeared in.

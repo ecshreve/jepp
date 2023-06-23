@@ -6,7 +6,7 @@ definitions:
         example: 765
         type: integer
       name:
-        example: Category Name
+        example: State Capitals
         type: string
     type: object
   models.Clue:
@@ -109,25 +109,6 @@ paths:
       summary: Returns a list of categories.
       tags:
       - category
-  /categories/random:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a random category
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Category'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a random category
-      tags:
-      - category
   /clues:
     get:
       consumes:
@@ -162,51 +143,6 @@ paths:
       summary: Returns a list of clues
       tags:
       - clue
-  /clues/{clueID}:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a clue
-      parameters:
-      - default: 708002056
-        description: Clue ID
-        in: path
-        name: clueID
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Clue'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a clue
-      tags:
-      - clue
-  /clues/random:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a random clue
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Clue'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a random clue
-      tags:
-      - clue
   /games:
     get:
       consumes:
@@ -233,49 +169,6 @@ paths:
       summary: Returns a list of games
       tags:
       - game
-  /games/{gameID}:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a game
-      parameters:
-      - default: 7040
-        description: Game ID
-        in: path
-        name: gameID
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Game'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a game
-      tags:
-      - game
-  /games/random:
-    get:
-      description: Returns a random game
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Game'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a random game
-      tags:
-      - game
   /ping:
     get:
       consumes:
@@ -292,6 +185,63 @@ paths:
       summary: Show the status of server
       tags:
       - root
+  /random/category:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a random category
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Returns a random category
+      tags:
+      - random
+  /random/clue:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a random clue
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Clue'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Returns a random clue
+      tags:
+      - random
+  /random/game:
+    get:
+      consumes:
+      - '*/*'
+      description: Returns a random game
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Game'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Returns a random game
+      tags:
+      - random
 schemes:
 - http
 swagger: "2.0"

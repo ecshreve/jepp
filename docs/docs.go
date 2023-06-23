@@ -88,35 +88,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories/random": {
-            "get": {
-                "description": "Returns a random category",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Returns a random category",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Category"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
         "/clues": {
             "get": {
                 "description": "Returns a list of clues",
@@ -169,74 +140,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/clues/random": {
-            "get": {
-                "description": "Returns a random clue",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clue"
-                ],
-                "summary": "Returns a random clue",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Clue"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/clues/{clueID}": {
-            "get": {
-                "description": "Returns a clue",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clue"
-                ],
-                "summary": "Returns a clue",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 708002056,
-                        "description": "Clue ID",
-                        "name": "clueID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Clue"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
         "/games": {
             "get": {
                 "description": "Returns a list of games",
@@ -277,71 +180,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/games/random": {
-            "get": {
-                "description": "Returns a random game",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "game"
-                ],
-                "summary": "Returns a random game",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Game"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/games/{gameID}": {
-            "get": {
-                "description": "Returns a game",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "game"
-                ],
-                "summary": "Returns a game",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 7040,
-                        "description": "Game ID",
-                        "name": "gameID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Game"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
         "/ping": {
             "get": {
                 "description": "Get the status of server",
@@ -365,6 +203,93 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/random/category": {
+            "get": {
+                "description": "Returns a random category",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "random"
+                ],
+                "summary": "Returns a random category",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Category"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/random/clue": {
+            "get": {
+                "description": "Returns a random clue",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "random"
+                ],
+                "summary": "Returns a random clue",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Clue"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/random/game": {
+            "get": {
+                "description": "Returns a random game",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "random"
+                ],
+                "summary": "Returns a random game",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Game"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -377,7 +302,7 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string",
-                    "example": "Category Name"
+                    "example": "State Capitals"
                 }
             }
         },
