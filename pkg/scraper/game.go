@@ -1,4 +1,4 @@
-package main
+package scraper
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// scrapeGame scrapes a game from j-archive.com
+// scrapeGameClues scrapes a game from j-archive.com.
 func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
 	clueMap := map[int64]*mods.Clue{}
 	clueStrings := map[int64]string{}
@@ -34,6 +34,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
 		clueStrings[clueId] = cid
 	})
 
+	// collect and parse the categories for single jepp
 	c.OnHTML("div[id=jeopardy_round]", func(e *colly.HTMLElement) {
 		cc := []string{}
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
@@ -42,6 +43,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
 		cats[mods.Jeopardy] = append(cats[mods.Jeopardy], cc...)
 	})
 
+	// collect and parse the categories for double jepp
 	c.OnHTML("div[id=double_jeopardy_round]", func(e *colly.HTMLElement) {
 		cc := []string{}
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
@@ -50,6 +52,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
 		cats[mods.DoubleJeopardy] = append(cats[mods.DoubleJeopardy], cc...)
 	})
 
+	// collect and parse the categories for final jepp
 	c.OnHTML("div[id=final_jeopardy_round]", func(e *colly.HTMLElement) {
 		cc := []string{}
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
@@ -81,7 +84,7 @@ func scrapeAndFillCluesForGame(db *mods.JeppDB, gid int64) int {
 
 	for clueID, clue := range clues {
 		actual, err := mods.GetCategoryByName(cats[clueID])
-		if err != nil {
+		if actual != nil {
 			clue.CategoryID = actual.CategoryID
 			continue
 		}

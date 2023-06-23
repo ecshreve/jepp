@@ -113,12 +113,14 @@ func GetCategory(categoryID int64) (*Category, error) {
 }
 
 func GetCategoryByName(categoryName string) (*Category, error) {
-	var c Category
+	query := fmt.Sprintf("SELECT * FROM category WHERE name='%s' ORDER BY category_id DESC LIMIT 1", categoryName)
 
-	if err := db.Get(&c, "SELECT category_id, name FROM category WHERE name=? LIMIT 1", categoryName); err != nil {
+	c := Category{}
+	if err := db.Get(&c, query); err != nil {
 		return nil, oops.Wrapf(err, "could not get category for name %s", categoryName)
 	}
 
+	log.Debugf("category: %+v", c)
 	return &c, nil
 }
 

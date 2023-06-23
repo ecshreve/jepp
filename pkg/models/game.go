@@ -61,7 +61,7 @@ func GetGames() ([]Game, error) {
 
 // GetGamesBySeason returns a list of games in the database for a given season.
 func GetGamesBySeason(seasonID int64) ([]Game, error) {
-	query := fmt.Sprintf("SELECT * FROM game WHERE season_id=%d", seasonID)
+	query := fmt.Sprintf("SELECT * FROM game WHERE season_id=%d ORDER BY game_date DESC", seasonID)
 
 	games := []Game{}
 	if err := db.Select(&games, query); err != nil {

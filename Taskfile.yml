@@ -4,10 +4,18 @@ dotenv: ['.env', '{{.ENV}}/.env.', '{{.HOME}}/.env']
 
 tasks:
   default:
+    desc: List all tasks and descriptions.
     cmds:
       - task --list-all
 
+  build:
+    desc: Builds both the scraper and server binaries.
+    deps:
+      - go:build:scraper
+      - go:build:server
+
   test:
+    desc: Runs go tests
     cmds:
       - go test github.com/ecshreve/jepp/...
 
@@ -17,6 +25,9 @@ tasks:
       - bin/scrape
     sources:
       - cmd/scrape/*.go
+      - pkg/scraper/*.go
+      - pkg/models/*.go
+      - pkg/utils/*.go
     cmds:
       - go build -o bin/scrape github.com/ecshreve/jepp/cmd/scrape
 
@@ -41,12 +52,6 @@ tasks:
     cmds:
       - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
       - swag init --parseVendor -d cmd/server,pkg/server,pkg/models,pkg/utils
-
-  build:
-    desc: Builds both the scraper and server binaries.
-    deps:
-      - go:build:scraper
-      - go:build:server
   
   scrape:
     desc: Runs the scraper.
