@@ -15,10 +15,9 @@
         },
         "version": "1.0"
     },
-    "host": "jepp.app",
     "basePath": "/api",
     "paths": {
-        "/api": {
+        "/": {
             "get": {
                 "description": "List available endpoints",
                 "consumes": [
@@ -52,7 +51,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "list"
                 ],
                 "summary": "Returns a list of categories.",
                 "parameters": [
@@ -92,7 +91,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "clue"
+                    "list"
                 ],
                 "summary": "Returns a list of clues",
                 "parameters": [
@@ -144,7 +143,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "game"
+                    "list"
                 ],
                 "summary": "Returns a list of games",
                 "parameters": [

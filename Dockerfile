@@ -11,7 +11,7 @@ RUN go mod download
 COPY ./cmd/server ./cmd/server
 COPY ./pkg ./pkg
 COPY ./docs ./docs
-COPY ./static/site ./static
+COPY ./static/site ./static/site
 
 RUN go build -o bin/server github.com/ecshreve/jepp/cmd/server
 

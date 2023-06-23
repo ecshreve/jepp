@@ -22,7 +22,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api": {
+        "/": {
             "get": {
                 "description": "List available endpoints",
                 "consumes": [
@@ -56,7 +56,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "list"
                 ],
                 "summary": "Returns a list of categories.",
                 "parameters": [
@@ -96,7 +96,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clue"
+                    "list"
                 ],
                 "summary": "Returns a list of clues",
                 "parameters": [
@@ -148,7 +148,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "game"
+                    "list"
                 ],
                 "summary": "Returns a list of games",
                 "parameters": [
@@ -373,7 +373,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "jepp.app",
+	Host:             "",
 	BasePath:         "/api",
 	Schemes:          []string{"http"},
 	Title:            "Jepp API Documentation",

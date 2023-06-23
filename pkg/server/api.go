@@ -15,7 +15,7 @@ import (
 //	@Accept			*/*
 //	@Produce		json
 //	@Success		200	{object}	map[string]interface{}
-//	@Router			/api [get]
+//	@Router			/ [get]
 func BaseHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"available endpoints": []string{

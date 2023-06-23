@@ -16,7 +16,7 @@ import (
 //	@Summary		Returns a list of clues
 //	@Description	Returns a list of clues
 //
-//	@Tags			clue
+//	@Tags			list
 //	@Accept			*/*
 //	@Produce		json
 //	@Param			id			query		integer	false	"Clue ID"
