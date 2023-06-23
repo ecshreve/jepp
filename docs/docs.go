@@ -11,9 +11,7 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "shreve",
-            "url": "http://github.com/ecshreve",
-            "email": "eric@shreve.dev"
+            "name": "shreve"
         },
         "license": {
             "name": "MIT",
@@ -375,7 +373,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "10.35.220.99:8880",
+	Host:             "jepp.app",
 	BasePath:         "/api",
 	Schemes:          []string{"http"},
 	Title:            "Jepp API Documentation",

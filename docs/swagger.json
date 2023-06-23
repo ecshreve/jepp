@@ -7,9 +7,7 @@
         "description": "This is a simple api to access jeopardy data.",
         "title": "Jepp API Documentation",
         "contact": {
-            "name": "shreve",
-            "url": "http://github.com/ecshreve",
-            "email": "eric@shreve.dev"
+            "name": "shreve"
         },
         "license": {
             "name": "MIT",
@@ -17,7 +15,7 @@
         },
         "version": "1.0"
     },
-    "host": "10.35.220.99:8880",
+    "host": "jepp.app",
     "basePath": "/api",
     "paths": {
         "/": {

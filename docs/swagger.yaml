@@ -54,12 +54,10 @@ definitions:
         example: status bad request
         type: string
     type: object
-host: 10.35.220.99:8880
+host: jepp.app
 info:
   contact:
-    email: eric@shreve.dev
     name: shreve
-    url: http://github.com/ecshreve
   description: This is a simple api to access jeopardy data.
   license:
     name: MIT
