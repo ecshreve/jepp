@@ -64,16 +64,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "size",
+                        "description": "Category ID",
+                        "name": "id",
                         "in": "query"
                     }
                 ],
@@ -125,44 +117,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories/{categoryID}": {
-            "get": {
-                "description": "Returns a category",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "category"
-                ],
-                "summary": "Returns a category",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "categoryID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Category"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
         "/clues": {
             "get": {
                 "description": "Returns a list of clues",
@@ -179,6 +133,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "Clue ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "Game ID",
                         "name": "game",
                         "in": "query"
@@ -187,20 +147,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Category ID",
                         "name": "category",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "size",
                         "in": "query"
                     }
                 ],
@@ -240,10 +186,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Clue"
-                            }
+                            "$ref": "#/definitions/models.Clue"
                         }
                     },
                     "500": {
@@ -310,16 +253,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "size",
+                        "description": "Game ID",
+                        "name": "id",
                         "in": "query"
                     }
                 ],
@@ -345,9 +280,6 @@ const docTemplate = `{
         "/games/random": {
             "get": {
                 "description": "Returns a random game",
-                "consumes": [
-                    "*/*"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -359,10 +291,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Game"
-                            }
+                            "$ref": "#/definitions/models.Game"
                         }
                     },
                     "500": {
@@ -376,6 +305,7 @@ const docTemplate = `{
         },
         "/games/{gameID}": {
             "get": {
+                "description": "Returns a game",
                 "consumes": [
                     "*/*"
                 ],
@@ -385,10 +315,11 @@ const docTemplate = `{
                 "tags": [
                     "game"
                 ],
+                "summary": "Returns a game",
                 "parameters": [
                     {
-                        "type": "string",
-                        "default": "7040",
+                        "type": "integer",
+                        "default": 7040,
                         "description": "Game ID",
                         "name": "gameID",
                         "in": "path",
@@ -518,12 +449,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Version:          "1.0",
+	Host:             "10.35.220.99:8880",
+	BasePath:         "/api",
+	Schemes:          []string{"http"},
+	Title:            "Jepp API Documentation",
+	Description:      "This is a simple api to access jeopardy data.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

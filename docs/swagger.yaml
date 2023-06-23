@@ -1,3 +1,4 @@
+basePath: /api
 definitions:
   models.Category:
     properties:
@@ -53,14 +54,18 @@ definitions:
         example: status bad request
         type: string
     type: object
+host: 10.35.220.99:8880
 info:
   contact:
     email: eric@shreve.dev
     name: shreve
     url: http://github.com/ecshreve
+  description: This is a simple api to access jeopardy data.
   license:
     name: MIT
     url: https://github.com/ecshreve/jepp/blob/main/LICENSE
+  title: Jepp API Documentation
+  version: "1.0"
 paths:
   /:
     get:
@@ -84,15 +89,9 @@ paths:
       - '*/*'
       description: Returns a list of categories.
       parameters:
-      - default: 1
-        description: Page number
+      - description: Category ID
         in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        name: size
+        name: id
         type: integer
       produces:
       - application/json
@@ -108,31 +107,6 @@ paths:
           schema:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of categories.
-      tags:
-      - category
-  /categories/{categoryID}:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a category
-      parameters:
-      - description: Category ID
-        in: path
-        name: categoryID
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Category'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a category
       tags:
       - category
   /categories/random:
@@ -160,6 +134,10 @@ paths:
       - '*/*'
       description: Returns a list of clues
       parameters:
+      - description: Clue ID
+        in: query
+        name: id
+        type: integer
       - description: Game ID
         in: query
         name: game
@@ -167,16 +145,6 @@ paths:
       - description: Category ID
         in: query
         name: category
-        type: integer
-      - default: 1
-        description: Page number
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        name: size
         type: integer
       produces:
       - application/json
@@ -231,9 +199,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Clue'
-            type: array
+            $ref: '#/definitions/models.Clue'
         "500":
           description: Internal Server Error
           schema:
@@ -247,15 +213,9 @@ paths:
       - '*/*'
       description: Returns a list of games
       parameters:
-      - default: 1
-        description: Page number
+      - description: Game ID
         in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        name: size
+        name: id
         type: integer
       produces:
       - application/json
@@ -277,13 +237,14 @@ paths:
     get:
       consumes:
       - '*/*'
+      description: Returns a game
       parameters:
-      - default: "7040"
+      - default: 7040
         description: Game ID
         in: path
         name: gameID
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -295,12 +256,11 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
+      summary: Returns a game
       tags:
       - game
   /games/random:
     get:
-      consumes:
-      - '*/*'
       description: Returns a random game
       produces:
       - application/json
@@ -308,9 +268,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Game'
-            type: array
+            $ref: '#/definitions/models.Game'
         "500":
           description: Internal Server Error
           schema:
@@ -334,4 +292,6 @@ paths:
       summary: Show the status of server
       tags:
       - root
+schemes:
+- http
 swagger: "2.0"

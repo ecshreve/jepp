@@ -3,46 +3,37 @@ package server
 import (
 	"encoding/json"
 
+	mods "github.com/ecshreve/jepp/pkg/models"
+	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/samsarahq/go/oops"
 )
 
-// registerUIHandlers registers route handlers for the UI.
-func (s *Server) registerUIHandlers() {
-	s.Router.StaticFile("style.css", "./static/style.css")
-	s.Router.StaticFile("favicon.ico", "./static/favicon.ico")
-
-	s.Router.LoadHTMLGlob("pkg/server/templates/prod/*")
-
-	s.Router.GET("/", s.BaseUIHandler)
-	s.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-}
-
 // BaseUIHandler handles the base UI route.
-func (s *Server) BaseUIHandler(c *gin.Context) {
-	clue, err := s.DB.GetRandomClue(nil)
+func BaseUIHandler(c *gin.Context) {
+	clue, err := mods.GetRandomClue()
 	if err != nil {
 		c.JSON(400, gin.H{"error": "couldn't fetch random clue"})
 		return
 	}
 
-	cat, err := s.DB.GetCategory(clue.CategoryID)
+	cat, err := mods.GetCategory(clue.CategoryID)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
 		return
 	}
 
-	game, err := s.DB.GetGame(clue.GameID)
+	game, err := mods.GetGame(clue.GameID)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "couldn't fetch game for clue"})
+		utils.NewError(c, 400, oops.Wrapf(err, "couldn't fetch game for clue"))
 		return
 	}
 
 	clueJSON, _ := json.Marshal(clue)
+	numClues, _ := mods.NumClues()
 
 	c.HTML(200, "base.html.tpl", gin.H{
-		"Stats":    s.Stats,
+		"NumClues": numClues,
 		"Clue":     clue,
 		"ClueJSON": string(clueJSON),
 		"Game":     game,

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	mod "github.com/ecshreve/jepp/pkg/models"
+	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,7 +15,7 @@ import (
 var SeasonRE = regexp.MustCompile(`Season ([0-9]+)`)
 var SeasonDateRE = regexp.MustCompile(`([0-9]{4}-[0-9]{2}-[0-9]{2}) to ([0-9]{4}-[0-9]{2}-[0-9]{2})`)
 
-func scrapeSeasons() ([]*mod.Season, error) {
+func scrapeSeasons() ([]*mods.Season, error) {
 	seasonURLs := map[string]string{}
 	seasonDates := map[int64][]string{}
 
@@ -51,12 +51,12 @@ func scrapeSeasons() ([]*mod.Season, error) {
 
 	c.Visit("https://www.j-archive.com/listseasons.php")
 
-	seasons := []*mod.Season{}
+	seasons := []*mods.Season{}
 	for seasonNum, dates := range seasonDates {
 		st, _ := time.Parse("2006-01-02", dates[0])
 		et, _ := time.Parse("2006-01-02", dates[1])
 
-		seasons = append(seasons, &mod.Season{
+		seasons = append(seasons, &mods.Season{
 			SeasonID:  seasonNum,
 			StartDate: st,
 			EndDate:   et,
@@ -70,20 +70,20 @@ func scrapeSeasons() ([]*mod.Season, error) {
 	return seasons, nil
 }
 
-func fillSeasons(db *mod.JeppDB) {
+func fillSeasons(db *mods.JeppDB) {
 	seasons, err := scrapeSeasons()
 	if err != nil {
 		panic(err)
 	}
 
 	for _, season := range seasons {
-		if err := db.InsertSeason(season); err != nil {
+		if err := mods.InsertSeason(season); err != nil {
 			log.Fatal(err)
 		}
 	}
 }
 
-func scrapeSeasonGames(seasonID int64) ([]*mod.Game, error) {
+func scrapeSeasonGames(seasonID int64) ([]*mods.Game, error) {
 	var gameRE = regexp.MustCompile(`game_id=([0-9]+)`)
 	var metaRE = regexp.MustCompile(`#([0-9]+),.*aired.*([0-9]{4}-[0-9]{2}-[0-9]{2})`)
 	var tapedRE = regexp.MustCompile(`Taped.*([0-9]{4}-[0-9]{2}-[0-9]{2})`)
@@ -131,9 +131,9 @@ func scrapeSeasonGames(seasonID int64) ([]*mod.Game, error) {
 
 	c.Visit(fmt.Sprintf("https://www.j-archive.com/showseason.php?season=%d", seasonID))
 
-	games := []*mod.Game{}
+	games := []*mods.Game{}
 	for _, gid := range gameIDs {
-		games = append(games, &mod.Game{
+		games = append(games, &mods.Game{
 			GameID:    gid,
 			SeasonID:  seasonID,
 			ShowNum:   showNums[gid],
@@ -149,14 +149,14 @@ func scrapeSeasonGames(seasonID int64) ([]*mod.Game, error) {
 	return games, nil
 }
 
-func fillSeasonGames(db *mod.JeppDB, seasonID int64) {
+func fillSeasonGames(db *mods.JeppDB, seasonID int64) {
 	games, err := scrapeSeasonGames(seasonID)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, game := range games {
-		if err := db.InsertGame(game); err != nil {
+		if err := mods.InsertGame(game); err != nil {
 			log.Fatal(err)
 		}
 	}

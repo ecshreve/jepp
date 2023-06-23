@@ -3,17 +3,17 @@ package main
 import (
 	"fmt"
 
-	mod "github.com/ecshreve/jepp/pkg/models"
+	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
 )
 
 // scrapeGame scrapes a game from j-archive.com
-func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
-	clueMap := map[int64]*mod.Clue{}
+func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
+	clueMap := map[int64]*mods.Clue{}
 	clueStrings := map[int64]string{}
-	cats := map[mod.Round][]string{}
+	cats := map[mods.Round][]string{}
 
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -28,9 +28,9 @@ func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 
 		clueText := e.ChildText(fmt.Sprintf("td#%s", cid))
 		clueAnswer := e.ChildText(fmt.Sprintf("td#%s_r em.correct_response", cid))
-		clueId := mod.ParseClueID(cid, gameID)
+		clueId := mods.ParseClueID(cid, gameID)
 
-		clueMap[clueId] = &mod.Clue{ClueID: clueId, GameID: gameID, Question: clueText, Answer: clueAnswer}
+		clueMap[clueId] = &mods.Clue{ClueID: clueId, GameID: gameID, Question: clueText, Answer: clueAnswer}
 		clueStrings[clueId] = cid
 	})
 
@@ -39,7 +39,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
 			cc = append(cc, el.Text)
 		})
-		cats[mod.Jeopardy] = append(cats[mod.Jeopardy], cc...)
+		cats[mods.Jeopardy] = append(cats[mods.Jeopardy], cc...)
 	})
 
 	c.OnHTML("div[id=double_jeopardy_round]", func(e *colly.HTMLElement) {
@@ -47,7 +47,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
 			cc = append(cc, el.Text)
 		})
-		cats[mod.DoubleJeopardy] = append(cats[mod.DoubleJeopardy], cc...)
+		cats[mods.DoubleJeopardy] = append(cats[mods.DoubleJeopardy], cc...)
 	})
 
 	c.OnHTML("div[id=final_jeopardy_round]", func(e *colly.HTMLElement) {
@@ -55,7 +55,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 		e.ForEach("td.category_name", func(_ int, el *colly.HTMLElement) {
 			cc = append(cc, el.Text)
 		})
-		cats[mod.FinalJeopardy] = append(cats[mod.FinalJeopardy], cc...)
+		cats[mods.FinalJeopardy] = append(cats[mods.FinalJeopardy], cc...)
 	})
 
 	// Before making a request print "Visiting ..."
@@ -69,24 +69,24 @@ func scrapeGameClues(gameID int64) (map[int64]*mod.Clue, map[int64]string) {
 
 	for clueId, clueStr := range clueStrings {
 		rd, col := utils.ParseRoundAndColumn(clueStr)
-		catName := cats[mod.Round(rd)][col-1]
+		catName := cats[mods.Round(rd)][col-1]
 		catMap[clueId] = catName
 	}
 
 	return clueMap, catMap
 }
 
-func scrapeAndFillCluesForGame(db *mod.JeppDB, gid int64) int {
+func scrapeAndFillCluesForGame(db *mods.JeppDB, gid int64) int {
 	clues, cats := scrapeGameClues(gid)
 
 	for clueID, clue := range clues {
-		actual, _ := db.GetCategoryByName(cats[clueID])
-		if actual != nil {
+		actual, err := mods.GetCategoryByName(cats[clueID])
+		if err != nil {
 			clue.CategoryID = actual.CategoryID
 			continue
 		}
 
-		inserted, err := db.InsertCategory(cats[clueID])
+		inserted, err := mods.InsertCategory(cats[clueID])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -94,7 +94,7 @@ func scrapeAndFillCluesForGame(db *mod.JeppDB, gid int64) int {
 	}
 
 	for _, clue := range clues {
-		if err := db.InsertClue(clue); err != nil {
+		if err := mods.InsertClue(clue); err != nil {
 			log.Fatal(err)
 		}
 	}

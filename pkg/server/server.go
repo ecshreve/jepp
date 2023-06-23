@@ -1,72 +1,67 @@
 package server
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/benbjohnson/clock"
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
-	"github.com/samsarahq/go/oops"
-	ginprometheus "github.com/zsais/go-gin-prometheus"
+	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
-
-type QuizSession struct {
-	Clues     []*models.Clue
-	Correct   int64
-	Incorrect int64
-	Total     int64
-}
 
 // Server is the API server.
 type Server struct {
 	ID     string
-	Router *gin.Engine
 	Clock  clock.Clock
-	DB     *models.JeppDB
-	Stats  *models.Stats
-	QZ     *QuizSession
+	Router *gin.Engine
+	JDB    *sqlx.DB
 }
 
 // NewServer returns a new API server.
 func NewServer() *Server {
-	dbname := "jeppdb"
-	dbuser := "jepp-user"
-	dbpass := os.Getenv("DB_PASS")
-	dbaddr := fmt.Sprintf("%s:3306", os.Getenv("DB_HOST"))
-
-	jdb := models.NewDB(dbname, dbuser, dbpass, dbaddr)
-	stats, _ := jdb.GetStats()
-
-	// Expose prometheus metrics on /metrics.
-	r := gin.Default()
-	p := ginprometheus.NewPrometheus("gin")
-	p.Use(r)
-
 	s := &Server{
-		ID:     "SERVER",
-		Router: r,
-		Clock:  clock.New(),
-		DB:     jdb,
-		Stats:  stats,
+		ID:    "SERVER",
+		Clock: clock.New(),
+		JDB:   models.GetDBHandle(),
 	}
+	s.Router = registerHandlers()
 
-	s.registerAPIHandlers()
-	s.registerUIHandlers()
-
+	// TODO: fix this
 	if os.Getenv("JEPP_LOCAL_DEV") == "true" {
-		s.registerDevHandlers()
+		registerDevHandlers()
 	}
 
+	log.Infof("Server %#v created", s)
 	return s
 }
 
-// Serve starts the server.
-func (s *Server) Serve() error {
-	// err := s.Router.Run(":8880")
-	err := s.Router.RunTLS(":8880", "pkg/server/certs/server.pem", "pkg/server/certs/server.key")
-	if err != nil {
-		return oops.Wrapf(err, "gin server returned error")
-	}
-	return nil
+func registerHandlers() *gin.Engine {
+	r := gin.Default()
+	r.StaticFile("style.css", "./static/style.css")
+	r.StaticFile("favicon.ico", "./static/favicon.ico")
+	r.StaticFile("swagger.json", "./docs/swagger.json")
+
+	r.LoadHTMLGlob("pkg/server/templates/prod/*")
+
+	r.GET("/ui", BaseUIHandler)
+	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	api := r.Group("/api")
+	api.GET("", BaseHandler)
+	api.GET("/ping", PingHandler)
+
+	api.GET("/clues", CluesHandler)
+	api.GET("/games", GamesHandler)
+	api.GET("/categories", CategoriesHandler)
+
+	api.GET("/random/game", RandomGameHandler)
+	api.GET("/random/category", RandomCategoryHandler)
+	api.GET("/random/clue", RandomClueHandler)
+
+	// if err := r.SetTrustedProxies(nil); err != nil {
+	// 	log.Error(oops.Wrapf(err, "unable to set proxies"))
+	// }
+
+	return r
 }

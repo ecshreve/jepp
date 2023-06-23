@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"math/rand"
 	"time"
 
 	"github.com/samsarahq/go/oops"
@@ -26,7 +25,7 @@ func (g Game) String() string {
 }
 
 // InsertGame inserts a game into the database.
-func (db *JeppDB) InsertGame(g *Game) error {
+func InsertGame(g *Game) error {
 	if g == nil {
 		return nil
 	}
@@ -46,55 +45,50 @@ func (db *JeppDB) InsertGame(g *Game) error {
 	return nil
 }
 
-// ListGames returns a list of games in the database, defaults to returning
-// values ordered by game date, with most recent first.
-func (db *JeppDB) ListGames(params *PaginationParams) ([]*Game, error) {
-	pageSize := params.PageSize
-	offset := (params.Page - 1) * params.PageSize
+// GetGames returns a list of games in the database, defaults to returning
+// values ordered by game date, with most recent first, limited to 100 results.
+//
+// TODO: have this take a "lastClueID" arg or something for dumb pagination.
+func GetGames() ([]Game, error) {
+	games := []Game{}
 
-	var games []*Game
-	if err := db.Select(&games, "SELECT * FROM game ORDER BY game_date DESC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
+	if err := db.Select(&games, "SELECT * FROM game ORDER BY game_date DESC LIMIT 100"); err != nil {
 		return nil, oops.Wrapf(err, "could not list games")
-	}
-
-	if len(games) == 0 {
-		return nil, nil
 	}
 
 	return games, nil
 }
 
 // GetGamesBySeason returns a list of games in the database for a given season.
-func (db *JeppDB) GetGamesBySeason(seasonID int64) ([]*Game, error) {
-	var games []*Game
-	if err := db.Select(&games, "SELECT * FROM game WHERE season_id = ?", seasonID); err != nil {
-		return nil, oops.Wrapf(err, "could not get games for season %d", seasonID)
-	}
+func GetGamesBySeason(seasonID int64) ([]Game, error) {
+	query := fmt.Sprintf("SELECT * FROM game WHERE season_id=%d", seasonID)
 
-	if len(games) == 0 {
-		return nil, nil
+	games := []Game{}
+	if err := db.Select(&games, query); err != nil {
+		return nil, oops.Wrapf(err, "could not get games for season %d", seasonID)
 	}
 
 	return games, nil
 }
 
 // GetGame returns a single game from the database.
-func (db *JeppDB) GetGame(gameID int64) (*Game, error) {
-	var game Game
-	if err := db.Get(&game, "SELECT * FROM game WHERE game_id = ?", gameID); err != nil {
+func GetGame(gameID int64) (*Game, error) {
+	query := fmt.Sprintf("SELECT * FROM game WHERE game_id=%d LIMIT 1", gameID)
+
+	g := Game{}
+	if err := db.Get(&g, query); err != nil {
 		return nil, oops.Wrapf(err, "could not get game %d", gameID)
 	}
 
-	return &game, nil
+	return &g, nil
 }
 
-// GetGame returns a single game from the database.
-func (db *JeppDB) GetRandomGame() (*Game, error) {
-	var allGameIDs []int64
-	if err := db.Select(&allGameIDs, "SELECT game_id FROM game"); err != nil {
+// GetRandomGame returns a single game from the database.
+func GetRandomGame() (*Game, error) {
+	g := Game{}
+	if err := db.Get(&g, "SELECT * FROM game ORDER BY RAND() LIMIT 1"); err != nil {
 		return nil, oops.Wrapf(err, "getting gid")
 	}
 
-	gameID := allGameIDs[rand.Int63n(int64(len(allGameIDs)))]
-	return db.GetGame(gameID)
+	return &g, nil
 }

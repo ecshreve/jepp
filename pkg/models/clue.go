@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
@@ -46,7 +45,8 @@ func (c *Clue) String() string {
 }
 
 // InsertClue inserts a clue into the database.
-func (db *JeppDB) InsertClue(c *Clue) error {
+func InsertClue(c *Clue) error {
+
 	if c == nil {
 		return nil
 	}
@@ -66,7 +66,7 @@ func (db *JeppDB) InsertClue(c *Clue) error {
 }
 
 // UpdateClue updates a category in the database.
-func (db *JeppDB) UpdateClue(c *Clue) error {
+func UpdateClue(c *Clue) error {
 	if c == nil {
 		return nil
 	}
@@ -85,121 +85,68 @@ func (db *JeppDB) UpdateClue(c *Clue) error {
 	return nil
 }
 
-// GetAllClues eturns all clues in the database.
-func (db *JeppDB) GetAllClues() ([]*Clue, error) {
-	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue"); err != nil {
-		return nil, oops.Wrapf(err, "could not get all clues")
-	}
-
-	if len(clues) == 0 {
-		return nil, nil
-	}
-
-	return clues, nil
-}
-
-// GetCluesForGame returns all clues for a given game.
-func (db *JeppDB) GetCluesForGame(gameId string) ([]*Clue, error) {
-	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue WHERE game_id = ? ORDER BY clue_id ASC", gameId); err != nil {
-		return nil, oops.Wrapf(err, "could not get clues for game_id %s", gameId)
-	}
-
-	if len(clues) == 0 {
-		return nil, nil
-	}
-
-	return clues, nil
-}
-
-// GetCluesForCategory returns all clues for a given category.
-func (db *JeppDB) GetCluesForCategory(category_id int64) ([]*Clue, error) {
-	var clues []*Clue
-	if err := db.Select(&clues, "SELECT * FROM clue WHERE category_id = ? ORDER BY clue_id ASC", category_id); err != nil {
-		return nil, oops.Wrapf(err, "could not get clues for category %d", category_id)
-	}
-
-	if len(clues) == 0 {
-		return nil, nil
-	}
-
-	return clues, nil
-}
-
 type CluesParams struct {
 	GameID     int64
 	CategoryID int64
-	*PaginationParams
 }
 
 // ListClues returns a list of clues in the database, defaults to returning
 // values ordered by game date, with most recent first.
-func (db *JeppDB) ListClues(params CluesParams) ([]*Clue, error) {
-	if params.PaginationParams == nil {
-		params.PaginationParams = &PaginationParams{
-			Page:     1,
-			PageSize: 100,
-		}
-	}
-
-	queryArgs := []interface{}{}
-	baseQuery := "SELECT * FROM clue"
+func GetClues(params CluesParams) ([]Clue, error) {
+	query := "SELECT * FROM clue"
 
 	if params.GameID != 0 {
-		baseQuery += " WHERE game_id = ?"
-		queryArgs = append(queryArgs, params.GameID)
+		query += fmt.Sprintf(" WHERE game_id=%d", params.GameID)
 	}
 
 	if params.CategoryID != 0 {
-		if len(queryArgs) > 0 {
-			baseQuery += " AND"
+		if params.GameID != 0 {
+			query += " AND"
 		} else {
-			baseQuery += " WHERE"
+			query += " WHERE"
 		}
 
-		baseQuery += " category_id = ?"
-		queryArgs = append(queryArgs, params.CategoryID)
+		query += fmt.Sprintf(" category_id=%d", params.CategoryID)
 	}
+	query += " ORDER BY clue_id DESC LIMIT 100"
+	log.Debug("query: ", query)
 
-	pageSize := params.PageSize
-	offset := (params.Page - 1) * params.PageSize
-	queryArgs = append(queryArgs, pageSize, offset)
-	baseQuery += " ORDER BY clue_id DESC LIMIT ? OFFSET ?"
-
-	var clues []*Clue
-	if err := db.Select(&clues, baseQuery, queryArgs...); err != nil {
+	var clues []Clue
+	if err := db.Select(&clues, query); err != nil {
 		return nil, oops.Wrapf(err, "could not list clues")
-	}
-
-	if len(clues) == 0 {
-		return nil, nil
 	}
 
 	return clues, nil
 }
 
 // GetClue returns a single clue from the database.
-func (db *JeppDB) GetClue(clueID int64) (*Clue, error) {
-	var clue Clue
-	if err := db.Get(&clue, "SELECT * FROM clue WHERE clue_id = ?", clueID); err != nil {
+func GetClue(clueID int64) (*Clue, error) {
+	query := fmt.Sprintf("SELECT * FROM clue WHERE clue_id=%d ORDER BY clue_id DESC LIMIT 1", clueID)
+
+	c := Clue{}
+	if err := db.Get(&c, query); err != nil {
 		return nil, oops.Wrapf(err, "could not get clue %d", clueID)
 	}
 
-	return &clue, nil
+	return &c, nil
 }
 
 // GetClue returns a single clue from the database.
-func (db *JeppDB) GetRandomClue(clueOptions []*Clue) (*Clue, error) {
-	if len(clueOptions) > 0 {
-		return clueOptions[rand.Intn(len(clueOptions))], nil
+func GetRandomClue() (*Clue, error) {
+	c := Clue{}
+	if err := db.Get(&c, "SELECT * FROM clue ORDER BY RAND() LIMIT 1"); err != nil {
+		return nil, oops.Wrapf(err, "getting random clue")
 	}
 
-	var allClueIDs []int64
-	if err := db.Select(&allClueIDs, "SELECT clue_id FROM clue"); err != nil {
-		return nil, oops.Wrapf(err, "getting clue ids")
+	return &c, nil
+}
+
+// NumClues returns the number of clues in the database.
+func NumClues() (int64, error) {
+	var count int64
+	if err := db.Get(&count, "SELECT COUNT(*) FROM clue"); err != nil {
+		return 0, oops.Wrapf(err, "could not get count of clues")
 	}
 
-	clueID := allClueIDs[rand.Int63n(int64(len(allClueIDs)))]
-	return db.GetClue(clueID)
+	return count, nil
 }

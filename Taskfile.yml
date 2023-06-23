@@ -33,15 +33,14 @@ tasks:
   api:docs:
     desc: Generates swagger docs for the API.
     generates:
-      - docs/swagger.json
-      - docs/swagger.yaml
-      - docs/docs.go
+      - vendor/*
     sources:
       - cmd/server/main.go
       - pkg/server/*.go
+      - pkg/server/templates/*
     cmds:
-      - swag init -d cmd/server,pkg/server,pkg/models,pkg/utils
       - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
+      - swag init --parseVendor -d cmd/server,pkg/server,pkg/models,pkg/utils
 
   build:
     desc: Builds both the scraper and server binaries.
@@ -60,9 +59,8 @@ tasks:
     desc: Runs the server.
     deps:
       - go:build:server
-      - api:docs
     sources:
-      - pkg/server/templates/*
-      - pkg/server/*.go
+      - pkg/*
+      - docs/*
     cmds:
       - bin/server

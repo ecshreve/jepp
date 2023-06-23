@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ecshreve/jepp/pkg/models"
+	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -19,31 +19,40 @@ import (
 //	@Tags			clue
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			game		query		int64	false	"Game ID"
-//	@Param			category	query		int64	false	"Category ID"
-//	@Param			page		query		int		false	"Page number"	default(1)
-//	@Param			size		query		int		false	"Page size"		default(10)
+//	@Param			id			query		integer	false	"Clue ID"
+//	@Param			game		query		integer	false	"Game ID"
+//	@Param			category	query		integer	false	"Category ID"
 //	@Success		200			{array}		models.Clue
 //	@Failure		500			{object}	utils.HTTPError
 //	@Router			/clues [get]
-func (s *Server) CluesHandler(c *gin.Context) {
+func CluesHandler(c *gin.Context) {
+	clueIDStr := c.DefaultQuery("id", "")
+	if clueIDStr != "" {
+		clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
+		clue, err := mods.GetClue(clueID)
+		if err != nil {
+			log.Error(oops.Wrapf(err, "unable to get clue %d", clueID))
+			utils.NewError(c, http.StatusBadRequest, err)
+			return
+		}
+
+		cc := []mods.Clue{*clue}
+		c.JSON(http.StatusOK, cc)
+		return
+	}
+
 	gameIDStr := c.Query("game")
 	gameID, _ := strconv.ParseInt(gameIDStr, 10, 64)
 
 	categoryIDStr := c.Query("category")
 	categoryID, _ := strconv.ParseInt(categoryIDStr, 10, 64)
 
-	page := c.GetInt("page")
-	size := c.GetInt("size")
-	paginationParams := models.PaginationParams{Page: page, PageSize: size}
-
-	cluesParams := &models.CluesParams{
-		GameID:           gameID,
-		CategoryID:       categoryID,
-		PaginationParams: &paginationParams,
+	cluesParams := &mods.CluesParams{
+		GameID:     gameID,
+		CategoryID: categoryID,
 	}
 
-	clues, err := s.DB.ListClues(*cluesParams)
+	clues, err := mods.GetClues(*cluesParams)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clues"))
 		utils.NewError(c, http.StatusBadRequest, err)
@@ -53,49 +62,24 @@ func (s *Server) CluesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, clues)
 }
 
-// ClueHandler godoc
-//
-//	@Summary		Returns a clue
-//	@Description	Returns a clue
-//
-//	@Tags			clue
-//	@Accept			*/*
-//	@Produce		json
-//	@Param			clueID	path		int64	true	"Clue ID"	default(708002056)
-//	@Success		200		{object}	models.Clue
-//	@Failure		500		{object}	utils.HTTPError
-//	@Router			/clues/{clueID} [get]
-func (s *Server) ClueHandler(c *gin.Context) {
-	clueIDStr := c.Param("clueID")
-	clueID, _ := strconv.ParseInt(clueIDStr, 10, 64)
-	clue, err := s.DB.GetClue(clueID)
-	if err != nil {
-		log.Error(oops.Wrapf(err, "unable to get clue %d", clueID))
-		utils.NewError(c, http.StatusBadRequest, err)
-		return
-	}
-
-	c.JSON(200, clue)
-}
-
 // RandomClueHandler godoc
 //
 //	@Summary		Returns a random clue
 //	@Description	Returns a random clue
 //
-//	@Tags			clue
+//	@Tags			random
 //	@Accept			*/*
 //	@Produce		json
-//	@Success		200	{array}		models.Clue
+//	@Success		200	{object}	models.Clue
 //	@Failure		500	{object}	utils.HTTPError
-//	@Router			/clues/random [get]
-func (s *Server) RandomClueHandler(c *gin.Context) {
-	clue, err := s.DB.GetRandomClue(nil)
+//	@Router			/random/clue [get]
+func RandomClueHandler(c *gin.Context) {
+	clue, err := mods.GetRandomClue()
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get random clue"))
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(200, clue)
+	c.JSON(http.StatusOK, clue)
 }

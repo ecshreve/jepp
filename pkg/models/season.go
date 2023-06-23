@@ -20,7 +20,8 @@ func (s Season) String() string {
 }
 
 // InsertSeason inserts a season into the database.
-func (db *JeppDB) InsertSeason(s *Season) error {
+func InsertSeason(s *Season) error {
+
 	if s == nil {
 		return nil
 	}
@@ -41,7 +42,8 @@ func (db *JeppDB) InsertSeason(s *Season) error {
 
 // GetSeasons returns a list of seasons in the database, defaults to returning
 // values ordered by season id, with most recent first.
-func (db *JeppDB) GetSeasons(params *PaginationParams) ([]*Season, error) {
+func GetSeasons(params *PaginationParams) ([]*Season, error) {
+
 	pageSize := params.PageSize
 	offset := (params.Page - 1) * params.PageSize
 
@@ -53,5 +55,6 @@ func (db *JeppDB) GetSeasons(params *PaginationParams) ([]*Season, error) {
 	if len(seasons) == 0 {
 		return nil, nil
 	}
+
 	return seasons, nil
 }
