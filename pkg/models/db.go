@@ -36,21 +36,8 @@ func GetDBHandle() *sqlx.DB {
 	cfg.ParseTime = true
 	cfg.MaxAllowedPacket = 64 << 20
 
-	// Capture connection properties.
-	// cfg = mysql.Config{
-	// 	User:                 dbuser,
-	// 	Passwd:               dbpass,
-	// 	Net:                  "tcp",
-	// 	Addr:                 dbaddr,
-	// 	DBName:               dbname,
-	// 	AllowNativePasswords: true,
-	// 	ParseTime:            true,
-	// 	MaxAllowedPacket: 64 << 20,
-	// }
-
 	// Get a database handle.
-	dbx := sqlx.MustOpen("mysql", cfg.FormatDSN())
-	db = dbx
+	db = sqlx.MustOpen("mysql", cfg.FormatDSN())
 	return db
 }
 

@@ -111,7 +111,7 @@ func GetClues(params CluesParams) ([]Clue, error) {
 	query += " ORDER BY clue_id DESC LIMIT 100"
 	log.Debug("query: ", query)
 
-	var clues []Clue
+	clues := []Clue{}
 	if err := db.Select(&clues, query); err != nil {
 		return nil, oops.Wrapf(err, "could not list clues")
 	}
@@ -141,11 +141,11 @@ func GetRandomClue() (*Clue, error) {
 	return &c, nil
 }
 
-// NumClues returns the number of clues in the database.
-func NumClues() (int64, error) {
+// CountClues returns the number of clues in the database.
+func CountClues() (int64, error) {
 	var count int64
 	if err := db.Get(&count, "SELECT COUNT(*) FROM clue"); err != nil {
-		return 0, oops.Wrapf(err, "could not get count of clues")
+		return -1, oops.Wrapf(err, "could not get count of clues")
 	}
 
 	return count, nil

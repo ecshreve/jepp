@@ -93,10 +93,6 @@ func GetCategories() ([]Category, error) {
 		return nil, oops.Wrapf(err, "could not get all categories")
 	}
 
-	if len(categories) == 0 {
-		return nil, nil
-	}
-
 	return categories, nil
 }
 
@@ -104,7 +100,7 @@ func GetCategories() ([]Category, error) {
 func GetCategory(categoryID int64) (*Category, error) {
 	query := fmt.Sprintf("SELECT * FROM category WHERE category_id=%d ORDER BY category_id DESC LIMIT 1", categoryID)
 
-	var c Category
+	c := Category{}
 	if err := db.Get(&c, query); err != nil {
 		return nil, oops.Wrapf(err, "could not get category for id %d", categoryID)
 	}
@@ -126,8 +122,7 @@ func GetCategoryByName(categoryName string) (*Category, error) {
 
 // GetRandomCategory returns a single category from the database.
 func GetRandomCategory() (*Category, error) {
-	var c Category
-
+	c := Category{}
 	if err := db.Get(&c, "SELECT * FROM category ORDER BY RAND() LIMIT 1"); err != nil {
 		return nil, oops.Wrapf(err, "getting random category")
 	}
@@ -138,13 +133,8 @@ func GetRandomCategory() (*Category, error) {
 // GetCategoriesForGame returns all categories for a given game.
 func GetCategoriesForGame(gameID int64) ([]Category, error) {
 	var categories []Category
-
 	if err := db.Select(&categories, "SELECT clue.category_id, category.name FROM clue JOIN category ON clue.category_id = category.category_id WHERE game_id=? GROUP BY category_id", gameID); err != nil {
 		return nil, oops.Wrapf(err, "could not get categories for game %d", gameID)
-	}
-
-	if len(categories) == 0 {
-		return nil, nil
 	}
 
 	return categories, nil

@@ -32,7 +32,7 @@ func BaseUIHandler(c *gin.Context) {
 
 	// TODO: validation
 	clueJSON, _ := json.Marshal(clue)
-	numClues, _ := mods.NumClues()
+	numClues, _ := mods.CountClues()
 
 	c.HTML(200, "base.html.tpl", gin.H{
 		"NumClues": numClues,

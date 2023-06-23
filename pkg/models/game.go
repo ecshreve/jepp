@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// TIME_FORMAT is the format used for friendly date strings. This is the format
+// used by j-archive.
 const TIME_FORMAT = "Monday, January 2, 2006"
 
 // Game represents a single game of Jeopardy.
@@ -51,7 +53,6 @@ func InsertGame(g *Game) error {
 // TODO: have this take a "lastClueID" arg or something for dumb pagination.
 func GetGames() ([]Game, error) {
 	games := []Game{}
-
 	if err := db.Select(&games, "SELECT * FROM game ORDER BY game_date DESC LIMIT 100"); err != nil {
 		return nil, oops.Wrapf(err, "could not list games")
 	}

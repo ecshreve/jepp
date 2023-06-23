@@ -3,6 +3,7 @@
 [![Go](https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg)](https://github.com/ecshreve/jepp/actions/workflows/go.yml)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ecshreve/jepp)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ecshreve/jepp)](https://goreportcard.com/report/github.com/ecshreve/jepp)
+[![GoDoc](https://godoc.org/github.com/ecshreve/jepp?status.svg)](https://godoc.org/github.com/ecshreve/jepp)
 
 ---
 
@@ -30,7 +31,7 @@ type Clue struct {
 
 ### ui
 
-- the ui is served from the `/ui` endpoint and is a simple html page that displays the swagger docs
+- the ui is served from the `/` and `/ui` endpoints and is a simple html page that displays the swagger docs
   and some basic info
 - the embedded swagger ui provides runnable request / response examples and type references
 
@@ -80,6 +81,21 @@ the scraping happened in a few passes to get all the data
 - [jservice](https://jservice.io/)
 - [jservice repo](https://github.com/sottenad/jService)
 
-<hr>
+---
+
 <br>
-<a href="https://www.buymeacoffee.com/ecshreve" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 160px !important;" ></a>
+
+![cf](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=Cloudflare&logoColor=white)
+![do](https://img.shields.io/badge/Digital_Ocean-0080FF?style=for-the-badge&logo=DigitalOcean&logoColor=white)
+![ga](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![mysql](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![mariadb](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
+![dock](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+![swag](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white)
+![golan](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
+
+
+
+---
+
+<a href="https://www.buymeacoffee.com/ecshreve" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 25px !important;width: 100px !important;" ></a>

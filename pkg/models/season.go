@@ -42,18 +42,10 @@ func InsertSeason(s *Season) error {
 
 // GetSeasons returns a list of seasons in the database, defaults to returning
 // values ordered by season id, with most recent first.
-func GetSeasons(params *PaginationParams) ([]*Season, error) {
-
-	pageSize := params.PageSize
-	offset := (params.Page - 1) * params.PageSize
-
-	var seasons []*Season
-	if err := db.Select(&seasons, "SELECT * FROM season ORDER BY season_id DESC LIMIT ? OFFSET ?", pageSize, offset); err != nil {
+func GetSeasons() ([]Season, error) {
+	var seasons []Season
+	if err := db.Select(&seasons, "SELECT * FROM season ORDER BY season_id DESC LIMIT 100"); err != nil {
 		return nil, oops.Wrapf(err, "could not list seasons")
-	}
-
-	if len(seasons) == 0 {
-		return nil, nil
 	}
 
 	return seasons, nil
