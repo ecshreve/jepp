@@ -89,3 +89,9 @@ tasks:
       - docker-compose.yml
     cmds:
       - docker compose up -d
+
+  sql:dump:
+    desc: Dumps the database to a file.
+    cmds:
+      - mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} --column-statistics=0 --databases jeppdb > dump.sql
+      - gzip dump.sql
