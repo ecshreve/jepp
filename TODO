@@ -17,10 +17,12 @@ JEPP TODOS:
 
     rate-limiting:
       ☐ add rate limiting to api
+        - maybe not needed, rate limiting done via cloudflare
     
   chores:
     ☐ add test coverage
     ☐ godoc comments / release package
+      - added github action to dump sql and attach to release
     ☐ give endpoint descriptions a once over
     ☐ add codecov
     ☐ document deploy pipeline

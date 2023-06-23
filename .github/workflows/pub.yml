@@ -1,0 +1,40 @@
+
+name: Publish
+
+on:
+  push:
+    tags: [ "*" ]
+
+env:
+  REGISTRY: registry.digitalocean.com
+  IMAGE_NAME: jepp-app
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build image
+        run: docker compose build
+
+      - name: Tag image
+        run: |
+          docker tag jepp-app:latest registry.digitalocean.com/shreggie/jepp:latest
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Push image
+        run: |
+          docker push registry.digitalocean.com/shreggie/jepp:latest

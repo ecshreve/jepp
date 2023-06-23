@@ -80,6 +80,16 @@ tasks:
     cmds:
       - docker compose build
 
+  docker:push:
+    desc: Pushes the docker image to the digital ocean container registry.
+    deps:
+      - docker:build
+    sources:
+      - Dockerfile
+      - docker-compose.yml
+    cmds:
+      - docker push registry.digitalocean.com/shreggie/jepp:custom
+
   docker:run:
     desc: Runs the docker image.
     deps:

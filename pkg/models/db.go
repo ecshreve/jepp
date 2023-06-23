@@ -15,7 +15,7 @@ type JeppDB struct {
 	Conn *sqlx.DB
 }
 
-// NewDB returns a new database handle.
+// GetDBHandler returns a new database handle.
 func GetDBHandle() *sqlx.DB {
 	if db != nil {
 		return db
