@@ -376,7 +376,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
 	BasePath:         "/api",
-	Schemes:          []string{"http"},
+	Schemes:          []string{"https"},
 	Title:            "Jepp API Documentation",
 	Description:      "This is a simple api to access jeopardy data.",
 	InfoInstanceName: "swagger",

@@ -12,7 +12,7 @@ import (
 //	@description	This is a simple api to access jeopardy data.
 //	@version		1.0
 //	@basepath		/api
-//	@schemes		http
+//	@schemes		https
 //	@contact.name	shreve
 //	@license.name	MIT
 //	@license.url	https://github.com/ecshreve/jepp/blob/main/LICENSE
