@@ -16,11 +16,11 @@ const (
 	FinalJeopardy
 )
 
-var RoundMap = map[string]Round{
-	"J":  Jeopardy,
-	"DJ": DoubleJeopardy,
-	"FJ": FinalJeopardy,
-	"TB": FinalJeopardy,
+var RoundMap = map[string]int{
+	"J":  int(Jeopardy),
+	"DJ": int(DoubleJeopardy),
+	"FJ": int(FinalJeopardy),
+	"TB": int(FinalJeopardy),
 }
 
 // Clue represents a jeopardy clue in the database.

@@ -28,7 +28,7 @@ func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
 
 		clueText := e.ChildText(fmt.Sprintf("td#%s", cid))
 		clueAnswer := e.ChildText(fmt.Sprintf("td#%s_r em.correct_response", cid))
-		clueId := mods.ParseClueID(cid, gameID)
+		clueId := utils.ParseClueID(cid, gameID, mods.RoundMap)
 
 		clueMap[clueId] = &mods.Clue{ClueID: clueId, GameID: gameID, Question: clueText, Answer: clueAnswer}
 		clueStrings[clueId] = cid
