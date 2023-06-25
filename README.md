@@ -1,19 +1,21 @@
-# [jepp api](https://jepp.app)
+# [jepp](https://jepp.app)
+
+API fun with Jeopardy! Access >300k Jeopardy clues scraped from [j-archive] via a simple api.
+
 
 [![Go](https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg)](https://github.com/ecshreve/jepp/actions/workflows/go.yml)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ecshreve/jepp)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ecshreve/jepp)](https://goreportcard.com/report/github.com/ecshreve/jepp)
 [![GoDoc](https://godoc.org/github.com/ecshreve/jepp?status.svg)](https://godoc.org/github.com/ecshreve/jepp)
+![GitHub release (release name instead of tag name)](https://img.shields.io/github/v/release/ecshreve/jepp)
 
 ---
 
-api fun with jeopardy!
-
 ![jepp](static/repo/jepp-ui.png)
 
-## api
+# API
 
-- the api is a simple go web server built with [gin] that exposes a handful of endpoints to access the data
+- the api is a simple go web server built with [gin] that exposes a handful of endpoints to access jeopardy data
 - the shape of the data returned from the api aligns with the db schema, this is accomplished via various struct tags on the type definitions
 - for example, the `Clue` type is defined as follows:
 ```{golang}
@@ -29,35 +31,36 @@ type Clue struct {
 - the `json` struct tag is used by the [gin] library to map the struct fields to the json response
 - the `example` struct tag is used by the [swaggo] library to generate example responses for the swagger docs
 
-### ui
+### Frontend / UI
 
-- the ui is served from the `/` and `/ui` endpoints and is a simple html page that displays the swagger docs
-  and some basic info
+- the ui is served from the `/` endpoint and is a simple html page that displays the swagger docs and some other info
 - the embedded swagger ui provides runnable request / response examples and type references
 
-<hr>
-
-## db
-
-- getting the data into the database and cleaning it up after has been a manual process for the most part
-- for local development i set the `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME` environment variables to target a `mariadb/mysql` server running in my home lab (also experimented with defining the db service and build params in a docker compose file)
-- so personally i play with that local copy of the data, but for the public api i use a mysql db hosted on [digital ocean](https://www.digitalocean.com/products/managed-databases-mysql)
-  - to populate this db i first created a backup of my local db and then restored it to the digital ocean db through an [adminer](https://hub.docker.com/_/adminer/) ui running in my home lab
-
-## docs
+### Swagger Docs
 
 - swagger docs generated with [swaggo] and embedded in the /ui
   page as part of the html template
 - the `--parseVendor` was helpful here to generate the full `swagger.json` file that could be used
   in standalone mode by the ui
 
-## scraping
+# DB
+
+- getting the data into the database and cleaning it up after has been a manual process for the most part
+- for local development i set the `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME` environment variables to target a `mariadb/mysql` server running in my home lab (also experimented with defining the db service and build params in a docker compose file)
+- so personally i play with that local copy of the data, but for the public api i use a mysql db hosted on [digital ocean](https://www.digitalocean.com/products/managed-databases-mysql)
+  - to populate this db i first created a backup of my local db and then restored it to the digital ocean db through an [adminer](https://hub.docker.com/_/adminer/) ui running in my home lab
+
+
+
+# Data Scraping
 
 - the `scrape` package contains the code to scrape [j-archive]
   and write the data to a mysql database
-- [colly](https://github.com/gocolly/colly) is used to scrape the data
+- [colly] is used to scrape the data and [sqlx] is used to write the data to the db
 
-the scraping happened in a few passes to get all the data
+<br>
+
+_the scraping happened in a few passes to get all the data_
 - first pass was to get all the seasons and populate the seasons table
   - this scrape targeted the season [summary page on j-archive](https://www.j-archive.com/listseasons.php) and pulled the season number, start date, end date for each season
 - second pass was to get all the games for each season and populate the game table
@@ -78,6 +81,7 @@ the scraping happened in a few passes to get all the data
 [gin]: <https://github.com/gin-gonic/gin>
 [swaggo]: <https://github.com/swaggo/swag>
 [j-archive]: <https://www.j-archive.com/>
+[colly]: <https://github.com/gocolly/colly>
 - [jservice](https://jservice.io/)
 - [jservice repo](https://github.com/sottenad/jService)
 

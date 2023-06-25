@@ -57,10 +57,14 @@ func registerHandlers() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api")
-	api.GET("/", BaseAPIHandler)
 	api.GET("/clue", ClueHandler)
 	api.GET("/game", GameHandler)
 	api.GET("/category", CategoryHandler)
+
+	// Basic health check endpoint.
+	api.GET("/status", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{"status": "ok"})
+	})
 
 	// if err := r.SetTrustedProxies(nil); err != nil {
 	// 	log.Error(oops.Wrapf(err, "unable to set proxies"))

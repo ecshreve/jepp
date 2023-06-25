@@ -37,7 +37,7 @@ tasks:
     generates:
       - bin/server
     sources:
-      - pkg/**/*.go
+      - pkg/*
       - cmd/server/main.go
     cmds:
       - go build -o bin/server github.com/ecshreve/jepp/cmd/server
@@ -55,7 +55,8 @@ tasks:
       - go:build:server
     sources:
       - cmd/server/*
-      - pkg/server/*
+      - pkg/server/*.go
+      - pkg/server/templates/**/*
       - pkg/models/*
       - pkg/utils/*
     cmds:

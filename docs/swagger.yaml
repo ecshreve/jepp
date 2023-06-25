@@ -64,23 +64,6 @@ info:
   title: Jepp API Documentation
   version: "1.0"
 paths:
-  /:
-    get:
-      consumes:
-      - '*/*'
-      description: List available endpoints
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: list of available endpoints
-          schema:
-            items:
-              type: string
-            type: array
-      summary: Base api handler
-      tags:
-      - root
   /category:
     get:
       consumes:

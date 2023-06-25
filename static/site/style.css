@@ -37,7 +37,7 @@
   border-radius: 15px; 
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.5);
   border-radius: 5px;
-  margin-right: 20px;
+  margin-left: 20px;
   flex: 2;
 }
 
@@ -88,6 +88,12 @@ img {
   box-shadow: 0 20px 20px 0 rgba(0,0,0,0.9);
 }
 
+.ghcustom:hover {
+  cursor: pointer;
+  box-shadow: 0 20px 20px 0 rgba(0,0,0,0.9);
+  border-radius: 5px;
+}
+
 .score-but {
   flex: 1;
   padding: 5px;
@@ -125,4 +131,8 @@ img {
 
 .rand-clue:hover {
   cursor: pointer;
+}
+
+#swagger-ui .info {
+  margin: 0px;
 }
