@@ -13,6 +13,13 @@ type Category struct {
 	Name       string `db:"name" json:"name" example:"State Capitals"`
 }
 
+func (c *Category) Dump() []string {
+	ret := make([]string, 2)
+	ret[0] = fmt.Sprintf("%d", c.CategoryID)
+	ret[1] = c.Name
+	return ret
+}
+
 // GetCategoryGameCount returns the number of games a category has appeared in.
 func GetCategoryGameCount(categoryID int64) (int64, error) {
 

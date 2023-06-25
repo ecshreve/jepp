@@ -1,9 +1,7 @@
 jepp-env/
-data/
 bin/
 .task/
 jepp_scraper/
 cache/
 .env
 */**/certs
-dump.*

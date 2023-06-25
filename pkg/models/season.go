@@ -14,6 +14,14 @@ type Season struct {
 	EndDate   time.Time `db:"end_date" json:"endDate" example:"2002-07-26T00:00:00Z"`
 }
 
+func (s *Season) Dump() []string {
+	ret := make([]string, 3)
+	ret[0] = fmt.Sprintf("%d", s.SeasonID)
+	ret[1] = s.StartDate.Format(TIME_FORMAT)
+	ret[2] = s.EndDate.Format(TIME_FORMAT)
+	return ret
+}
+
 // String implements fmt.Stringer for the Season type.
 func (s Season) String() string {
 	return fmt.Sprintf("Season %d :: ", s.SeasonID) + s.StartDate.Format(TIME_FORMAT) + " - " + s.EndDate.Format(TIME_FORMAT)

@@ -21,6 +21,16 @@ type Game struct {
 	TapedDate time.Time `db:"taped_date" json:"tapedDate" example:"2019-01-01"`
 }
 
+func (g *Game) Dump() []string {
+	ret := make([]string, 5)
+	ret[0] = fmt.Sprintf("%d", g.GameID)
+	ret[1] = fmt.Sprintf("%d", g.SeasonID)
+	ret[2] = fmt.Sprintf("%d", g.ShowNum)
+	ret[3] = g.GameDate.Format(TIME_FORMAT)
+	ret[4] = g.TapedDate.Format(TIME_FORMAT)
+	return ret
+}
+
 // String implements fmt.Stringer for the Game type.
 func (g Game) String() string {
 	return fmt.Sprintf("ID: %d -- Show: %d - Aired: %s", g.GameID, g.ShowNum, g.GameDate.Format(TIME_FORMAT))
