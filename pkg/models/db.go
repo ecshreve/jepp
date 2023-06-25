@@ -40,12 +40,3 @@ func GetDBHandle() *sqlx.DB {
 	db = sqlx.MustOpen("mysql", cfg.FormatDSN())
 	return db
 }
-
-// InitDB initializes the database.
-//
-// Not currently used. I manually create tables in Adminer.
-// func (db *JeppDB) initDB() {
-// 	db.MustExec(GAME_SCHEMA)
-// 	db.MustExec(CLUE_SCHEMA)
-// 	db.MustExec(CATEGORY_SCHEMA)
-// }

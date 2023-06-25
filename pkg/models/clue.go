@@ -32,6 +32,17 @@ type Clue struct {
 	Answer     string `db:"answer" json:"answer" example:"This is the answer."`
 }
 
+func (c *Clue) Dump() []string {
+	ret := make([]string, 5)
+	ret[0] = fmt.Sprintf("%d", c.ClueID)
+	ret[1] = fmt.Sprintf("%d", c.GameID)
+	ret[2] = fmt.Sprintf("%d", c.CategoryID)
+	ret[3] = c.Question
+	ret[4] = c.Answer
+
+	return ret
+}
+
 func truncate(s string, n int) string {
 	if len(s) > n {
 		return s[:n]
