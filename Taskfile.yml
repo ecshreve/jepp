@@ -108,7 +108,6 @@ tasks:
   sql:dump:
     desc: Dumps the database to a file.
     cmds:
-      - rm dump.sql
-      - rm dump.sql.gz
       - mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} --skip-comments --column-statistics=0 --databases jeppdb > dump.sql
       - gzip dump.sql
+      - mv dump.sql.gz data/dump.sql.gz

@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	if os.Getenv("JEPP_LOCAL_DEV") != "true" {
+	if os.Getenv("JEPP_ENV") != "dev" {
 		log.Fatal("this script should only be run in a local development environment")
 	}
 	log.SetLevel(log.InfoLevel)

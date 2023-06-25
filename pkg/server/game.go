@@ -12,13 +12,17 @@ import (
 
 // GameHandler godoc
 //
-//	@Summary		Returns a list of games
-//	@Description	Returns a list of games
+//	@Summary		Fetch Games
+//	@Description	get games with optional filters
 //
 //	@Tags			api
-//	@Accept			*/*
+//	@Accept			json
 //	@Produce		json
-//	@Param			filter	query		Filter	false	"Filter games"
+//
+//	@Param			random	query		bool	false	"If exists or true, returns `limit` random records."
+//	@Param			id		query		int64	false	"If exists, returns the record with the given id."
+//	@Param			limit	query		int64	false	"Limit the number of records returned."	Default(10)
+//
 //	@Success		200		{array}		models.Game
 //	@Failure		500		{object}	utils.HTTPError
 //	@Router			/game [get]
@@ -55,7 +59,7 @@ func GameHandler(c *gin.Context) {
 		return
 	}
 
-	games, err := mods.GetGames()
+	games, err := mods.GetGames(*filter.Limit)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get games"))
 		utils.NewError(c, http.StatusBadRequest, err)

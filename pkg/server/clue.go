@@ -19,18 +19,20 @@ type ClueFilter struct {
 
 // ClueHandler godoc
 //
-//	@Summary		Returns a list of clues
-//	@Description	Returns a list of clues
+//	@Summary		Fetch Clues
+//	@Description	get clues with optional filters
 //
 //	@Tags			api
-//	@Accept			*/*
+//	@Accept			json
 //	@Produce		json
-//	@Param			random		query		bool	false	"Random Clue"
-//	@Param			id			query		integer	false	"Clue ID"
-//	@Param			game		query		integer	false	"Game ID"
-//	@Param			category	query		integer	false	"Category ID"
+//
+//	@Param			random		query		bool	false	"If exists or true, returns `limit` random records."
+//	@Param			id			query		int64	false	"If exists, returns the record with the given id."
+//	@Param			game		query		integer	false	"Filter by Game ID"
+//	@Param			category	query		integer	false	"Filter by Category ID"
+//	@Param			limit		query		int64	false	"Limit the number of records returned"	Default(10)
+//
 //	@Success		200			{array}		models.Clue
-//	@Failure		400			{object}	utils.HTTPError
 //	@Failure		500			{object}	utils.HTTPError
 //	@Router			/clue [get]
 func ClueHandler(c *gin.Context) {
