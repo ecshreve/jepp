@@ -93,3 +93,15 @@ func GetRandomGame() (*Game, error) {
 
 	return &g, nil
 }
+
+// GetRandomGameMany returns count random games from the database.
+func GetRandomGameMany(count int64) ([]Game, error) {
+	query := fmt.Sprintf("SELECT * FROM game ORDER BY RAND() LIMIT %d", count)
+
+	var gg []Game
+	if err := db.Get(&gg, query); err != nil {
+		return nil, oops.Wrapf(err, "getting random games")
+	}
+
+	return gg, nil
+}

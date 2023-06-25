@@ -36,6 +36,13 @@ func NewServer() *Server {
 	return s
 }
 
+type Filter struct {
+	Random *bool  `form:"random"`
+	ID     *int64 `form:"id"`
+	Page   *int64 `form:"page,default=0" binding:"min=0"`
+	Limit  *int64 `form:"limit,default=1" binding:"min=1,max=100"`
+}
+
 func registerHandlers() *gin.Engine {
 	r := gin.Default()
 	r.StaticFile("style.css", "./static/site/style.css")
@@ -43,23 +50,15 @@ func registerHandlers() *gin.Engine {
 	r.StaticFile("swagger.json", "./docs/swagger.json")
 
 	r.LoadHTMLGlob("pkg/server/templates/prod/*")
-
-	r.GET("/", BaseUIHandler)
-	r.GET("/ui", BaseUIHandler)
-
 	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	r.GET("/", BaseUIHandler)
+
 	api := r.Group("/api")
-	api.GET("/", BaseHandler)
-	api.GET("/ping", PingHandler)
-
-	api.GET("/clues", CluesHandler)
-	api.GET("/games", GamesHandler)
-	api.GET("/categories", CategoriesHandler)
-
-	api.GET("/random/game", RandomGameHandler)
-	api.GET("/random/category", RandomCategoryHandler)
-	api.GET("/random/clue", RandomClueHandler)
+	api.GET("/", BaseAPIHandler)
+	api.GET("/clue", ClueHandler)
+	api.GET("/game", GameHandler)
+	api.GET("/category", CategoryHandler)
 
 	// if err := r.SetTrustedProxies(nil); err != nil {
 	// 	log.Error(oops.Wrapf(err, "unable to set proxies"))

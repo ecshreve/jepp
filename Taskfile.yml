@@ -13,11 +13,21 @@ tasks:
     deps:
       - go:build:scraper
       - go:build:server
+      - go:build:genswag
 
   test:
     desc: Runs go tests
     cmds:
       - go test github.com/ecshreve/jepp/...
+
+  go:build:genswag:
+    desc: Builds the genswag binary.
+    generates:
+      - bin/genswag
+    sources:
+      - cmd/genswag/*.go
+    cmds:
+      - go build -o bin/genswag github.com/ecshreve/jepp/cmd/genswag
 
   go:build:scraper:
     desc: Builds the scraper binary.
@@ -33,26 +43,16 @@ tasks:
 
   go:build:server:
     desc: Builds the server binary.
+    deps:
+      - genswag
     generates:
       - bin/server
     sources:
       - pkg/**/*.go
-      - cmd/server/*.go
+      - cmd/server/main.go
     cmds:
       - go build -o bin/server github.com/ecshreve/jepp/cmd/server
 
-  api:docs:
-    desc: Generates swagger docs for the API.
-    generates:
-      - vendor/*
-    sources:
-      - cmd/server/main.go
-      - pkg/server/*.go
-      - pkg/server/templates/*
-    cmds:
-      - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
-      - swag init --parseVendor -d cmd/server,pkg/server,pkg/models,pkg/utils
-  
   scrape:
     desc: Runs the scraper.
     deps:
@@ -65,10 +65,25 @@ tasks:
     deps:
       - go:build:server
     sources:
-      - pkg/*
-      - docs/*
+      - cmd/server/*
+      - pkg/server/*
+      - pkg/models/*
+      - pkg/utils/*
     cmds:
       - bin/server
+
+  genswag:
+    desc: Generates swagger docs for the API.
+    deps:
+      - go:build:genswag
+    generates:
+      - cmd/server/swag.go
+    sources:
+      - cmd/genswag/*.go
+    cmds:
+      - bin/genswag
+      - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
+      - swag init -g swag.go -d cmd/server,pkg/server,pkg/models,pkg/utils
 
   docker:build:
     desc: Builds the docker image.
@@ -80,7 +95,7 @@ tasks:
     cmds:
       - docker compose build
 
-  docker:push:
+  docker:do:push:
     desc: Pushes the docker image to the digital ocean container registry.
     deps:
       - docker:build

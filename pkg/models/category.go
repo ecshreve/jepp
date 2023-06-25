@@ -130,6 +130,18 @@ func GetRandomCategory() (*Category, error) {
 	return &c, nil
 }
 
+// GetRandomCategoryMany returns `count` random categories from the database.
+func GetRandomCategoryMany(count int64) ([]Category, error) {
+	query := fmt.Sprintf("SELECT * FROM category ORDER BY RAND() LIMIT %d", count)
+
+	var cc []Category
+	if err := db.Select(&cc, query); err != nil {
+		return nil, oops.Wrapf(err, "getting random categories")
+	}
+
+	return cc, nil
+}
+
 // GetCategoriesForGame returns all categories for a given game.
 func GetCategoriesForGame(gameID int64) ([]Category, error) {
 	var categories []Category

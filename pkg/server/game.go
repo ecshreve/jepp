@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"strconv"
 
 	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
@@ -11,25 +10,42 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GamesHandler godoc
+// GameHandler godoc
 //
 //	@Summary		Returns a list of games
 //	@Description	Returns a list of games
 //
-//	@Tags			list
+//	@Tags			api
 //	@Accept			*/*
 //	@Produce		json
-//	@Param			id	query		int64	false	"Game ID"
-//	@Success		200	{array}		models.Game
-//	@Failure		500	{object}	utils.HTTPError
-//	@Router			/games [get]
-func GamesHandler(c *gin.Context) {
-	gameIDStr := c.DefaultQuery("id", "")
-	if gameIDStr != "" {
-		gameID, _ := strconv.ParseInt(gameIDStr, 10, 64)
-		game, err := mods.GetGame(gameID)
-		if err != nil || game == nil {
-			log.Error(oops.Wrapf(err, "unable to get game %d", gameID))
+//	@Param			filter	query		Filter	false	"Filter games"
+//	@Success		200		{array}		models.Game
+//	@Failure		500		{object}	utils.HTTPError
+//	@Router			/game [get]
+func GameHandler(c *gin.Context) {
+	var filter Filter
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		log.Error(oops.Wrapf(err, "unable to bind query"))
+		utils.NewError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if filter.Random != nil {
+		games, err := mods.GetRandomGameMany(*filter.Limit)
+		if err != nil {
+			log.Error(oops.Wrapf(err, "unable to get random game"))
+			utils.NewError(c, http.StatusBadRequest, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, games)
+		return
+	}
+
+	if filter.ID != nil {
+		game, err := mods.GetGame(*filter.ID)
+		if err != nil {
+			log.Error(oops.Wrapf(err, "unable to get game %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
 			return
 		}
@@ -47,26 +63,4 @@ func GamesHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, games)
-}
-
-// RandomGameHandler godoc
-//
-//	@Summary		Returns a random game
-//	@Description	Returns a random game
-//
-//	@Tags			random
-//	@Accept			*/*
-//	@Produce		json
-//	@Success		200	{object}	models.Game
-//	@Failure		500	{object}	utils.HTTPError
-//	@Router			/random/game [get]
-func RandomGameHandler(c *gin.Context) {
-	game, err := mods.GetRandomGame()
-	if err != nil {
-		log.Error(oops.Wrapf(err, "unable to get random game"))
-		utils.NewError(c, http.StatusBadRequest, err)
-		return
-	}
-
-	c.JSON(http.StatusOK, game)
 }

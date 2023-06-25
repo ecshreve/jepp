@@ -88,6 +88,8 @@ func UpdateClue(c *Clue) error {
 type CluesParams struct {
 	GameID     int64
 	CategoryID int64
+	Page       int64
+	Limit      int64
 }
 
 // ListClues returns a list of clues in the database, defaults to returning
@@ -108,8 +110,7 @@ func GetClues(params CluesParams) ([]Clue, error) {
 
 		query += fmt.Sprintf(" category_id=%d", params.CategoryID)
 	}
-	query += " ORDER BY clue_id DESC LIMIT 100"
-	log.Debug("query: ", query)
+	query += fmt.Sprintf(" ORDER BY clue_id DESC LIMIT %d", params.Limit)
 
 	clues := []Clue{}
 	if err := db.Select(&clues, query); err != nil {
@@ -139,6 +140,18 @@ func GetRandomClue() (*Clue, error) {
 	}
 
 	return &c, nil
+}
+
+// GetRandomClueMany returns `count` random clues from the database.
+func GetRandomClueMany(count int64) ([]Clue, error) {
+	query := fmt.Sprintf("SELECT * FROM clue ORDER BY RAND() LIMIT %d", count)
+
+	var cc []Clue
+	if err := db.Select(&cc, query); err != nil {
+		return nil, oops.Wrapf(err, "getting random clues")
+	}
+
+	return cc, nil
 }
 
 // CountClues returns the number of clues in the database.

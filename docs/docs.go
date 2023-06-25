@@ -32,7 +32,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "api"
+                    "root"
                 ],
                 "summary": "Base api handler",
                 "responses": {
@@ -48,24 +48,42 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories": {
+        "/category": {
             "get": {
                 "description": "Returns a list of categories.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "list"
+                    "api"
                 ],
                 "summary": "Returns a list of categories.",
                 "parameters": [
                     {
+                        "type": "boolean",
+                        "description": "If exists, returns up to ` + "`" + `limit` + "`" + ` random records.",
+                        "name": "random",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
-                        "description": "Category ID",
+                        "description": "If exists, returns the record with the given id.",
                         "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Paging offset",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit the number of records returned",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -78,17 +96,11 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Category"
                             }
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
                     }
                 }
             }
         },
-        "/clues": {
+        "/clue": {
             "get": {
                 "description": "Returns a list of clues",
                 "consumes": [
@@ -98,10 +110,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "list"
+                    "api"
                 ],
                 "summary": "Returns a list of clues",
                 "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Random Clue",
+                        "name": "random",
+                        "in": "query"
+                    },
                     {
                         "type": "integer",
                         "description": "Clue ID",
@@ -131,6 +149,12 @@ const docTemplate = `{
                             }
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -140,7 +164,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/games": {
+        "/game": {
             "get": {
                 "description": "Returns a list of games",
                 "consumes": [
@@ -150,14 +174,31 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "list"
+                    "api"
                 ],
                 "summary": "Returns a list of games",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Game ID",
                         "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 0,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "random",
                         "in": "query"
                     }
                 ],
@@ -169,116 +210,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.Game"
                             }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/ping": {
-            "get": {
-                "description": "Get the status of server",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "api"
-                ],
-                "summary": "Show the status of server",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/random/category": {
-            "get": {
-                "description": "Returns a random category",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "random"
-                ],
-                "summary": "Returns a random category",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Category"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/random/clue": {
-            "get": {
-                "description": "Returns a random clue",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "random"
-                ],
-                "summary": "Returns a random clue",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Clue"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/random/game": {
-            "get": {
-                "description": "Returns a random game",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "random"
-                ],
-                "summary": "Returns a random game",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Game"
                         }
                     },
                     "500": {
@@ -374,7 +305,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "",
+	Host:             "10.35.220.99:8880",
 	BasePath:         "/api",
 	Schemes:          []string{"https"},
 	Title:            "Jepp API Documentation",

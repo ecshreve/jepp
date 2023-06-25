@@ -54,6 +54,7 @@ definitions:
         example: status bad request
         type: string
     type: object
+host: 10.35.220.99:8880
 info:
   contact:
     name: shreve
@@ -80,16 +81,28 @@ paths:
             type: array
       summary: Base api handler
       tags:
-      - api
-  /categories:
+      - root
+  /category:
     get:
       consumes:
-      - '*/*'
+      - application/json
       description: Returns a list of categories.
       parameters:
-      - description: Category ID
+      - description: If exists, returns up to `limit` random records.
+        in: query
+        name: random
+        type: boolean
+      - description: If exists, returns the record with the given id.
         in: query
         name: id
+        type: integer
+      - description: Paging offset
+        in: query
+        name: page
+        type: integer
+      - description: Limit the number of records returned
+        in: query
+        name: limit
         type: integer
       produces:
       - application/json
@@ -100,19 +113,19 @@ paths:
             items:
               $ref: '#/definitions/models.Category'
             type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of categories.
       tags:
-      - list
-  /clues:
+      - api
+  /clue:
     get:
       consumes:
       - '*/*'
       description: Returns a list of clues
       parameters:
+      - description: Random Clue
+        in: query
+        name: random
+        type: boolean
       - description: Clue ID
         in: query
         name: id
@@ -134,23 +147,38 @@ paths:
             items:
               $ref: '#/definitions/models.Clue'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of clues
       tags:
-      - list
-  /games:
+      - api
+  /game:
     get:
       consumes:
       - '*/*'
       description: Returns a list of games
       parameters:
-      - description: Game ID
-        in: query
+      - in: query
         name: id
         type: integer
+      - in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - in: query
+        minimum: 0
+        name: page
+        type: integer
+      - in: query
+        name: random
+        type: boolean
       produces:
       - application/json
       responses:
@@ -166,79 +194,7 @@ paths:
             $ref: '#/definitions/utils.HTTPError'
       summary: Returns a list of games
       tags:
-      - list
-  /ping:
-    get:
-      consumes:
-      - '*/*'
-      description: Get the status of server
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      summary: Show the status of server
-      tags:
       - api
-  /random/category:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a random category
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Category'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a random category
-      tags:
-      - random
-  /random/clue:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a random clue
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Clue'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a random clue
-      tags:
-      - random
-  /random/game:
-    get:
-      consumes:
-      - '*/*'
-      description: Returns a random game
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Game'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a random game
-      tags:
-      - random
 schemes:
 - https
 swagger: "2.0"
