@@ -13,21 +13,12 @@ tasks:
     deps:
       - go:build:scraper
       - go:build:server
-      - go:build:genswag
 
   test:
     desc: Runs go tests
     cmds:
       - go test github.com/ecshreve/jepp/...
 
-  go:build:genswag:
-    desc: Builds the genswag binary.
-    generates:
-      - bin/genswag
-    sources:
-      - cmd/genswag/*.go
-    cmds:
-      - go build -o bin/genswag github.com/ecshreve/jepp/cmd/genswag
 
   go:build:scraper:
     desc: Builds the scraper binary.
@@ -43,8 +34,6 @@ tasks:
 
   go:build:server:
     desc: Builds the server binary.
-    deps:
-      - genswag
     generates:
       - bin/server
     sources:
@@ -74,16 +63,16 @@ tasks:
 
   genswag:
     desc: Generates swagger docs for the API.
-    deps:
-      - go:build:genswag
     generates:
-      - cmd/server/swag.go
+      - docs/*
     sources:
-      - cmd/genswag/*.go
+      - cmd/server/*
+      - pkg/server/*
+      - pkg/models/*
+      - pkg/utils/*
     cmds:
-      - bin/genswag
       - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
-      - swag init -g swag.go -d cmd/server,pkg/server,pkg/models,pkg/utils
+      - swag init -d cmd/server,pkg/server,pkg/models,pkg/utils
 
   docker:build:
     desc: Builds the docker image.

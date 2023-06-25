@@ -8,7 +8,7 @@
     window.onload = function () {
         // Begin Swagger UI call region
         const ui = SwaggerUIBundle({
-            url: "/swagger.json", //Location of Open API spec in the repo
+            url: "/swagger/doc.json", //Location of Open API spec in the repo
             dom_id: '#swagger-ui',
             deepLinking: false,
             presets: [
@@ -39,7 +39,7 @@
    <div class="card">
       <h2 style="text-align: center;">Example: Random Clue</h2>
       <div class="rand-cont">
-        <pre>GET /api/clues/random</pre>
+        <pre>GET /api/clue?random</pre>
         <a class="rand-clue" onclick="window.location.reload()"><i class="fa fa-refresh"></i></a>
       </div>
       <hr>
@@ -47,15 +47,15 @@
         <table class="rand-tbl">
           <tr>
             <th>ClueID</th>
-            <td><a href="/api/clues?id={{.Clue.ClueID}}" target="_blank">{{.Clue.ClueID}}</a></td>
+            <td><a href="/api/clue?id={{.Clue.ClueID}}" target="_blank">{{.Clue.ClueID}}</a></td>
           </tr>
           <tr>
             <th>GameID</th>
-            <td><a href="/api/games?id={{.Clue.GameID}}" target="_blank">{{.Clue.GameID}}</a></td>
+            <td><a href="/api/game?id={{.Clue.GameID}}" target="_blank">{{.Clue.GameID}}</a></td>
           </tr>
           <tr>
             <th>CategoryID</th>
-            <td><a href="/api/categories?id={{.Clue.CategoryID}}" target="_blank">{{.Clue.CategoryID}}</a></td>
+            <td><a href="/api/category?id={{.Clue.CategoryID}}" target="_blank">{{.Clue.CategoryID}}</a></td>
           </tr>
           <tr>
             <th>Question</th>

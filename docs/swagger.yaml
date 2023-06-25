@@ -54,7 +54,6 @@ definitions:
         example: status bad request
         type: string
     type: object
-host: 10.35.220.99:8880
 info:
   contact:
     name: shreve
@@ -195,6 +194,4 @@ paths:
       summary: Returns a list of games
       tags:
       - api
-schemes:
-- https
 swagger: "2.0"

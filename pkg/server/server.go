@@ -4,10 +4,13 @@ import (
 	"os"
 
 	"github.com/benbjohnson/clock"
+	_ "github.com/ecshreve/jepp/docs"
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Server is the API server.
@@ -47,12 +50,11 @@ func registerHandlers() *gin.Engine {
 	r := gin.Default()
 	r.StaticFile("style.css", "./static/site/style.css")
 	r.StaticFile("favicon.ico", "./static/site/favicon.ico")
-	r.StaticFile("swagger.json", "./docs/swagger.json")
 
 	r.LoadHTMLGlob("pkg/server/templates/prod/*")
-	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	r.GET("/", BaseUIHandler)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.Group("/api")
 	api.GET("/", BaseAPIHandler)

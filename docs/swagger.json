@@ -1,7 +1,4 @@
 {
-    "schemes": [
-        "https"
-    ],
     "swagger": "2.0",
     "info": {
         "description": "This is a simple api to access jeopardy data.",
@@ -15,7 +12,6 @@
         },
         "version": "1.0"
     },
-    "host": "10.35.220.99:8880",
     "basePath": "/api",
     "paths": {
         "/": {

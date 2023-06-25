@@ -12,6 +12,7 @@ services:
       DB_PASS: ${DB_PASS}
       API_HOST: ${API_HOST}
       JEPP_LOCAL_DEV: ${JEPP_LOCAL_DEV}
+      JEPP_ENV: ${JEPP_ENV}
     ports:
       - 8880:8880
     container_name: jepp-app
