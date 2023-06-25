@@ -94,13 +94,15 @@ func UpdateCategory(c *Category) error {
 }
 
 // GetCategories returns all categories in the database.
-func GetCategories() ([]Category, error) {
-	var categories []Category
-	if err := db.Select(&categories, "SELECT * FROM category ORDER BY category_id ASC LIMIT 100"); err != nil {
+func GetCategories(limit int64) ([]Category, error) {
+	query := fmt.Sprintf("SELECT * FROM category ORDER BY category_id ASC LIMIT %d", limit)
+
+	var cc []Category
+	if err := db.Select(&cc, query); err != nil {
 		return nil, oops.Wrapf(err, "could not get all categories")
 	}
 
-	return categories, nil
+	return cc, nil
 }
 
 // GetCategory returns the category with the given ID.
@@ -137,9 +139,9 @@ func GetRandomCategory() (*Category, error) {
 	return &c, nil
 }
 
-// GetRandomCategoryMany returns `count` random categories from the database.
-func GetRandomCategoryMany(count int64) ([]Category, error) {
-	query := fmt.Sprintf("SELECT * FROM category ORDER BY RAND() LIMIT %d", count)
+// GetRandomCategoryMany returns `limit` random categories from the database.
+func GetRandomCategoryMany(limit int64) ([]Category, error) {
+	query := fmt.Sprintf("SELECT * FROM category ORDER BY RAND() LIMIT %d", limit)
 
 	var cc []Category
 	if err := db.Select(&cc, query); err != nil {
@@ -151,10 +153,10 @@ func GetRandomCategoryMany(count int64) ([]Category, error) {
 
 // GetCategoriesForGame returns all categories for a given game.
 func GetCategoriesForGame(gameID int64) ([]Category, error) {
-	var categories []Category
-	if err := db.Select(&categories, "SELECT clue.category_id, category.name FROM clue JOIN category ON clue.category_id = category.category_id WHERE game_id=? GROUP BY category_id", gameID); err != nil {
+	var cc []Category
+	if err := db.Select(&cc, "SELECT clue.category_id, category.name FROM clue JOIN category ON clue.category_id = category.category_id WHERE game_id=? GROUP BY category_id LIMIT 20", gameID); err != nil {
 		return nil, oops.Wrapf(err, "could not get categories for game %d", gameID)
 	}
 
-	return categories, nil
+	return cc, nil
 }

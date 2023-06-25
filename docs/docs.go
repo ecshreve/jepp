@@ -14,7 +14,7 @@ const docTemplate = `{
             "name": "shreve"
         },
         "license": {
-            "name": "MIT",
+            "name": "MIT License",
             "url": "https://github.com/ecshreve/jepp/blob/main/LICENSE"
         },
         "version": "{{.Version}}"
@@ -24,7 +24,7 @@ const docTemplate = `{
     "paths": {
         "/category": {
             "get": {
-                "description": "Returns a list of categories.",
+                "description": "get categories with optional filters",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,11 +34,11 @@ const docTemplate = `{
                 "tags": [
                     "api"
                 ],
-                "summary": "Returns a list of categories.",
+                "summary": "Fetch categories",
                 "parameters": [
                     {
                         "type": "boolean",
-                        "description": "If exists, returns up to ` + "`" + `limit` + "`" + ` random records.",
+                        "description": "If exists or true, returns ` + "`" + `limit` + "`" + ` random records.",
                         "name": "random",
                         "in": "query"
                     },
@@ -50,13 +50,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Paging offset",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Limit the number of records returned",
+                        "default": 10,
+                        "description": "Limit the number of records returned.",
                         "name": "limit",
                         "in": "query"
                     }
@@ -70,15 +65,21 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Category"
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPError"
+                        }
                     }
                 }
             }
         },
         "/clue": {
             "get": {
-                "description": "Returns a list of clues",
+                "description": "get clues with optional filters",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -86,30 +87,37 @@ const docTemplate = `{
                 "tags": [
                     "api"
                 ],
-                "summary": "Returns a list of clues",
+                "summary": "Fetch Clues",
                 "parameters": [
                     {
                         "type": "boolean",
-                        "description": "Random Clue",
+                        "description": "If exists or true, returns ` + "`" + `limit` + "`" + ` random records.",
                         "name": "random",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Clue ID",
+                        "description": "If exists, returns the record with the given id.",
                         "name": "id",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Game ID",
+                        "description": "Filter by Game ID",
                         "name": "game",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Category ID",
+                        "description": "Filter by Category ID",
                         "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit the number of records returned",
+                        "name": "limit",
                         "in": "query"
                     }
                 ],
@@ -123,12 +131,6 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.HTTPError"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -140,9 +142,9 @@ const docTemplate = `{
         },
         "/game": {
             "get": {
-                "description": "Returns a list of games",
+                "description": "get games with optional filters",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -150,29 +152,25 @@ const docTemplate = `{
                 "tags": [
                     "api"
                 ],
-                "summary": "Returns a list of games",
+                "summary": "Fetch Games",
                 "parameters": [
                     {
+                        "type": "boolean",
+                        "description": "If exists or true, returns ` + "`" + `limit` + "`" + ` random records.",
+                        "name": "random",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
+                        "description": "If exists, returns the record with the given id.",
                         "name": "id",
                         "in": "query"
                     },
                     {
-                        "maximum": 100,
-                        "minimum": 1,
                         "type": "integer",
+                        "default": 10,
+                        "description": "Limit the number of records returned.",
                         "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 0,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "name": "random",
                         "in": "query"
                     }
                 ],

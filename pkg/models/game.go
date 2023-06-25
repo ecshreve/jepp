@@ -61,9 +61,11 @@ func InsertGame(g *Game) error {
 // values ordered by game date, with most recent first, limited to 100 results.
 //
 // TODO: have this take a "lastClueID" arg or something for dumb pagination.
-func GetGames() ([]Game, error) {
+func GetGames(limit int64) ([]Game, error) {
+	query := fmt.Sprintf("SELECT * FROM game ORDER BY game_date DESC LIMIT %d", limit)
+
 	games := []Game{}
-	if err := db.Select(&games, "SELECT * FROM game ORDER BY game_date DESC LIMIT 100"); err != nil {
+	if err := db.Select(&games, query); err != nil {
 		return nil, oops.Wrapf(err, "could not list games")
 	}
 
@@ -72,14 +74,14 @@ func GetGames() ([]Game, error) {
 
 // GetGamesBySeason returns a list of games in the database for a given season.
 func GetGamesBySeason(seasonID int64) ([]Game, error) {
-	query := fmt.Sprintf("SELECT * FROM game WHERE season_id=%d ORDER BY game_date DESC", seasonID)
+	query := fmt.Sprintf("SELECT * FROM game WHERE season_id=%d ORDER BY game_date DESC LIMIT 300", seasonID)
 
-	games := []Game{}
-	if err := db.Select(&games, query); err != nil {
+	var gg []Game
+	if err := db.Select(&gg, query); err != nil {
 		return nil, oops.Wrapf(err, "could not get games for season %d", seasonID)
 	}
 
-	return games, nil
+	return gg, nil
 }
 
 // GetGame returns a single game from the database.
@@ -104,12 +106,12 @@ func GetRandomGame() (*Game, error) {
 	return &g, nil
 }
 
-// GetRandomGameMany returns count random games from the database.
-func GetRandomGameMany(count int64) ([]Game, error) {
-	query := fmt.Sprintf("SELECT * FROM game ORDER BY RAND() LIMIT %d", count)
+// GetRandomGameMany returns `limit` random games from the database.
+func GetRandomGameMany(limit int64) ([]Game, error) {
+	query := fmt.Sprintf("SELECT * FROM game ORDER BY RAND() LIMIT %d", limit)
 
 	var gg []Game
-	if err := db.Get(&gg, query); err != nil {
+	if err := db.Select(&gg, query); err != nil {
 		return nil, oops.Wrapf(err, "getting random games")
 	}
 

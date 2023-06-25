@@ -12,16 +12,19 @@ import (
 
 // CategoryHandler godoc.
 //
-//	@Summary		Returns a list of categories.
-//	@Description	Returns a list of categories.
+//	@Summary		Fetch categories
+//	@Description	get categories with optional filters
+//
 //	@Tags			api
 //	@Accept			json
 //	@Produce		json
-//	@Param			random	query	bool	false	"If exists, returns up to `limit` random records."
-//	@Param			id		query	int64	false	"If exists, returns the record with the given id."
-//	@Param			page	query	int64	false	"Paging offset"
-//	@Param			limit	query	int64	false	"Limit the number of records returned"
-//	@Success		200		{array}	models.Category
+//
+//	@Param			random	query		bool	false	"If exists or true, returns `limit` random records."
+//	@Param			id		query		int64	false	"If exists, returns the record with the given id."
+//	@Param			limit	query		int64	false	"Limit the number of records returned."	Default(10)
+//
+//	@Success		200		{array}		models.Category
+//	@Failure		500		{object}	utils.HTTPError
 //	@Router			/category [get]
 func CategoryHandler(c *gin.Context) {
 	var filter Filter
@@ -30,7 +33,6 @@ func CategoryHandler(c *gin.Context) {
 		utils.NewError(c, http.StatusBadRequest, err)
 		return
 	}
-	log.Debugf("filter: %#v", filter)
 
 	if filter.Random != nil {
 		category, err := mods.GetRandomCategoryMany(*filter.Limit)
@@ -56,7 +58,7 @@ func CategoryHandler(c *gin.Context) {
 		return
 	}
 
-	cats, err := mods.GetCategories()
+	cats, err := mods.GetCategories(*filter.Limit)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get categories"))
 		utils.NewError(c, http.StatusBadRequest, err)

@@ -1,13 +1,12 @@
 package server
 
 import (
-	"os"
-
 	"github.com/benbjohnson/clock"
 	_ "github.com/ecshreve/jepp/docs"
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -31,9 +30,9 @@ func NewServer() *Server {
 	s.Router = registerHandlers()
 
 	// TODO: fix this
-	if os.Getenv("JEPP_LOCAL_DEV") == "true" {
-		registerDevHandlers()
-	}
+	// if os.Getenv("JEPP_ENV") == "dev" {
+	// 	registerDevHandlers()
+	// }
 
 	log.Infof("Server %#v created", s)
 	return s
@@ -47,10 +46,12 @@ type Filter struct {
 }
 
 func registerHandlers() *gin.Engine {
+	// Explicitly setting to debug mode, surfaces extra logging.
+	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
+
 	r.StaticFile("style.css", "./static/site/style.css")
 	r.StaticFile("favicon.ico", "./static/site/favicon.ico")
-
 	r.LoadHTMLGlob("pkg/server/templates/prod/*")
 
 	r.GET("/", BaseUIHandler)
@@ -62,13 +63,14 @@ func registerHandlers() *gin.Engine {
 	api.GET("/category", CategoryHandler)
 
 	// Basic health check endpoint.
+	// TODO: pull into isolated handler with docs
 	api.GET("/status", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"status": "ok"})
 	})
 
-	// if err := r.SetTrustedProxies(nil); err != nil {
-	// 	log.Error(oops.Wrapf(err, "unable to set proxies"))
-	// }
+	if err := r.SetTrustedProxies(nil); err != nil {
+		log.Error(oops.Wrapf(err, "unable to set proxies"))
+	}
 
 	return r
 }

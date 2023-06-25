@@ -41,7 +41,7 @@
 <br>
 <div class="card-container">
   <div style="display: flex; flex-direction: column;">
-    <div style="margin-bottom: 10px;">
+    <div style="margin-bottom: 20px;">
       <div class="card">
         <div class="container">
         <h3>API fun with Jeopardy! Access historical Jeopardy clues scraped from <a href="https://www.j-archive.com/" target="_blank">J-ARCHIVE</a> via a simple api.</h2>
@@ -50,6 +50,18 @@
         <p><a href="https://github.com/ecshreve/jepp/actions/workflows/go.yml"><img src="https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg" alt="Go"></a>
         <a href="https://godoc.org/github.com/ecshreve/jepp"><img src="https://godoc.org/github.com/ecshreve/jepp?status.svg" alt="GoDoc"></a>
         <img alt="GitHub release (release name instead of tag name)" src="https://img.shields.io/github/v/release/ecshreve/jepp">
+        </p>
+        </div>
+      </div>
+    </div>
+     <div style="margin-bottom: 25px;">
+      <div class="card">
+        <div class="container">
+        <h4>Just interested in the data? Feel free to download the CSV files or SQL dump from the GitHub Repository</h4>
+        <p>
+        The most recent data files should be attached to the <a href="https://github.com/ecshreve/jepp/releases" target="_blank">most recent release here.</a>
+        <br><br>
+        More information on the data itself can be found in the  <a href="https://github.com/ecshreve/jepp/tree/main/data" target="_blank">`data` directory's `readme`.</a>
         </p>
         </div>
       </div>

@@ -123,12 +123,12 @@ func GetClues(params CluesParams) ([]Clue, error) {
 	}
 	query += fmt.Sprintf(" ORDER BY clue_id DESC LIMIT %d", params.Limit)
 
-	clues := []Clue{}
-	if err := db.Select(&clues, query); err != nil {
+	var cc []Clue
+	if err := db.Select(&cc, query); err != nil {
 		return nil, oops.Wrapf(err, "could not list clues")
 	}
 
-	return clues, nil
+	return cc, nil
 }
 
 // GetClue returns a single clue from the database.
@@ -153,9 +153,9 @@ func GetRandomClue() (*Clue, error) {
 	return &c, nil
 }
 
-// GetRandomClueMany returns `count` random clues from the database.
-func GetRandomClueMany(count int64) ([]Clue, error) {
-	query := fmt.Sprintf("SELECT * FROM clue ORDER BY RAND() LIMIT %d", count)
+// GetRandomClueMany returns `limit` random clues from the database.
+func GetRandomClueMany(limit int64) ([]Clue, error) {
+	query := fmt.Sprintf("SELECT * FROM clue ORDER BY RAND() LIMIT %d", limit)
 
 	var cc []Clue
 	if err := db.Select(&cc, query); err != nil {

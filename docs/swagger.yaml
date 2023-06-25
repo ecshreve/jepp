@@ -59,7 +59,7 @@ info:
     name: shreve
   description: This is a simple api to access jeopardy data.
   license:
-    name: MIT
+    name: MIT License
     url: https://github.com/ecshreve/jepp/blob/main/LICENSE
   title: Jepp API Documentation
   version: "1.0"
@@ -68,9 +68,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: Returns a list of categories.
+      description: get categories with optional filters
       parameters:
-      - description: If exists, returns up to `limit` random records.
+      - description: If exists or true, returns `limit` random records.
         in: query
         name: random
         type: boolean
@@ -78,11 +78,8 @@ paths:
         in: query
         name: id
         type: integer
-      - description: Paging offset
-        in: query
-        name: page
-        type: integer
-      - description: Limit the number of records returned
+      - default: 10
+        description: Limit the number of records returned.
         in: query
         name: limit
         type: integer
@@ -95,30 +92,39 @@ paths:
             items:
               $ref: '#/definitions/models.Category'
             type: array
-      summary: Returns a list of categories.
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Fetch categories
       tags:
       - api
   /clue:
     get:
       consumes:
-      - '*/*'
-      description: Returns a list of clues
+      - application/json
+      description: get clues with optional filters
       parameters:
-      - description: Random Clue
+      - description: If exists or true, returns `limit` random records.
         in: query
         name: random
         type: boolean
-      - description: Clue ID
+      - description: If exists, returns the record with the given id.
         in: query
         name: id
         type: integer
-      - description: Game ID
+      - description: Filter by Game ID
         in: query
         name: game
         type: integer
-      - description: Category ID
+      - description: Filter by Category ID
         in: query
         name: category
+        type: integer
+      - default: 10
+        description: Limit the number of records returned
+        in: query
+        name: limit
         type: integer
       produces:
       - application/json
@@ -129,38 +135,32 @@ paths:
             items:
               $ref: '#/definitions/models.Clue'
             type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.HTTPError'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a list of clues
+      summary: Fetch Clues
       tags:
       - api
   /game:
     get:
       consumes:
-      - '*/*'
-      description: Returns a list of games
+      - application/json
+      description: get games with optional filters
       parameters:
-      - in: query
-        name: id
-        type: integer
-      - in: query
-        maximum: 100
-        minimum: 1
-        name: limit
-        type: integer
-      - in: query
-        minimum: 0
-        name: page
-        type: integer
-      - in: query
+      - description: If exists or true, returns `limit` random records.
+        in: query
         name: random
         type: boolean
+      - description: If exists, returns the record with the given id.
+        in: query
+        name: id
+        type: integer
+      - default: 10
+        description: Limit the number of records returned.
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -174,7 +174,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.HTTPError'
-      summary: Returns a list of games
+      summary: Fetch Games
       tags:
       - api
 swagger: "2.0"
