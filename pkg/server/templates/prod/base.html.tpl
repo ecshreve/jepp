@@ -1,13 +1,4 @@
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J6ZJ2Y9HHQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-J6ZJ2Y9HHQ');
-</script>
   <title>Jepp</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -30,7 +21,16 @@
         })
         window.ui = ui
     }
-</script>
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6ZJ2Y9HHQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-J6ZJ2Y9HHQ');
+  </script>
 </head>
 <div style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 20px;">
   <a href="/" style="text-decoration: none; color: black;"><h1>Jepp</h1></a>
