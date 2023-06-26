@@ -29,7 +29,6 @@ func (s Season) String() string {
 
 // InsertSeason inserts a season into the database.
 func InsertSeason(s *Season) error {
-
 	if s == nil {
 		return nil
 	}
@@ -45,6 +44,7 @@ func InsertSeason(s *Season) error {
 	if err := tx.Commit(); err == nil {
 		log.Info("inserted season", "season", s)
 	}
+
 	return nil
 }
 

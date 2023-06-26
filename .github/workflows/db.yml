@@ -1,0 +1,63 @@
+name: DB
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  DB_NAME: testdb
+  DB_USER: root
+  DB_PASSWORD: root
+  RESTORE: .testdb_dump.sql
+
+jobs:
+  test-db-models:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.20.4
+
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          version: 3.25.0
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Initialize MySQL
+        run: sudo systemctl start mysql.service
+
+      - name: Initialize first database
+        run: |
+          mysql -e 'CREATE DATABASE ${{ env.DB_NAME }};' \
+          -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+
+      - name: Boost user perms
+        run: |
+          mysql -e "ALTER USER '${{ env.DB_USER }}'@'localhost' \
+          IDENTIFIED WITH mysql_native_password BY 'root';" \
+          -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+
+      - name: Dump database
+        run: |
+          gunzip data/testdb_dump.sql.gz
+          sudo mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} ${{env.DB_NAME}}  < data/testdb_dump.sql
+
+      - name: Run tests
+        run: |
+          DB_HOST=localhost
+          DB_NAME=testdb
+          DB_PORT=3306
+          DB_USER=root
+          DB_PASS=root
+          JEPP_ENV=test
+          task build
+          task test
+          
