@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 
+	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 )
@@ -43,16 +44,9 @@ func (c *Clue) Dump() []string {
 	return ret
 }
 
-func truncate(s string, n int) string {
-	if len(s) > n {
-		return s[:n]
-	}
-	return s
-}
-
-// String implements fmt.Stringer.
+// String implements the Stringer interface for the Clue type.
 func (c *Clue) String() string {
-	return fmt.Sprintf("%d - %d -- Q: %s - A: %s", c.ClueID, c.GameID, truncate(c.Question, 20), truncate(c.Answer, 20))
+	return fmt.Sprintf("%d - %d -- Q: %s - A: %s", c.ClueID, c.GameID, utils.Truncate(c.Question, 20, nil), utils.Truncate(c.Answer, 20, nil))
 }
 
 // InsertClue inserts a clue into the database.
