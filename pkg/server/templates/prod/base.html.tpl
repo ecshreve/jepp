@@ -1,5 +1,15 @@
+<!DOCTYPE html>
 <head>
   <title>Jepp</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6ZJ2Y9HHQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-J6ZJ2Y9HHQ');
+  </script>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
@@ -22,15 +32,6 @@
         window.ui = ui
     }
   </script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-J6ZJ2Y9HHQ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-J6ZJ2Y9HHQ');
-  </script>
 </head>
 <div style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 20px;">
   <a href="/" style="text-decoration: none; color: black;"><h1>Jepp</h1></a>
@@ -46,11 +47,17 @@
         <div class="container">
         <h3>API fun with Jeopardy! Access historical Jeopardy clues scraped from <a href="https://www.j-archive.com/" target="_blank">J-ARCHIVE</a> via a simple api.</h2>
         <hr>
-        <a href="https://github.com/ecshreve/jepp">view project on github <i class="fa fa-brands fa-github"></i></a>
-        <p><a href="https://github.com/ecshreve/jepp/actions/workflows/go.yml"><img src="https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg" alt="Go"></a>
-        <a href="https://godoc.org/github.com/ecshreve/jepp"><img src="https://godoc.org/github.com/ecshreve/jepp?status.svg" alt="GoDoc"></a>
-        <img alt="GitHub release (release name instead of tag name)" src="https://img.shields.io/github/v/release/ecshreve/jepp">
-        </p>
+        <a href="https://github.com/ecshreve/jepp">
+          <div>
+            <p>
+              view project on github <i class="fa fa-brands fa-github"></i>
+            </p>
+             <p>
+              <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/ecshreve/jepp/.github%2Fworkflows%2Fci.yml">
+              <img alt="GitHub release (release name instead of tag name)" src="https://img.shields.io/github/v/release/ecshreve/jepp">
+            </p>
+          </div>
+        </a>
         </div>
       </div>
     </div>
@@ -113,4 +120,4 @@
     </div>
   </div>
 </div>
-     
+</html>
