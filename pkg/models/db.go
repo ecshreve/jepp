@@ -21,7 +21,7 @@ func GetDBHandle() *sqlx.DB {
 		return db
 	}
 
-	dbname := "jeppdb"
+	dbname := os.Getenv("DB_NAME")
 	dbuser := os.Getenv("DB_USER")
 	dbpass := os.Getenv("DB_PASS")
 	dbaddr := fmt.Sprintf("%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"))
