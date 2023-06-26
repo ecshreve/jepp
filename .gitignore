@@ -5,3 +5,4 @@ jepp_scraper/
 cache/
 .env
 */**/certs
+.vscode/
