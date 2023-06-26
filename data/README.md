@@ -14,6 +14,7 @@ mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} --skip-comments
 
 gzip dump.sql
 ```
+
 It can be imported into a MySQL database with the following command:
 
 ```bash

@@ -15,9 +15,21 @@ API fun with Jeopardy! Access >300k Jeopardy clues scraped from [j-archive] via 
 
 # API
 
-- the api is a simple go web server built with [gin] that exposes a handful of endpoints to access jeopardy data
-- the shape of the data returned from the api aligns with the db schema, this is accomplished via various struct tags on the type definitions
-- for example, the `Clue` type is defined as follows:
+The api is backed by a go web server built with [gin] that exposes a few endpoints to access historical Jeopardy data.
+
+## Types
+
+The shape of the data returned from the api aligns with the db schema, this is accomplished via various struct tags on the type definitions.
+
+### Struct tags quick reference
+
+- `db` tag is used by the [sqlx] library to map the db columns to the struct fields
+- `json` tag is used by the [gin] library to map the struct fields to the json response
+- `example` tag is used by the [swaggo] library to generate example responses for the swagger docs
+- `form` and `binding` tags are used by [gin] to map query arguments to a struct with some basic validation
+
+
+for example, the `pkg.models.Clue` type is defined as follows:
 ```{golang}
 type Clue struct {
 	ClueID     int64  `db:"clue_id" json:"clueId" example:"804002032"`
@@ -27,67 +39,76 @@ type Clue struct {
 	Answer     string `db:"answer" json:"answer" example:"This is the answer."`
 }
 ```
-- the `db` struct tag is used by the [sqlx] library to map the db columns to the struct fields
-- the `json` struct tag is used by the [gin] library to map the struct fields to the json response
-- the `example` struct tag is used by the [swaggo] library to generate example responses for the swagger docs
 
-### Frontend / UI
 
-- the ui is served from the `/` endpoint and is a simple html page that displays the swagger docs and some other info
-- the embedded swagger ui provides runnable request / response examples and type references
+- Struct tags also appear on some helper structs like the `pkg.server.Filter` type:
+```{golang}
+// Filter describes the query parameters that can be used to filter the results of an API query.
+type Filter struct {
+	Random *bool  `form:"random"`
+	ID     *int64 `form:"id"`
+	Page   *int64 `form:"page,default=0" binding:"min=0"`
+	Limit  *int64 `form:"limit,default=1" binding:"min=1,max=100"`
+}
+```
 
-### Swagger Docs
 
-- swagger docs generated with [swaggo] and embedded in the /ui
-  page as part of the html template
-- the `--parseVendor` was helpful here to generate the full `swagger.json` file that could be used
-  in standalone mode by the ui
+## Frontend / UI
+
+- The ui is served from the `/` endpoint and is a simple html page that displays the swagger docs and some other info
+- The embedded swagger ui provides runnable request / response examples and type references.
+
+## Swagger Docs
+
+- Swagger documentation is generated with [swaggo] and embedded in the homepage as part of the html template.
+- Figuring out the right build/deploy configuration was challenging here, I ran into some problems in my Taskfile task dependencies. The main problem seemed to be multiple tasks with the same set of files listed as `sources` causing a watched task to continuously rebuild because of some circular dependencies.
+- These problems seem to be solved after breaking up and organizing the taskfiles better.
 
 # DB
 
-- getting the data into the database and cleaning it up after has been a manual process for the most part
-- for local development i set the `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME` environment variables to target a `mariadb/mysql` server running in my home lab (also experimented with defining the db service and build params in a docker compose file)
-- so personally i play with that local copy of the data, but for the public api i use a mysql db hosted on [digital ocean](https://www.digitalocean.com/products/managed-databases-mysql)
-  - to populate this db i first created a backup of my local db and then restored it to the digital ocean db through an [adminer](https://hub.docker.com/_/adminer/) ui running in my home lab
+Getting the data into the database started as a manual process, and hasn't been automated yet because the data is all there and I haven't needed to import / export it recently.
+
+Here's how I went about doing it initially:
+- For local development I set the `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME` environment variables to target a `mariadb/mysql` server running in my home lab.
+- Most of the time I play with that local copy of the data, but the public api uses a mysql db hosted on [digital ocean](https://www.digitalocean.com/products/managed-databases-mysql)
+- Initially to populate the prod db I just manually created a backup of my local database and restored it to the prod database, both via an [adminer](https://hub.docker.com/_/adminer/) instance running in my home lab.
+- Currently the `task sql:dump` command will create a dump of the database defined by the environment variables and write it to `data/dump.sql.gz`.
+- Recent dumps of the prod database are available in the [data](data/) directory or as downloads on repository's [Releases](https://github.com/ecshreve/jepp/releases) page.
 
 
 
 # Data Scraping
 
-- the `scrape` package contains the code to scrape [j-archive]
-  and write the data to a mysql database
-- [colly] is used to scrape the data and [sqlx] is used to write the data to the db
+The [scraper](pkg/scraper/) package contains the code to scrape [j-archive] for jeopardy clues and write the data to a mysql database. [Colly] is the package use to scrape the data and [sqlx] is used to write the data to the db. The scraping happened in a few passes, more or less following these steps:
 
-<br>
+Get all the seasons and populate the seasons table.
 
-_the scraping happened in a few passes to get all the data_
-- first pass was to get all the seasons and populate the seasons table
-  - this scrape targeted the season [summary page on j-archive](https://www.j-archive.com/listseasons.php) and pulled the season number, start date, end date for each season
-- second pass was to get all the games for each season and populate the game table
-  - this scrape targets the individual [season show pages on j-archive](https://www.j-archive.com/showseason.php?season=1) and pulls the game number, air date, taped date for each season
-- third pass was to get all the clues for each game in each season and populate the category and clue table
-  - this scrape targets the individual [game pages on j-archive](https://www.j-archive.com/showgame.php?game_id=7040) and pulls the clue data from the tables on the page
+- This scrape targeted the season [summary page on j-archive](https://www.j-archive.com/listseasons.php) and pulled the season number, start date, end date for each season
 
-## demo
+Get all the games for each season and populate the game table.
 
-- this is an example of a simple web app that uses a local copy of the database and a simple
-  web ui to display the data
+- This scrape targets the individual [season show pages on j-archive](https://www.j-archive.com/showseason.php?season=1) and pulls the game number, air date, taped date for each season
+ 
+Get all the clues for each game in each season and populate the category and clue tables
 
-![drop](static/repo/drop.gif)
+- This scrape targeted the individual [game pages on j-archive](https://www.j-archive.com/showgame.php?game_id=7040) and pulls the clue data from the `<table>` elements on the page
 
 
-## references
+## references / prior art
+
+- [jservice](https://jservice.io/)
+- [jservice repo](https://github.com/sottenad/jService)
+- [jeppy](https://github.com/ecshreve/jeppy)
+
 [sqlx]: <https://github.com/jmoiron/sqlx>
 [gin]: <https://github.com/gin-gonic/gin>
 [swaggo]: <https://github.com/swaggo/swag>
 [j-archive]: <https://www.j-archive.com/>
 [colly]: <https://github.com/gocolly/colly>
-- [jservice](https://jservice.io/)
-- [jservice repo](https://github.com/sottenad/jService)
 
----
 
-<br>
+<hr>
+<hr>
 
 ![cf](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=Cloudflare&logoColor=white)
 ![do](https://img.shields.io/badge/Digital_Ocean-0080FF?style=for-the-badge&logo=DigitalOcean&logoColor=white)
@@ -98,8 +119,5 @@ _the scraping happened in a few passes to get all the data_
 ![swag](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=white)
 ![golan](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)
 
-
-
----
 
 <a href="https://www.buymeacoffee.com/ecshreve" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 25px !important;width: 100px !important;" ></a>
