@@ -15,7 +15,7 @@ definitions:
         example: This is the answer.
         type: string
       categoryId:
-        example: 804092001
+        example: 3462
         type: integer
       clueId:
         example: 804002032

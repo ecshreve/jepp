@@ -217,7 +217,7 @@ const docTemplate = `{
                 },
                 "categoryId": {
                     "type": "integer",
-                    "example": 804092001
+                    "example": 3462
                 },
                 "clueId": {
                     "type": "integer",

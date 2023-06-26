@@ -1,0 +1,23 @@
+version: "3"
+  
+tasks:
+  build:
+    desc: Builds the docker image.
+    cmds:
+      - docker compose build
+
+  run:
+    desc: Runs the docker image.
+    deps:
+      - docker:build
+    cmds:
+      - docker compose up -d
+
+  push-digital-ocean:
+    desc: Pushes the docker image to the digital ocean container registry.
+    deps:
+      - docker:build
+    cmds:
+      - docker push registry.digitalocean.com/shreggie/jepp:custom
+
+  

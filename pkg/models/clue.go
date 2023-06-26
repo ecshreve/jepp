@@ -27,7 +27,7 @@ var RoundMap = map[string]int{
 type Clue struct {
 	ClueID     int64  `db:"clue_id" json:"clueId" example:"804002032"`
 	GameID     int64  `db:"game_id" json:"gameId" example:"8040"`
-	CategoryID int64  `db:"category_id" json:"categoryId" example:"804092001"`
+	CategoryID int64  `db:"category_id" json:"categoryId" example:"3462"`
 	Question   string `db:"question" json:"question" example:"This is the question."`
 	Answer     string `db:"answer" json:"answer" example:"This is the answer."`
 }
@@ -57,7 +57,6 @@ func (c *Clue) String() string {
 
 // InsertClue inserts a clue into the database.
 func InsertClue(c *Clue) error {
-
 	if c == nil {
 		return nil
 	}
@@ -104,7 +103,7 @@ type CluesParams struct {
 }
 
 // ListClues returns a list of clues in the database, defaults to returning
-// values ordered by game date, with most recent first.
+// values ordered by game id descending.
 func GetClues(params CluesParams) ([]Clue, error) {
 	query := "SELECT * FROM clue"
 
