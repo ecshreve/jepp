@@ -1,4 +1,4 @@
-name: DB
+name: CI
 
 on:
   push:
@@ -9,12 +9,14 @@ on:
 env:
   DB_NAME: testdb
   DB_USER: root
-  DB_PASSWORD: root
+  DB_PASS: root
+  DB_HOST: localhost
+  DB_PORT: 3306
+  JEPP_ENV: test
 
 jobs:
-  test-db-models:
+  test-with-db:
     runs-on: ubuntu-latest
-
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -36,27 +38,19 @@ jobs:
       - name: Initialize first database
         run: |
           mysql -e 'CREATE DATABASE ${{ env.DB_NAME }};' \
-          -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+          -u${{ env.DB_USER }} -p${{ env.DB_PASS }}
 
       - name: Boost user perms
         run: |
           mysql -e "ALTER USER '${{ env.DB_USER }}'@'localhost' \
           IDENTIFIED WITH mysql_native_password BY 'root';" \
-          -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+          -u${{ env.DB_USER }} -p${{ env.DB_PASS }}
 
-      - name: Dump database
-        run: |
-          gunzip data/testdb_dump.sql.gz
-          sudo mysql -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} ${{env.DB_NAME}}  < data/testdb_dump.sql
+      - name: Restore test database
+        run: task sql:restore
 
-      - name: Run tests
-        run: |
-          DB_HOST=localhost
-          DB_NAME=testdb
-          DB_PORT=3306
-          DB_USER=root
-          DB_PASS=root
-          JEPP_ENV=test
-          task build
-          task test
+      - name: Build
+        run: task build
           
+      - name: Test
+        run: task test
