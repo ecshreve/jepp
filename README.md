@@ -3,7 +3,7 @@
 API fun with Jeopardy! Access >300k Jeopardy clues scraped from [j-archive] via a simple api.
 
 
-[![Go](https://github.com/ecshreve/jepp/actions/workflows/go.yml/badge.svg)](https://github.com/ecshreve/jepp/actions/workflows/go.yml)
+[![CI](https://github.com/ecshreve/jepp/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/ecshreve/jepp/actions/workflows/ci.yml)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ecshreve/jepp)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ecshreve/jepp)](https://goreportcard.com/report/github.com/ecshreve/jepp)
 [![GoDoc](https://godoc.org/github.com/ecshreve/jepp?status.svg)](https://godoc.org/github.com/ecshreve/jepp)
