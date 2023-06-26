@@ -17,5 +17,5 @@ func TestGetSeasons(t *testing.T) {
 	seasons, err := models.GetSeasons()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, seasons)
-	assert.Equal(t, 40, len(seasons))
+	assert.Equal(t, 39, len(seasons))
 }

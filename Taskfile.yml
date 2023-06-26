@@ -65,8 +65,13 @@ tasks:
       - swag init -d cmd/server,pkg/server,pkg/models,pkg/utils
 
   sql:dump:
-    desc: Dumps the database to a file.
+    desc: WIP Dumps the database to a file.
     cmds:
-      - mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} --skip-comments --column-statistics=0 --databases jeppdb > dump.sql
-      - gzip dump.sql
-      - mv dump.sql.gz data/dump.sql.gz
+      - mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} --skip-comments --column-statistics=0 --databases ${DB_NAME} > data/${DB_NAME}_dump.sql
+      - gzip data/${DB_NAME}_dump.sql
+
+  sql:restore:
+    desc: WIP Restores the database from a file.
+    cmds:
+      - gunzip data/${DB_NAME}_dump.sql.gz
+      - mysql -u${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} < data/${DB_NAME}_dump.sql
