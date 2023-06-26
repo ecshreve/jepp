@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
 
 var db *sqlx.DB
@@ -18,6 +19,7 @@ type JeppDB struct {
 // GetDBHandler returns a new database handle.
 func GetDBHandle() *sqlx.DB {
 	if db != nil {
+		log.Debug("using existing database handle", "db", db)
 		return db
 	}
 
@@ -38,5 +40,6 @@ func GetDBHandle() *sqlx.DB {
 
 	// Get a database handle.
 	db = sqlx.MustOpen("mysql", cfg.FormatDSN())
+	log.Debug("created new database handle", "db", db)
 	return db
 }

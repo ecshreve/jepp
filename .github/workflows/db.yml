@@ -10,7 +10,6 @@ env:
   DB_NAME: testdb
   DB_USER: root
   DB_PASSWORD: root
-  RESTORE: .testdb_dump.sql
 
 jobs:
   test-db-models:
