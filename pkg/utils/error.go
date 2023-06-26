@@ -3,6 +3,8 @@ package utils
 import "github.com/gin-gonic/gin"
 
 // NewError creates an error in the gin context.
+//
+// TODO: log error in this helper function
 func NewError(ctx *gin.Context, status int, err error) {
 	er := HTTPError{
 		Code:    status,

@@ -85,3 +85,73 @@ func TestParseClueID(t *testing.T) {
 		})
 	}
 }
+
+func TestTruncate(t *testing.T) {
+	testcases := []struct {
+		desc     string
+		input    string
+		truncate int
+		pad      *string
+		expected string
+	}{
+		{
+			desc:     "string shorter than truncate, no pad",
+			input:    "hello",
+			truncate: 10,
+			expected: "hello",
+		},
+		{
+			desc:     "string shorter than truncate, pad",
+			input:    "hello",
+			truncate: 10,
+			pad:      utils.StringPtr("#"),
+			expected: "hello#####",
+		},
+		{
+			desc:     "string shorter than truncate, truncate greater than max, no pad",
+			input:    "hello",
+			truncate: 50,
+			expected: "hello",
+		},
+		{
+			desc:     "string shorter than truncate, truncate greater than max, pad",
+			input:    "hello",
+			truncate: 50,
+			pad:      utils.StringPtr("#"),
+			expected: "hello###################################",
+		},
+		{
+			desc:     "string longer than truncate, no pad",
+			input:    "hellohello",
+			truncate: 5,
+			expected: "hello",
+		},
+		{
+			desc:     "string longer than truncate, pad",
+			input:    "hellohello",
+			truncate: 5,
+			pad:      utils.StringPtr("#"),
+			expected: "hello",
+		},
+		{
+			desc:     "string longer than truncate, truncate longer than max, no pad",
+			input:    "hellohellohellohellohellohellohellohellohellohello",
+			truncate: 50,
+			expected: "hellohellohellohellohellohellohellohello",
+		},
+		{
+			desc:     "string longer than truncate, truncate longer than max, pad",
+			input:    "hellohellohellohellohellohellohellohellohellohello",
+			truncate: 50,
+			pad:      utils.StringPtr("#"),
+			expected: "hellohellohellohellohellohellohellohello",
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.desc, func(t *testing.T) {
+			actual := utils.Truncate(tc.input, tc.truncate, tc.pad)
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
+}
