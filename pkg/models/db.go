@@ -1,9 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -23,17 +20,12 @@ func GetDBHandle() *sqlx.DB {
 		return db
 	}
 
-	dbname := os.Getenv("DB_NAME")
-	dbuser := os.Getenv("DB_USER")
-	dbpass := os.Getenv("DB_PASS")
-	dbaddr := fmt.Sprintf("%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"))
-
 	cfg := mysql.NewConfig()
-	cfg.User = dbuser
-	cfg.Passwd = dbpass
+	cfg.User = "jepp"
+	cfg.Passwd = "jepp"
+	cfg.DBName = "jeppdb"
 	cfg.Net = "tcp"
-	cfg.Addr = dbaddr
-	cfg.DBName = dbname
+	cfg.Addr = "db:3306"
 	cfg.AllowNativePasswords = true
 	cfg.ParseTime = true
 	cfg.MaxAllowedPacket = 64 << 20

@@ -2,12 +2,12 @@ version: "3"
   
 tasks:
   build:
-    desc: Builds the docker image.
+    desc: Builds docker images via docker compose.
     cmds:
       - docker compose build
 
   run:
-    desc: Runs the docker image.
+    desc: Runs the docker compose project.
     deps:
       - docker:build
     cmds:
