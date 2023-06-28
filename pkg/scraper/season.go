@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ecshreve/jepp/pkg/models"
 	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/gocolly/colly/v2"
 	log "github.com/sirupsen/logrus"
@@ -70,14 +71,14 @@ func scrapeSeasons() ([]*mods.Season, error) {
 	return seasons, nil
 }
 
-func fillSeasons(db *mods.JeppDB) {
+func fillSeasons(db *models.JeppDB) {
 	seasons, err := scrapeSeasons()
 	if err != nil {
 		panic(err)
 	}
 
 	for _, season := range seasons {
-		if err := mods.InsertSeason(season); err != nil {
+		if err := db.InsertSeason(season); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -149,14 +150,14 @@ func scrapeSeasonGames(seasonID int64) ([]*mods.Game, error) {
 	return games, nil
 }
 
-func fillSeasonGames(db *mods.JeppDB, seasonID int64) {
+func fillSeasonGames(db *models.JeppDB, seasonID int64) {
 	games, err := scrapeSeasonGames(seasonID)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, game := range games {
-		if err := mods.InsertGame(game); err != nil {
+		if err := db.InsertGame(game); err != nil {
 			log.Fatal(err)
 		}
 	}

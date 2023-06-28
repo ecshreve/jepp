@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	mods "github.com/ecshreve/jepp/pkg/models"
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -35,7 +35,7 @@ func GameHandler(c *gin.Context) {
 	}
 
 	if filter.Random != nil {
-		games, err := mods.GetRandomGameMany(*filter.Limit)
+		games, err := db.GetRandomGameMany(*filter.Limit)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get random game"))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -47,19 +47,19 @@ func GameHandler(c *gin.Context) {
 	}
 
 	if filter.ID != nil {
-		game, err := mods.GetGame(*filter.ID)
+		game, err := db.GetGame(*filter.ID)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get game %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
 			return
 		}
 
-		gg := []mods.Game{*game}
+		gg := []models.Game{*game}
 		c.JSON(http.StatusOK, gg)
 		return
 	}
 
-	games, err := mods.GetGames(*filter.Limit)
+	games, err := db.GetGames(*filter.Limit)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get games"))
 		utils.NewError(c, http.StatusBadRequest, err)

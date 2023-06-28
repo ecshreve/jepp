@@ -34,7 +34,19 @@ tasks:
       - task: scraper:test
       - task: server:test
     cmds:
-      - go test ./pkg/...
+      - go test ./...
+
+  scrape:
+    desc: Runs the scraper.
+    generates:
+      - bin/scraper
+    sources:
+      - cmd/scrape/*
+      - pkg/scrape/*
+      - pkg/models/*
+      - pkg/utils/*
+    cmds:
+      - task: scraper:run
 
   serve:
     desc: Runs the server.
@@ -47,7 +59,7 @@ tasks:
       - pkg/models/*
       - pkg/utils/*
     cmds:
-      - task: server:run
+      - ./bin/server
 
   genswag:
     desc: Generates swagger docs for the API.

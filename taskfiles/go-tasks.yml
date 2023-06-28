@@ -9,4 +9,8 @@ tasks:
 
   build: go build -o bin/{{.CMD_NAME}} github.com/ecshreve/jepp/cmd/{{.CMD_NAME}}
   test: go test github.com/ecshreve/jepp/cmd/{{.CMD_NAME}}/...
-  run: bin/{{.CMD_NAME}}
+  run:
+    deps:
+      - task: build    
+    cmds:
+      - bin/{{.CMD_NAME}}

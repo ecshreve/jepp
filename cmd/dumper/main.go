@@ -5,6 +5,7 @@ import (
 	"os"
 
 	mods "github.com/ecshreve/jepp/pkg/models"
+	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -40,7 +41,7 @@ func dumpTables() {
 	f4, _ := os.Create("data/clue-dump.csv")
 	defer f4.Close()
 
-	db := mods.GetDBHandle()
+	db := sqlx.MustOpen("sqlite3", "data/sqlite/jepp.db")
 	if err := db.Select(&allSeasons, "SELECT * FROM season ORDER BY season_id DESC"); err != nil {
 		log.Fatal(err)
 	}

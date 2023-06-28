@@ -22,3 +22,15 @@ gunzip -c dump.sql.gz
 
 mysql -u <DB_USER> -p<DB_PASSWORD> -h <DB_HOST> -P <DB_PORT> -D <DB_NAME> < dump.sql
 ```
+
+## jepp.db
+
+The jepp.db file is a SQLite3 database file, containing the same data as the MySQL dump.
+
+It was created with the mysql-to-sqlite3 tool, using the following commands:
+
+```bash
+pip3 install mysql-to-sqlite3
+mysql2sqlite -f jepp.db -d jeppdb -u jepp -p
+<enter password>
+```

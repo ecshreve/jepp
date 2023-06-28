@@ -12,17 +12,18 @@ func main() {
 	if os.Getenv("JEPP_ENV") != "dev" {
 		log.Fatal("this script should only be run in a local development environment")
 	}
-	log.SetLevel(log.InfoLevel)
+	log.SetLevel(log.DebugLevel)
 	log.Info("Starting Jepp scraper...")
 
-	models.GetDBHandle()
-
+	// jdb := models.NewJeppDB("data/jepp.db")
+	jdb := models.NewJeppDB("data/sqlite/scrape.db")
+	num := scraper.ScrapeAndFillCluesForGame(jdb, 3109)
+	log.Infof("inserted %d clues", num)
 	// Change loop values to scrape different seasons.
-	for i := 15; i > 10; i-- {
-		if err := scraper.ScrapeSeason(int64(i)); err != nil {
-			log.Fatal(err)
-		}
-	}
-
+	// for i := 25; i > 24; i-- {
+	// 	if err := scraper.ScrapeSeason(jdb, int64(i)); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// }
 	log.Info("...done scraping")
 }
