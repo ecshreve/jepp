@@ -8,9 +8,9 @@ import (
 )
 
 func TestGetSeasons(t *testing.T) {
-	jdb := models.NewJeppDB("testdata/jepptest.db")
+	models.NewTestJeppDB()
 
-	seasons, err := jdb.GetSeasons()
+	seasons, err := models.GetSeasons()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, seasons)
 	assert.Equal(t, 39, len(seasons))

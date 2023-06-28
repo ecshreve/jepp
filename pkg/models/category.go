@@ -21,8 +21,7 @@ func (c *Category) Dump() []string {
 }
 
 // GetCategoryGameCount returns the number of games a category has appeared in.
-func (db *JeppDB) GetCategoryGameCount(categoryID int64) (int64, error) {
-
+func GetCategoryGameCount(categoryID int64) (int64, error) {
 	var count int64
 
 	err := db.Get(&count, "SELECT COUNT(DISTINCT game_id) FROM clue WHERE category_id = ?", categoryID)
@@ -34,7 +33,7 @@ func (db *JeppDB) GetCategoryGameCount(categoryID int64) (int64, error) {
 }
 
 // GetCategoryClueCount returns the number of clues a category has appeared in.
-func (db *JeppDB) GetCategoryClueCount(categoryID int64) (int64, error) {
+func GetCategoryClueCount(categoryID int64) (int64, error) {
 
 	var count int64
 
@@ -47,7 +46,7 @@ func (db *JeppDB) GetCategoryClueCount(categoryID int64) (int64, error) {
 }
 
 // InsertCategory inserts a category into the database.
-func (db *JeppDB) InsertCategory(name string) (*Category, error) {
+func InsertCategory(name string) (*Category, error) {
 
 	if name == "" {
 		return nil, oops.Errorf("cannot insert empty category")
@@ -74,7 +73,7 @@ func (db *JeppDB) InsertCategory(name string) (*Category, error) {
 }
 
 // UpdateCategory updates a category in the database.
-func (db *JeppDB) UpdateCategory(c *Category) error {
+func UpdateCategory(c *Category) error {
 
 	if c == nil {
 		return nil
@@ -95,7 +94,7 @@ func (db *JeppDB) UpdateCategory(c *Category) error {
 }
 
 // GetCategories returns all categories in the database.
-func (db *JeppDB) GetCategories(limit int64) ([]Category, error) {
+func GetCategories(limit int64) ([]Category, error) {
 	query := fmt.Sprintf("SELECT * FROM category ORDER BY category_id ASC LIMIT %d", limit)
 
 	var cc []Category
@@ -107,7 +106,7 @@ func (db *JeppDB) GetCategories(limit int64) ([]Category, error) {
 }
 
 // GetCategory returns the category with the given ID.
-func (db *JeppDB) GetCategory(categoryID int64) (*Category, error) {
+func GetCategory(categoryID int64) (*Category, error) {
 	query := fmt.Sprintf("SELECT * FROM category WHERE category_id=%d ORDER BY category_id DESC LIMIT 1", categoryID)
 
 	c := Category{}
@@ -118,7 +117,7 @@ func (db *JeppDB) GetCategory(categoryID int64) (*Category, error) {
 	return &c, nil
 }
 
-func (db *JeppDB) GetCategoryByName(categoryName string) (*Category, error) {
+func GetCategoryByName(categoryName string) (*Category, error) {
 	query := "SELECT * FROM category WHERE name = ? LIMIT 1"
 
 	c := Category{}
@@ -131,7 +130,7 @@ func (db *JeppDB) GetCategoryByName(categoryName string) (*Category, error) {
 }
 
 // GetRandomCategory returns a single category from the database.
-func (db *JeppDB) GetRandomCategory() (*Category, error) {
+func GetRandomCategory() (*Category, error) {
 	c := Category{}
 	if err := db.Get(&c, "SELECT * FROM category ORDER BY RAND() LIMIT 1"); err != nil {
 		return nil, oops.Wrapf(err, "getting random category")
@@ -141,7 +140,7 @@ func (db *JeppDB) GetRandomCategory() (*Category, error) {
 }
 
 // GetRandomCategoryMany returns `limit` random categories from the database.
-func (db *JeppDB) GetRandomCategoryMany(limit int64) ([]Category, error) {
+func GetRandomCategoryMany(limit int64) ([]Category, error) {
 	query := fmt.Sprintf("SELECT * FROM category ORDER BY RANDOM() LIMIT %d", limit)
 
 	var cc []Category
@@ -153,7 +152,7 @@ func (db *JeppDB) GetRandomCategoryMany(limit int64) ([]Category, error) {
 }
 
 // GetCategoriesForGame returns all categories for a given game.
-func (db *JeppDB) GetCategoriesForGame(gameID int64) ([]Category, error) {
+func GetCategoriesForGame(gameID int64) ([]Category, error) {
 	var cc []Category
 	if err := db.Select(&cc, "SELECT clue.category_id, category.name FROM clue JOIN category ON clue.category_id = category.category_id WHERE game_id=? GROUP BY category_id LIMIT 20", gameID); err != nil {
 		return nil, oops.Wrapf(err, "could not get categories for game %d", gameID)

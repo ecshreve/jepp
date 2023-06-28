@@ -9,14 +9,14 @@ tasks:
   run:
     desc: Runs the docker compose project.
     deps:
-      - docker:build
+      - task: build
     cmds:
       - docker compose up -d
 
   push-digital-ocean:
     desc: Pushes the docker image to the digital ocean container registry.
     deps:
-      - docker:build
+      - task: build
     cmds:
       - docker push registry.digitalocean.com/shreggie/jepp:custom
 

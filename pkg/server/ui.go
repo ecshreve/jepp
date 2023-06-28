@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -11,19 +12,19 @@ import (
 
 // BaseUIHandler handles the base UI route.
 func BaseUIHandler(c *gin.Context) {
-	clue, err := db.GetRandomClue()
+	clue, err := models.GetRandomClue()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "couldn't fetch random clue"})
 		return
 	}
 
-	cat, err := db.GetCategory(clue.CategoryID)
+	cat, err := models.GetCategory(clue.CategoryID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "couldn't fetch category for clue"})
 		return
 	}
 
-	game, err := db.GetGame(clue.GameID)
+	game, err := models.GetGame(clue.GameID)
 	if err != nil {
 		utils.NewError(c, http.StatusBadRequest, oops.Wrapf(err, "couldn't fetch game for clue"))
 		return
@@ -31,7 +32,7 @@ func BaseUIHandler(c *gin.Context) {
 
 	// TODO: validation
 	clueJSON, _ := json.Marshal(clue)
-	numClues, _ := db.CountClues()
+	numClues, _ := models.CountClues()
 
 	c.HTML(200, "base.html.tpl", gin.H{
 		"NumClues": numClues,

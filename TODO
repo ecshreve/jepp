@@ -1,7 +1,7 @@
 JEPP TODOS:
   tweaks:
-    ☐ swap columns on homepage
-    ☐ add "info" card above example on homepage
+    ✔ swap columns on homepage @done(23-06-28 23:04)
+    ✔ add "info" card above example on homepage @done(23-06-28 23:03)
 
   features:
     pagination:
@@ -16,12 +16,12 @@ JEPP TODOS:
       ☐ requests per route
 
     rate-limiting:
-      ☐ add rate limiting to api
+      ✔ add rate limiting to api @done(23-06-28 23:03)
         - maybe not needed, rate limiting done via cloudflare
     
   chores:
     ☐ add test coverage
-    ☐ godoc comments / release package
+    ✔ godoc comments / release package @done(23-06-28 23:03)
       - added github action to dump sql and attach to release
     ☐ give endpoint descriptions a once over
     ☐ add codecov

@@ -37,7 +37,7 @@ func (g Game) String() string {
 }
 
 // InsertGame inserts a game into the database.
-func (db *JeppDB) InsertGame(g *Game) error {
+func InsertGame(g *Game) error {
 	if g == nil {
 		return nil
 	}
@@ -61,7 +61,7 @@ func (db *JeppDB) InsertGame(g *Game) error {
 // values ordered by game date, with most recent first, limited to 100 results.
 //
 // TODO: have this take a "lastClueID" arg or something for dumb pagination.
-func (db *JeppDB) GetGames(limit int64) ([]Game, error) {
+func GetGames(limit int64) ([]Game, error) {
 	query := fmt.Sprintf("SELECT * FROM game ORDER BY game_date DESC LIMIT %d", limit)
 
 	games := []Game{}
@@ -73,7 +73,7 @@ func (db *JeppDB) GetGames(limit int64) ([]Game, error) {
 }
 
 // GetGamesBySeason returns a list of games in the database for a given season.
-func (db *JeppDB) GetGamesBySeason(seasonID int64) ([]Game, error) {
+func GetGamesBySeason(seasonID int64) ([]Game, error) {
 	query := fmt.Sprintf("SELECT * FROM game WHERE season_id=%d ORDER BY game_date DESC LIMIT 300", seasonID)
 
 	var gg []Game
@@ -85,7 +85,7 @@ func (db *JeppDB) GetGamesBySeason(seasonID int64) ([]Game, error) {
 }
 
 // GetGame returns a single game from the database.
-func (db *JeppDB) GetGame(gameID int64) (*Game, error) {
+func GetGame(gameID int64) (*Game, error) {
 	query := fmt.Sprintf("SELECT * FROM game WHERE game_id=%d LIMIT 1", gameID)
 
 	g := Game{}
@@ -97,7 +97,7 @@ func (db *JeppDB) GetGame(gameID int64) (*Game, error) {
 }
 
 // GetRandomGame returns a single game from the database.
-func (db *JeppDB) GetRandomGame() (*Game, error) {
+func GetRandomGame() (*Game, error) {
 	g := Game{}
 	if err := db.Get(&g, "SELECT * FROM game ORDER BY RANDOM() LIMIT 1"); err != nil {
 		return nil, oops.Wrapf(err, "getting gid")
@@ -107,7 +107,7 @@ func (db *JeppDB) GetRandomGame() (*Game, error) {
 }
 
 // GetRandomGameMany returns `limit` random games from the database.
-func (db *JeppDB) GetRandomGameMany(limit int64) ([]Game, error) {
+func GetRandomGameMany(limit int64) ([]Game, error) {
 	query := fmt.Sprintf("SELECT * FROM game ORDER BY RANDOM() LIMIT %d", limit)
 
 	var gg []Game

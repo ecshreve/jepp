@@ -35,7 +35,7 @@ func GameHandler(c *gin.Context) {
 	}
 
 	if filter.Random != nil {
-		games, err := db.GetRandomGameMany(*filter.Limit)
+		games, err := models.GetRandomGameMany(*filter.Limit)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get random game"))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -47,7 +47,7 @@ func GameHandler(c *gin.Context) {
 	}
 
 	if filter.ID != nil {
-		game, err := db.GetGame(*filter.ID)
+		game, err := models.GetGame(*filter.ID)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get game %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -59,7 +59,7 @@ func GameHandler(c *gin.Context) {
 		return
 	}
 
-	games, err := db.GetGames(*filter.Limit)
+	games, err := models.GetGames(*filter.Limit)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get games"))
 		utils.NewError(c, http.StatusBadRequest, err)
