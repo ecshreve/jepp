@@ -9,8 +9,10 @@ COPY go.sum ./
 RUN go mod download
 
 COPY ./cmd/server ./cmd/server
-COPY ./data/sqlite ./data/sqlite
-COPY ./pkg ./pkg
+COPY ./data/sqlite/jepp.db ./data/sqlite/jepp.db
+COPY ./pkg/models ./pkg/models
+COPY ./pkg/server ./pkg/server
+COPY ./pkg/utils ./pkg/utils
 COPY ./docs ./docs
 COPY ./static/site ./static/site
 
