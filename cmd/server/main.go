@@ -18,7 +18,9 @@ import (
 //	@license.name	MIT License
 //	@license.url	https://github.com/ecshreve/jepp/blob/main/LICENSE
 func main() {
-	docs.SwaggerInfo.Host = os.Getenv("API_HOST")
+	if os.Getenv("JEPP_ENV") == "prod" {
+		docs.SwaggerInfo.Host = "jepp.app"
+	}
 
 	log.SetLevel(log.DebugLevel)
 	log.Info("Starting Jepp API server...")

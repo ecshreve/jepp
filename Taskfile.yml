@@ -40,8 +40,6 @@ tasks:
     desc: Runs the server.
     deps:
       - task: server:build
-    generates:
-      - bin/server
     sources:
       - cmd/server/*
       - pkg/server/*.go
@@ -49,7 +47,7 @@ tasks:
       - pkg/models/*
       - pkg/utils/*
     cmds:
-      - task: server:run
+      - task: docker:run
 
   genswag:
     desc: Generates swagger docs for the API.
