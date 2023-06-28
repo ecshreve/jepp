@@ -3,6 +3,7 @@ package scraper
 import (
 	"fmt"
 
+	"github.com/ecshreve/jepp/pkg/models"
 	mods "github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gocolly/colly/v2"
@@ -79,17 +80,17 @@ func scrapeGameClues(gameID int64) (map[int64]*mods.Clue, map[int64]string) {
 	return clueMap, catMap
 }
 
-func scrapeAndFillCluesForGame(db *mods.JeppDB, gid int64) int {
+func ScrapeAndFillCluesForGame(db *models.JeppDB, gid int64) int {
 	clues, cats := scrapeGameClues(gid)
 
 	for clueID, clue := range clues {
-		actual, err := mods.GetCategoryByName(cats[clueID])
+		actual, err := db.GetCategoryByName(cats[clueID])
 		if actual != nil {
 			clue.CategoryID = actual.CategoryID
 			continue
 		}
 
-		inserted, err := mods.InsertCategory(cats[clueID])
+		inserted, err := db.InsertCategory(cats[clueID])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -97,7 +98,7 @@ func scrapeAndFillCluesForGame(db *mods.JeppDB, gid int64) int {
 	}
 
 	for _, clue := range clues {
-		if err := mods.InsertClue(clue); err != nil {
+		if err := db.InsertClue(clue); err != nil {
 			log.Fatal(err)
 		}
 	}

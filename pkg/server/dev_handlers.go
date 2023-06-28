@@ -3,7 +3,7 @@ package server
 import (
 	"strconv"
 
-	mods "github.com/ecshreve/jepp/pkg/models"
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,14 +27,14 @@ func DebugUIHandler(c *gin.Context) {
 		return
 	}
 
-	clue, _ := mods.GetClue(clueID)
-	game, _ := mods.GetGame(clue.GameID)
-	category, _ := mods.GetCategory(clue.CategoryID)
+	clue, _ := db.GetClue(clueID)
+	game, _ := db.GetGame(clue.GameID)
+	category, _ := db.GetCategory(clue.CategoryID)
 
 	dat := struct {
-		*mods.Clue
-		*mods.Game
-		*mods.Category
+		*models.Clue
+		*models.Game
+		*models.Category
 	}{
 		Clue:     clue,
 		Game:     game,
@@ -57,19 +57,19 @@ func DebugUIHandler(c *gin.Context) {
 // 		s.QZ.Total++
 // 	}
 
-// 	clue, err := mods.GetRandomClue(nil)
+// 	clue, err := db.GetRandomClue(nil)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch random clue"})
 // 		return
 // 	}
 
-// 	cat, err := mods.GetCategory(clue.CategoryID)
+// 	cat, err := db.GetCategory(clue.CategoryID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
 // 		return
 // 	}
 
-// 	game, err := mods.GetGame(clue.GameID)
+// 	game, err := db.GetGame(clue.GameID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch game for clue"})
 // 		return
@@ -95,7 +95,7 @@ func DebugUIHandler(c *gin.Context) {
 // 		return
 // 	}
 
-// 	clue, err := mods.GetClue(clueID)
+// 	clue, err := db.GetClue(clueID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch clue for clueID"})
 // 		return
@@ -108,7 +108,7 @@ func DebugUIHandler(c *gin.Context) {
 // 		return
 // 	}
 
-// 	clues, err := mods.ListClues(models.CluesParams{GameID: clue.GameID, CategoryID: categoryID})
+// 	clues, err := db.ListClues(models.CluesParams{GameID: clue.GameID, CategoryID: categoryID})
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch clues for categoryID"})
 // 		return
@@ -134,19 +134,19 @@ func DebugUIHandler(c *gin.Context) {
 // 		return
 // 	}
 
-// 	clue, err := mods.GetClue(clueID)
+// 	clue, err := db.GetClue(clueID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch clue for clueID"})
 // 		return
 // 	}
 
-// 	game, err := mods.GetGame(clue.GameID)
+// 	game, err := db.GetGame(clue.GameID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch game for clue"})
 // 		return
 // 	}
 
-// 	category, err := mods.GetCategory(clue.CategoryID)
+// 	category, err := db.GetCategory(clue.CategoryID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch category for clue"})
 // 		return
@@ -154,7 +154,7 @@ func DebugUIHandler(c *gin.Context) {
 
 // 	clueJSON := s.jsonHelper(clue)
 
-// 	categoriesForGame, err := mods.GetCategoriesForGame(clue.GameID)
+// 	categoriesForGame, err := db.GetCategoriesForGame(clue.GameID)
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch categories for game"})
 // 		return
@@ -169,7 +169,7 @@ func DebugUIHandler(c *gin.Context) {
 // 		})
 // 	}
 
-// 	cluesForGame, err := mods.ListClues(models.CluesParams{GameID: clue.GameID})
+// 	cluesForGame, err := db.ListClues(models.CluesParams{GameID: clue.GameID})
 // 	if err != nil {
 // 		c.JSON(400, gin.H{"error": "couldn't fetch clues for game"})
 // 		return
@@ -218,8 +218,8 @@ func DebugUIHandler(c *gin.Context) {
 // }
 
 // func jsonHelper(clue *models.Clue) map[string]interface{} {
-// 	cat, _ := mods.GetCategory(clue.CategoryID)
-// 	game, _ := mods.GetGame(clue.GameID)
+// 	cat, _ := db.GetCategory(clue.CategoryID)
+// 	game, _ := db.GetGame(clue.GameID)
 
 // 	return map[string]interface{}{
 // 		"clueID":       clue.ClueID,

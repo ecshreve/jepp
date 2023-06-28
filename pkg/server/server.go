@@ -5,28 +5,28 @@ import (
 	_ "github.com/ecshreve/jepp/docs"
 	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
-	"github.com/jmoiron/sqlx"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+var db *models.JeppDB
+
 // Server is the API server.
 type Server struct {
 	ID     string
 	Clock  clock.Clock
 	Router *gin.Engine
-	JDB    *sqlx.DB
 }
 
 // NewServer returns a new API server.
-func NewServer() *Server {
+func NewServer(jdb *models.JeppDB) *Server {
 	s := &Server{
 		ID:    "SERVER",
 		Clock: clock.New(),
-		JDB:   models.GetDBHandle(),
 	}
+	db = jdb
 	s.Router = registerHandlers()
 
 	// TODO: fix this

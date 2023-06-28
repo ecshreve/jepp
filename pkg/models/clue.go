@@ -50,7 +50,7 @@ func (c *Clue) String() string {
 }
 
 // InsertClue inserts a clue into the database.
-func InsertClue(c *Clue) error {
+func (db *JeppDB) InsertClue(c *Clue) error {
 	if c == nil {
 		return nil
 	}
@@ -70,7 +70,7 @@ func InsertClue(c *Clue) error {
 }
 
 // UpdateClue updates a category in the database.
-func UpdateClue(c *Clue) error {
+func (db *JeppDB) UpdateClue(c *Clue) error {
 	if c == nil {
 		return nil
 	}
@@ -98,7 +98,7 @@ type CluesParams struct {
 
 // ListClues returns a list of clues in the database, defaults to returning
 // values ordered by game id descending.
-func GetClues(params CluesParams) ([]Clue, error) {
+func (db *JeppDB) GetClues(params CluesParams) ([]Clue, error) {
 	query := "SELECT * FROM clue"
 
 	if params.GameID != 0 {
@@ -125,7 +125,7 @@ func GetClues(params CluesParams) ([]Clue, error) {
 }
 
 // GetClue returns a single clue from the database.
-func GetClue(clueID int64) (*Clue, error) {
+func (db *JeppDB) GetClue(clueID int64) (*Clue, error) {
 	query := fmt.Sprintf("SELECT * FROM clue WHERE clue_id=%d ORDER BY clue_id DESC LIMIT 1", clueID)
 
 	c := Clue{}
@@ -137,9 +137,9 @@ func GetClue(clueID int64) (*Clue, error) {
 }
 
 // GetClue returns a single clue from the database.
-func GetRandomClue() (*Clue, error) {
+func (db *JeppDB) GetRandomClue() (*Clue, error) {
 	c := Clue{}
-	if err := db.Get(&c, "SELECT * FROM clue ORDER BY RAND() LIMIT 1"); err != nil {
+	if err := db.Get(&c, "SELECT * FROM clue ORDER BY RANDOM() LIMIT 1"); err != nil {
 		return nil, oops.Wrapf(err, "getting random clue")
 	}
 
@@ -147,8 +147,8 @@ func GetRandomClue() (*Clue, error) {
 }
 
 // GetRandomClueMany returns `limit` random clues from the database.
-func GetRandomClueMany(limit int64) ([]Clue, error) {
-	query := fmt.Sprintf("SELECT * FROM clue ORDER BY RAND() LIMIT %d", limit)
+func (db *JeppDB) GetRandomClueMany(limit int64) ([]Clue, error) {
+	query := fmt.Sprintf("SELECT * FROM clue ORDER BY RANDOM() LIMIT %d", limit)
 
 	var cc []Clue
 	if err := db.Select(&cc, query); err != nil {
@@ -159,7 +159,7 @@ func GetRandomClueMany(limit int64) ([]Clue, error) {
 }
 
 // CountClues returns the number of clues in the database.
-func CountClues() (int64, error) {
+func (db *JeppDB) CountClues() (int64, error) {
 	var count int64
 	if err := db.Get(&count, "SELECT COUNT(*) FROM clue"); err != nil {
 		return -1, oops.Wrapf(err, "could not get count of clues")

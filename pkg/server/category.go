@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	mods "github.com/ecshreve/jepp/pkg/models"
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -35,7 +35,7 @@ func CategoryHandler(c *gin.Context) {
 	}
 
 	if filter.Random != nil {
-		category, err := mods.GetRandomCategoryMany(*filter.Limit)
+		category, err := db.GetRandomCategoryMany(*filter.Limit)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get random category"))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -47,18 +47,18 @@ func CategoryHandler(c *gin.Context) {
 	}
 
 	if filter.ID != nil {
-		category, err := mods.GetCategory(*filter.ID)
+		category, err := db.GetCategory(*filter.ID)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get category %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
 			return
 		}
-		cc := []mods.Category{*category}
+		cc := []models.Category{*category}
 		c.JSON(http.StatusOK, cc)
 		return
 	}
 
-	cats, err := mods.GetCategories(*filter.Limit)
+	cats, err := db.GetCategories(*filter.Limit)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get categories"))
 		utils.NewError(c, http.StatusBadRequest, err)

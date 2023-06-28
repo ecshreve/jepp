@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	mods "github.com/ecshreve/jepp/pkg/models"
+	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/ecshreve/jepp/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
@@ -44,7 +44,7 @@ func ClueHandler(c *gin.Context) {
 	}
 
 	if filter.Random != nil {
-		clues, err := mods.GetRandomClueMany(*filter.Limit)
+		clues, err := db.GetRandomClueMany(*filter.Limit)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get random clue"))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -56,26 +56,26 @@ func ClueHandler(c *gin.Context) {
 	}
 
 	if filter.ID != nil {
-		clue, err := mods.GetClue(*filter.ID)
+		clue, err := db.GetClue(*filter.ID)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get clue %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
 			return
 		}
 
-		cc := []mods.Clue{*clue}
+		cc := []models.Clue{*clue}
 		c.JSON(http.StatusOK, cc)
 		return
 	}
 
-	cluesParams := &mods.CluesParams{
+	cluesParams := &models.CluesParams{
 		GameID:     filter.GameID,
 		CategoryID: filter.CategoryID,
 		Page:       *filter.Page,
 		Limit:      *filter.Limit,
 	}
 
-	clues, err := mods.GetClues(*cluesParams)
+	clues, err := db.GetClues(*cluesParams)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clues"))
 		utils.NewError(c, http.StatusBadRequest, err)
