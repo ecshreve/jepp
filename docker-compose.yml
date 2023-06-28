@@ -29,20 +29,23 @@ services:
     restart: unless-stopped
     environment:
       JEPP_ENV: ${JEPP_ENV}
+      JEPP_DB_HOST: db
     ports:
       - 8880:8880
     depends_on:
       db:
         condition: service_healthy
 
-  adminer:
-    image: adminer
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - 8881:8080
+  # useful for local development
+  #
+  # adminer:
+  #   image: adminer
+  #   restart: unless-stopped
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   ports:
+  #     - 8881:8080
 
 
 volumes:
