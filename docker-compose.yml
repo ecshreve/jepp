@@ -1,54 +1,12 @@
 version: '3.1'
 
 services:  
-  db:
-    image: mariadb:10.11.3
-    restart: unless-stopped
-    environment:
-      MARIADB_DATABASE: jeppdb
-      MARIADB_USER: jepp
-      MARIADB_PASSWORD: jepp
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
-      MARIADB_MYSQL_LOCALHOST_USER: true
-    ports:
-      - 3306:3306
-    volumes:
-      - db-data:/var/lib/mysql
-      - ./data/dump.sql.gz:/docker-entrypoint-initdb.d/dump.sql.gz
-    healthcheck:
-      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 30s
-      timeout: 30s
-      retries: 10
-      start_period: 30s
-
-  api:
-    build: 
+  app:
+    build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       JEPP_ENV: ${JEPP_ENV}
-      JEPP_DB_HOST: db
-      JEPP_DB_PASSWORD: ""
     ports:
       - 8880:8880
-    depends_on:
-      db:
-        condition: service_healthy
-
-  # useful for local development
-  #
-  # adminer:
-  #   image: adminer
-  #   restart: unless-stopped
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   ports:
-  #     - 8881:8080
-
-
-volumes:
-  db-data:
-    driver: local

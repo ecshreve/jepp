@@ -66,7 +66,6 @@ func (db *JeppDB) InsertCategory(name string) (*Category, error) {
 	if err := tx.Commit(); err == nil {
 		lid, _ := res.LastInsertId()
 		cat = &Category{CategoryID: lid, Name: name}
-		db.LastCategoryID = lid
 		log.Debugf("inserted category -- %+v", cat)
 	} else {
 		return nil, oops.Wrapf(err, "could not insert category: %v", name)
