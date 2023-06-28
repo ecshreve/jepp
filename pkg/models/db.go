@@ -25,7 +25,6 @@ func GetDBHandle() *sqlx.DB {
 
 	cfg := mysql.NewConfig()
 	cfg.User = "root"
-	cfg.Passwd = os.Getenv("JEPP_DB_PASSWORD")
 	cfg.DBName = "jeppdb"
 	cfg.Net = "tcp"
 	cfg.Addr = fmt.Sprintf("%s:3306", os.Getenv("JEPP_DB_HOST"))

@@ -7,9 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  JEPP_ENV: ci
   JEPP_DB_HOST: localhost
-  JEPP_DB_PASSWORD: root
 
 jobs:
   test-with-db:
@@ -28,23 +26,9 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v3
-
-      - name: Initialize MySQL
-        run: sudo systemctl start mysql.service
-
-      - name: Initialize first database
-        run: |
-          mysql -e 'CREATE DATABASE jeppdb;' \
-          -u root -proot
-
-      - name: Boost user perms
-        run: |
-          mysql -e "ALTER USER 'root'@'localhost' \
-          IDENTIFIED WITH mysql_native_password BY 'root';" \
-          -u root -proot
-
-      - name: Restore database
-        run: gunzip -c ./data/dump.sql.gz | mysql -u root -proot jeppdb
+        
+      - name: Start db container
+        run: docker compose up -d db
 
       - name: Build
         run: task build
