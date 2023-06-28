@@ -1,11 +1,8 @@
 package models
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,17 +20,8 @@ func GetDBHandle() *sqlx.DB {
 		return db
 	}
 
-	cfg := mysql.NewConfig()
-	cfg.User = "root"
-	cfg.DBName = "jeppdb"
-	cfg.Net = "tcp"
-	cfg.Addr = fmt.Sprintf("%s:3306", os.Getenv("JEPP_DB_HOST"))
-	cfg.AllowNativePasswords = true
-	cfg.ParseTime = true
-	cfg.MaxAllowedPacket = 64 << 20
-
 	// Get a database handle.
-	db = sqlx.MustOpen("mysql", cfg.FormatDSN())
+	db = sqlx.MustConnect("sqlite3", "../../data/jepp.db")
 	log.Debug("created new database handle", "db", db)
 	return db
 }
