@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     environment:
       MARIADB_DATABASE: jeppdb
+      MARIADB_USER: jepp
+      MARIADB_PASSWORD: jepp
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
       MARIADB_MYSQL_LOCALHOST_USER: true
     ports:
