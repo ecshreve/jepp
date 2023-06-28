@@ -1,7 +1,6 @@
 package models_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/ecshreve/jepp/pkg/models"
@@ -9,8 +8,6 @@ import (
 )
 
 func TestGetSeasons(t *testing.T) {
-	os.Setenv("DB_NAME", "testdb")
-
 	testdb := models.GetDBHandle()
 	defer testdb.Close()
 

@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -21,14 +24,17 @@ func GetDBHandle() *sqlx.DB {
 	}
 
 	cfg := mysql.NewConfig()
-	cfg.User = "jepp"
-	cfg.Passwd = "jepp"
+	cfg.User = "root"
 	cfg.DBName = "jeppdb"
 	cfg.Net = "tcp"
-	cfg.Addr = "db:3306"
+	cfg.Addr = fmt.Sprintf("%s:3306", os.Getenv("JEPP_DB_HOST"))
 	cfg.AllowNativePasswords = true
 	cfg.ParseTime = true
 	cfg.MaxAllowedPacket = 64 << 20
+
+	if os.Getenv("JEPP_ENV") == "ci" {
+		cfg.Passwd = "root"
+	}
 
 	// Get a database handle.
 	db = sqlx.MustOpen("mysql", cfg.FormatDSN())

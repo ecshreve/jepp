@@ -7,12 +7,8 @@ on:
     branches: [ "main" ]
 
 env:
-  DB_NAME: testdb
-  DB_USER: root
-  DB_PASS: root
-  DB_HOST: localhost
-  DB_PORT: 3306
-  JEPP_ENV: test
+  JEPP_ENV: ci
+  JEPP_DB_HOST: localhost
 
 jobs:
   test-with-db:
@@ -37,17 +33,17 @@ jobs:
 
       - name: Initialize first database
         run: |
-          mysql -e 'CREATE DATABASE ${{ env.DB_NAME }};' \
-          -u${{ env.DB_USER }} -p${{ env.DB_PASS }}
+          mysql -e 'CREATE DATABASE jeppdb;' \
+          -u root -proot
 
       - name: Boost user perms
         run: |
-          mysql -e "ALTER USER '${{ env.DB_USER }}'@'localhost' \
+          mysql -e "ALTER USER 'root'@'localhost' \
           IDENTIFIED WITH mysql_native_password BY 'root';" \
-          -u${{ env.DB_USER }} -p${{ env.DB_PASS }}
+          -u root -proot
 
-      - name: Restore test database
-        run: task sql:restore
+      - name: Restore database
+        run: gunzip -c ./data/dump.sql.gz | mysql -u root -proot jeppdb
 
       - name: Build
         run: task build
