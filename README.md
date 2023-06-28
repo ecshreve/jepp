@@ -1,6 +1,6 @@
 # [jepp](https://jepp.app)
 
-API fun with Jeopardy! Access >300k Jeopardy clues scraped from [j-archive] via a simple api.
+API fun with Jeopardy! Access >100k Jeopardy clues scraped from [j-archive] via a simple api.
 
 
 [![CI](https://github.com/ecshreve/jepp/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/ecshreve/jepp/actions/workflows/ci.yml)
@@ -55,7 +55,8 @@ type Filter struct {
 
 ## Frontend / UI
 
-- The ui is served from the `/` endpoint and is a simple html page that displays the swagger docs and some other info
+- The ui is served from the `/` endpoint and is an html template that displays the swagger docs, some
+	general information, and a sample request.
 - The embedded swagger ui provides runnable request / response examples and type references.
 
 ## Swagger Docs
@@ -65,6 +66,12 @@ type Filter struct {
 - These problems seem to be solved after breaking up and organizing the taskfiles better.
 
 # DB
+
+Currently the app uses a file based sqlite database. Below are some notes on the deprecated mysql setup.
+All in all, the 15 seasons of data currently in the DB only end up as ~25 MB .sql file. Using
+sqlite removed the need to run a mysql server and made the app easier to deploy and test.
+
+## Notes on deprecated mysql setup
 
 Getting the data into the database started as a manual process, and hasn't been automated yet because the data is all there and I haven't needed to import / export it recently.
 
@@ -77,7 +84,10 @@ Here's how I went about doing it initially:
 
 
 
-# Data Scraping
+## Data Scraping
+
+note: all the scraping was done against the mysql databse, not the current sqlite setup (though I did 
+some brief testing and things seemed to still work for the most part _ymmv_)
 
 The [scraper](pkg/scraper/) package contains the code to scrape [j-archive] for jeopardy clues and write the data to a mysql database. [Colly] is the package use to scrape the data and [sqlx] is used to write the data to the db. The scraping happened in a few passes, more or less following these steps:
 
@@ -99,6 +109,7 @@ Get all the clues for each game in each season and populate the category and clu
 - [jservice](https://jservice.io/)
 - [jservice repo](https://github.com/sottenad/jService)
 - [jeppy](https://github.com/ecshreve/jeppy)
+- [illustrated sqlx](https://jmoiron.github.io/sqlx/)
 
 [sqlx]: <https://github.com/jmoiron/sqlx>
 [gin]: <https://github.com/gin-gonic/gin>
