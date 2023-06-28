@@ -11,8 +11,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var db *models.JeppDB
-
 // Server is the API server.
 type Server struct {
 	ID     string
@@ -21,12 +19,12 @@ type Server struct {
 }
 
 // NewServer returns a new API server.
-func NewServer(jdb *models.JeppDB) *Server {
+func NewServer() *Server {
 	s := &Server{
 		ID:    "SERVER",
 		Clock: clock.New(),
 	}
-	db = jdb
+	models.NewJeppDB()
 	s.Router = registerHandlers()
 
 	// TODO: fix this

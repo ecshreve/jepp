@@ -44,7 +44,7 @@ func ClueHandler(c *gin.Context) {
 	}
 
 	if filter.Random != nil {
-		clues, err := db.GetRandomClueMany(*filter.Limit)
+		clues, err := models.GetRandomClueMany(*filter.Limit)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get random clue"))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -56,7 +56,7 @@ func ClueHandler(c *gin.Context) {
 	}
 
 	if filter.ID != nil {
-		clue, err := db.GetClue(*filter.ID)
+		clue, err := models.GetClue(*filter.ID)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get clue %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -75,7 +75,7 @@ func ClueHandler(c *gin.Context) {
 		Limit:      *filter.Limit,
 	}
 
-	clues, err := db.GetClues(*cluesParams)
+	clues, err := models.GetClues(*cluesParams)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get clues"))
 		utils.NewError(c, http.StatusBadRequest, err)

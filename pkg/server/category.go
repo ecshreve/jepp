@@ -35,7 +35,7 @@ func CategoryHandler(c *gin.Context) {
 	}
 
 	if filter.Random != nil {
-		category, err := db.GetRandomCategoryMany(*filter.Limit)
+		category, err := models.GetRandomCategoryMany(*filter.Limit)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get random category"))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -47,7 +47,7 @@ func CategoryHandler(c *gin.Context) {
 	}
 
 	if filter.ID != nil {
-		category, err := db.GetCategory(*filter.ID)
+		category, err := models.GetCategory(*filter.ID)
 		if err != nil {
 			log.Error(oops.Wrapf(err, "unable to get category %d", *filter.ID))
 			utils.NewError(c, http.StatusBadRequest, err)
@@ -58,7 +58,7 @@ func CategoryHandler(c *gin.Context) {
 		return
 	}
 
-	cats, err := db.GetCategories(*filter.Limit)
+	cats, err := models.GetCategories(*filter.Limit)
 	if err != nil {
 		log.Error(oops.Wrapf(err, "unable to get categories"))
 		utils.NewError(c, http.StatusBadRequest, err)

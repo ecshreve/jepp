@@ -28,7 +28,7 @@ func (s Season) String() string {
 }
 
 // InsertSeason inserts a season into the database.
-func (db *JeppDB) InsertSeason(s *Season) error {
+func InsertSeason(s *Season) error {
 	if s == nil {
 		return nil
 	}
@@ -50,7 +50,7 @@ func (db *JeppDB) InsertSeason(s *Season) error {
 
 // GetSeasons returns a list of seasons in the database, defaults to returning
 // values ordered by season id, with most recent first.
-func (db *JeppDB) GetSeasons() ([]Season, error) {
+func GetSeasons() ([]Season, error) {
 	seasons := []Season{}
 	if err := db.Select(&seasons, "SELECT * FROM season ORDER BY season_id DESC LIMIT 100"); err != nil {
 		return nil, oops.Wrapf(err, "could not list seasons")

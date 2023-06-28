@@ -4,15 +4,9 @@ dotenv: ['.env', '{{.ENV}}/.env.', '{{.HOME}}/.env']
 
 includes:
   docker: ./taskfiles/docker-tasks.yml
-  dumper: 
+  jepp:
     taskfile: ./taskfiles/go-tasks.yml
-    vars: {CMD_NAME: dumper}
-  scraper: 
-    taskfile: ./taskfiles/go-tasks.yml
-    vars: {CMD_NAME: scrape}
-  server: 
-    taskfile: ./taskfiles/go-tasks.yml
-    vars: {CMD_NAME: server}
+    vars: {CMD_NAME: jepp}
   
 tasks:
   default:
@@ -23,65 +17,24 @@ tasks:
   build:
     desc: Builds all binaries.
     deps:
-      - task: dumper:build
-      - task: scraper:build
-      - task: server:build
+      - task: jepp:build
     
   test:
     desc: Runs all tests.
     deps:
-      - task: dumper:test
-      - task: scraper:test
-      - task: server:test
+      - task: jepp:test
     cmds:
       - go test ./...
-
-  scrape:
-    desc: Runs the scraper.
-    generates:
-      - bin/scraper
-    sources:
-      - cmd/scrape/*
-      - pkg/scrape/*
-      - pkg/models/*
-      - pkg/utils/*
-    cmds:
-      - task: scraper:run
 
   serve:
     desc: Runs the server.
     deps:
-      - task: server:build
+      - task: jepp:build
     sources:
-      - cmd/server/*
+      - cmd/jepp/*
       - pkg/server/*.go
       - pkg/server/templates/**/*
       - pkg/models/*
       - pkg/utils/*
     cmds:
-      - ./bin/server
-
-  genswag:
-    desc: Generates swagger docs for the API.
-    generates:
-      - docs/*
-    sources:
-      - cmd/server/*
-      - pkg/server/*
-      - pkg/models/*
-      - pkg/utils/*
-    cmds:
-      - swag fmt -d cmd/server,pkg/server,pkg/models,pkg/utils
-      - swag init -d cmd/server,pkg/server,pkg/models,pkg/utils
-
-  sql:dump:
-    desc: WIP Dumps the database to a file.
-    cmds:
-      - mysqldump -u ${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} --skip-comments --column-statistics=0 --databases ${DB_NAME} > data/${DB_NAME}_dump.sql
-      - gzip data/${DB_NAME}_dump.sql
-
-  sql:restore:
-    desc: WIP Restores the database from a file.
-    cmds:
-      - gunzip data/${DB_NAME}_dump.sql.gz
-      - mysql -u${DB_USER} -p${DB_PASS} -h ${DB_HOST} -P ${DB_PORT} < data/${DB_NAME}_dump.sql
+      - ./bin/jepp
