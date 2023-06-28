@@ -9,6 +9,7 @@ on:
 env:
   JEPP_ENV: ci
   JEPP_DB_HOST: localhost
+  JEPP_DB_PASSWORD: root
 
 jobs:
   test-with-db:
