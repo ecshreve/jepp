@@ -39,11 +39,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build image
-        run: docker compose build
-
-      - name: Tag image
-        run: |
-          docker tag jepp-app:latest registry.digitalocean.com/shreggie/jepp:latest
+        run: docker build . -t registry.digitalocean.com/shreggie/jepp:latest
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2

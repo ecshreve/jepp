@@ -25,16 +25,13 @@ func GetDBHandle() *sqlx.DB {
 
 	cfg := mysql.NewConfig()
 	cfg.User = "root"
+	cfg.Passwd = os.Getenv("JEPP_DB_PASSWORD")
 	cfg.DBName = "jeppdb"
 	cfg.Net = "tcp"
 	cfg.Addr = fmt.Sprintf("%s:3306", os.Getenv("JEPP_DB_HOST"))
 	cfg.AllowNativePasswords = true
 	cfg.ParseTime = true
 	cfg.MaxAllowedPacket = 64 << 20
-
-	if os.Getenv("JEPP_ENV") == "ci" {
-		cfg.Passwd = "root"
-	}
 
 	// Get a database handle.
 	db = sqlx.MustOpen("mysql", cfg.FormatDSN())

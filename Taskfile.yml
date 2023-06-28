@@ -47,7 +47,7 @@ tasks:
       - pkg/models/*
       - pkg/utils/*
     cmds:
-      - task: docker:run
+      - task: server:run
 
   genswag:
     desc: Generates swagger docs for the API.
