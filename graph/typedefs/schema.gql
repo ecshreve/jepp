@@ -1,0 +1,32 @@
+type Clue {
+  id: ID!
+  question: String!
+  answer: String!
+  category: Category!
+}
+
+input ClueInput {
+  question: String!
+  answer: String!
+}
+
+type Category {
+  id: ID!
+  name: String!
+  clues: [Clue!]!
+}
+
+input CategoryInput {
+  name: String!
+}
+
+type Mutation {
+  createClue(input: ClueInput): Clue!
+}
+
+type Query {
+  clues: [Clue!]!
+  clue(clueID: ID!): Clue!
+  category(categoryID: ID!): Category!
+  categories: [Category!]!
+}

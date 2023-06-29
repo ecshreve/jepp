@@ -14,6 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/ecshreve/jepp/app/models"
 	"github.com/ecshreve/jepp/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -37,6 +38,8 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Category() CategoryResolver
+	Clue() ClueResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -45,32 +48,45 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Category struct {
+		Clues func(childComplexity int) int
+		ID    func(childComplexity int) int
+		Name  func(childComplexity int) int
+	}
+
 	Clue struct {
 		Answer   func(childComplexity int) int
+		Category func(childComplexity int) int
 		ID       func(childComplexity int) int
 		Question func(childComplexity int) int
 	}
 
 	Mutation struct {
 		CreateClue func(childComplexity int, input *model.ClueInput) int
-		DeleteTodo func(childComplexity int, clueID int64) int
-		UpdateClue func(childComplexity int, clueID int64, input model.ClueInput) int
 	}
 
 	Query struct {
-		Clue  func(childComplexity int, clueID int64) int
-		Clues func(childComplexity int) int
+		Categories func(childComplexity int) int
+		Category   func(childComplexity int, categoryID int) int
+		Clue       func(childComplexity int, clueID int) int
+		Clues      func(childComplexity int) int
 	}
 }
 
+type CategoryResolver interface {
+	Clues(ctx context.Context, obj *models.Category) ([]*models.Clue, error)
+}
+type ClueResolver interface {
+	Category(ctx context.Context, obj *models.Clue) (*models.Category, error)
+}
 type MutationResolver interface {
-	CreateClue(ctx context.Context, input *model.ClueInput) (*model.Clue, error)
-	UpdateClue(ctx context.Context, clueID int64, input model.ClueInput) (*model.Clue, error)
-	DeleteTodo(ctx context.Context, clueID int64) (*model.Clue, error)
+	CreateClue(ctx context.Context, input *model.ClueInput) (*models.Clue, error)
 }
 type QueryResolver interface {
-	Clues(ctx context.Context) ([]*model.Clue, error)
-	Clue(ctx context.Context, clueID int64) (*model.Clue, error)
+	Clues(ctx context.Context) ([]*models.Clue, error)
+	Clue(ctx context.Context, clueID int) (*models.Clue, error)
+	Category(ctx context.Context, categoryID int) (*models.Category, error)
+	Categories(ctx context.Context) ([]*models.Category, error)
 }
 
 type executableSchema struct {
@@ -88,12 +104,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Category.clues":
+		if e.complexity.Category.Clues == nil {
+			break
+		}
+
+		return e.complexity.Category.Clues(childComplexity), true
+
+	case "Category.id":
+		if e.complexity.Category.ID == nil {
+			break
+		}
+
+		return e.complexity.Category.ID(childComplexity), true
+
+	case "Category.name":
+		if e.complexity.Category.Name == nil {
+			break
+		}
+
+		return e.complexity.Category.Name(childComplexity), true
+
 	case "Clue.answer":
 		if e.complexity.Clue.Answer == nil {
 			break
 		}
 
 		return e.complexity.Clue.Answer(childComplexity), true
+
+	case "Clue.category":
+		if e.complexity.Clue.Category == nil {
+			break
+		}
+
+		return e.complexity.Clue.Category(childComplexity), true
 
 	case "Clue.id":
 		if e.complexity.Clue.ID == nil {
@@ -121,29 +165,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateClue(childComplexity, args["input"].(*model.ClueInput)), true
 
-	case "Mutation.deleteTodo":
-		if e.complexity.Mutation.DeleteTodo == nil {
+	case "Query.categories":
+		if e.complexity.Query.Categories == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_deleteTodo_args(context.TODO(), rawArgs)
+		return e.complexity.Query.Categories(childComplexity), true
+
+	case "Query.category":
+		if e.complexity.Query.Category == nil {
+			break
+		}
+
+		args, err := ec.field_Query_category_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteTodo(childComplexity, args["clueId"].(int64)), true
-
-	case "Mutation.updateClue":
-		if e.complexity.Mutation.UpdateClue == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_updateClue_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdateClue(childComplexity, args["clueId"].(int64), args["input"].(model.ClueInput)), true
+		return e.complexity.Query.Category(childComplexity, args["categoryID"].(int)), true
 
 	case "Query.clue":
 		if e.complexity.Query.Clue == nil {
@@ -155,7 +194,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Clue(childComplexity, args["clueId"].(int64)), true
+		return e.complexity.Query.Clue(childComplexity, args["clueID"].(int)), true
 
 	case "Query.clues":
 		if e.complexity.Query.Clues == nil {
@@ -172,6 +211,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCategoryInput,
 		ec.unmarshalInputClueInput,
 	)
 	first := true
@@ -269,7 +309,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "typedefs/clue.gql"
+//go:embed "typedefs/schema.gql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -281,7 +321,7 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
-	{Name: "typedefs/clue.gql", Input: sourceData("typedefs/clue.gql"), BuiltIn: false},
+	{Name: "typedefs/schema.gql", Input: sourceData("typedefs/schema.gql"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -304,45 +344,6 @@ func (ec *executionContext) field_Mutation_createClue_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 int64
-	if tmp, ok := rawArgs["clueId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clueId"))
-		arg0, err = ec.unmarshalNID2int64(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["clueId"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_updateClue_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 int64
-	if tmp, ok := rawArgs["clueId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clueId"))
-		arg0, err = ec.unmarshalNID2int64(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["clueId"] = arg0
-	var arg1 model.ClueInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNClueInput2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg1
-	return args, nil
-}
-
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -358,18 +359,33 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_clue_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_category_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int64
-	if tmp, ok := rawArgs["clueId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clueId"))
-		arg0, err = ec.unmarshalNID2int64(ctx, tmp)
+	var arg0 int
+	if tmp, ok := rawArgs["categoryID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryID"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["clueId"] = arg0
+	args["categoryID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_clue_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["clueID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clueID"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["clueID"] = arg0
 	return args, nil
 }
 
@@ -411,7 +427,149 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Clue_id(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNID2int64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_name(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_clues(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_clues(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Category().Clues(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Clue)
+	fc.Result = res
+	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_clues(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Clue_id(ctx, field)
+			case "question":
+				return ec.fieldContext_Clue_question(ctx, field)
+			case "answer":
+				return ec.fieldContext_Clue_answer(ctx, field)
+			case "category":
+				return ec.fieldContext_Clue_category(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Clue_id(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -455,7 +613,7 @@ func (ec *executionContext) fieldContext_Clue_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_question(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_question(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_question(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -499,7 +657,7 @@ func (ec *executionContext) fieldContext_Clue_question(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_answer(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_answer(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_answer(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -543,6 +701,58 @@ func (ec *executionContext) fieldContext_Clue_answer(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Clue_category(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Clue_category(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Clue().Category(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Clue_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Clue",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "clues":
+				return ec.fieldContext_Category_clues(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createClue(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createClue(ctx, field)
 	if err != nil {
@@ -569,9 +779,9 @@ func (ec *executionContext) _Mutation_createClue(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Clue)
+	res := resTmp.(*models.Clue)
 	fc.Result = res
-	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, field.Selections, res)
+	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createClue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -588,6 +798,8 @@ func (ec *executionContext) fieldContext_Mutation_createClue(ctx context.Context
 				return ec.fieldContext_Clue_question(ctx, field)
 			case "answer":
 				return ec.fieldContext_Clue_answer(ctx, field)
+			case "category":
+				return ec.fieldContext_Clue_category(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
 		},
@@ -600,132 +812,6 @@ func (ec *executionContext) fieldContext_Mutation_createClue(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createClue_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_updateClue(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_updateClue(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateClue(rctx, fc.Args["clueId"].(int64), fc.Args["input"].(model.ClueInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Clue)
-	fc.Result = res
-	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_updateClue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Clue_id(ctx, field)
-			case "question":
-				return ec.fieldContext_Clue_question(ctx, field)
-			case "answer":
-				return ec.fieldContext_Clue_answer(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_updateClue_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_deleteTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_deleteTodo(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteTodo(rctx, fc.Args["clueId"].(int64))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Clue)
-	fc.Result = res
-	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_deleteTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Clue_id(ctx, field)
-			case "question":
-				return ec.fieldContext_Clue_question(ctx, field)
-			case "answer":
-				return ec.fieldContext_Clue_answer(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_deleteTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -758,9 +844,9 @@ func (ec *executionContext) _Query_clues(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Clue)
+	res := resTmp.([]*models.Clue)
 	fc.Result = res
-	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueᚄ(ctx, field.Selections, res)
+	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_clues(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -777,6 +863,8 @@ func (ec *executionContext) fieldContext_Query_clues(ctx context.Context, field 
 				return ec.fieldContext_Clue_question(ctx, field)
 			case "answer":
 				return ec.fieldContext_Clue_answer(ctx, field)
+			case "category":
+				return ec.fieldContext_Clue_category(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
 		},
@@ -798,7 +886,7 @@ func (ec *executionContext) _Query_clue(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Clue(rctx, fc.Args["clueId"].(int64))
+		return ec.resolvers.Query().Clue(rctx, fc.Args["clueID"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -810,9 +898,9 @@ func (ec *executionContext) _Query_clue(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Clue)
+	res := resTmp.(*models.Clue)
 	fc.Result = res
-	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, field.Selections, res)
+	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_clue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -829,6 +917,8 @@ func (ec *executionContext) fieldContext_Query_clue(ctx context.Context, field g
 				return ec.fieldContext_Clue_question(ctx, field)
 			case "answer":
 				return ec.fieldContext_Clue_answer(ctx, field)
+			case "category":
+				return ec.fieldContext_Clue_category(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
 		},
@@ -843,6 +933,121 @@ func (ec *executionContext) fieldContext_Query_clue(ctx context.Context, field g
 	if fc.Args, err = ec.field_Query_clue_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_category(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_category(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Category(rctx, fc.Args["categoryID"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "clues":
+				return ec.fieldContext_Category_clues(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_category_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_categories(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Categories(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategoryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "clues":
+				return ec.fieldContext_Category_clues(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -2749,6 +2954,35 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCategoryInput(ctx context.Context, obj interface{}) (model.CategoryInput, error) {
+	var it model.CategoryInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputClueInput(ctx context.Context, obj interface{}) (model.ClueInput, error) {
 	var it model.ClueInput
 	asMap := map[string]interface{}{}
@@ -2795,9 +3029,89 @@ func (ec *executionContext) unmarshalInputClueInput(ctx context.Context, obj int
 
 // region    **************************** object.gotpl ****************************
 
+var categoryImplementors = []string{"Category"}
+
+func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet, obj *models.Category) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, categoryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Category")
+		case "id":
+			out.Values[i] = ec._Category_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Category_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "clues":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Category_clues(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var clueImplementors = []string{"Clue"}
 
-func (ec *executionContext) _Clue(ctx context.Context, sel ast.SelectionSet, obj *model.Clue) graphql.Marshaler {
+func (ec *executionContext) _Clue(ctx context.Context, sel ast.SelectionSet, obj *models.Clue) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, clueImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2809,18 +3123,54 @@ func (ec *executionContext) _Clue(ctx context.Context, sel ast.SelectionSet, obj
 		case "id":
 			out.Values[i] = ec._Clue_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "question":
 			out.Values[i] = ec._Clue_question(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "answer":
 			out.Values[i] = ec._Clue_answer(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "category":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Clue_category(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2866,20 +3216,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createClue":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createClue(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "updateClue":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_updateClue(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "deleteTodo":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deleteTodo(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -2958,6 +3294,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_clue(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "category":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_category(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "categories":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_categories(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -3342,11 +3722,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNClue2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx context.Context, sel ast.SelectionSet, v model.Clue) graphql.Marshaler {
-	return ec._Clue(ctx, sel, &v)
+func (ec *executionContext) marshalNCategory2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v models.Category) graphql.Marshaler {
+	return ec._Category(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Clue) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Category) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3370,7 +3750,7 @@ func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, sel, v[i])
+			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3390,7 +3770,65 @@ func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx context.Context, sel ast.SelectionSet, v *model.Clue) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v *models.Category) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Category(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNClue2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx context.Context, sel ast.SelectionSet, v models.Clue) graphql.Marshaler {
+	return ec._Clue(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Clue) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx context.Context, sel ast.SelectionSet, v *models.Clue) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3400,9 +3838,19 @@ func (ec *executionContext) marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgra
 	return ec._Clue(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNClueInput2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueInput(ctx context.Context, v interface{}) (model.ClueInput, error) {
-	res, err := ec.unmarshalInputClueInput(ctx, v)
+func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) unmarshalNID2int64(ctx context.Context, v interface{}) (int64, error) {

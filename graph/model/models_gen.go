@@ -2,10 +2,8 @@
 
 package model
 
-type Clue struct {
-	ID       int64  `json:"id"`
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
+type CategoryInput struct {
+	Name string `json:"name"`
 }
 
 type ClueInput struct {
