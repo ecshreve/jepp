@@ -2,9 +2,29 @@
 
 package model
 
+import (
+	"github.com/ecshreve/jepp/app/models"
+)
+
+type CluesConnection struct {
+	Edges    []*CluesEdge `json:"edges"`
+	PageInfo *PageInfo    `json:"pageInfo"`
+}
+
+type CluesEdge struct {
+	Cursor string       `json:"cursor"`
+	Node   *models.Clue `json:"node,omitempty"`
+}
+
+type PageInfo struct {
+	StartCursor string `json:"startCursor"`
+	EndCursor   string `json:"endCursor"`
+	HasNextPage *bool  `json:"hasNextPage,omitempty"`
+}
+
 type Season struct {
-	ID        int    `json:"id"`
-	Number    int    `json:"number"`
+	ID        string `json:"id"`
+	Number    int64  `json:"number"`
 	StartDate string `json:"startDate"`
 	EndDate   string `json:"endDate"`
 }
