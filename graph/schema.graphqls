@@ -1,0 +1,13 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Clue {
+  id: ID!
+  question: String!
+  answer: String!
+}
+
+type Query {
+  clues: [Clue!]!
+}
