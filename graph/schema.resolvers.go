@@ -6,14 +6,20 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/ecshreve/jepp/graph/common"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Clues is the resolver for the clues field.
 func (r *queryResolver) Clues(ctx context.Context) ([]*model.Clue, error) {
-	panic(fmt.Errorf("not implemented: Clues - clues"))
+	context := common.GetContext(ctx)
+	var clues []*model.Clue
+	err := context.Database.Find(&clues).Error
+	if err != nil {
+		return nil, err
+	}
+	return clues, nil
 }
 
 // Query returns QueryResolver implementation.
