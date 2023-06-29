@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ecshreve/jepp/app/models"
 	"github.com/ecshreve/jepp/graph/common"
@@ -18,7 +17,7 @@ func (r *categoryResolver) Clues(ctx context.Context, obj *models.Category) ([]*
 	context := common.GetContext(ctx)
 
 	var clues []*models.Clue
-	if err := context.Database.Model(&obj).Association("Clues").Find(&clues); err != nil {
+	if err := context.Database.Find(&clues, &models.Clue{CategoryID: obj.ID}).Error; err != nil {
 		return nil, err
 	}
 
@@ -37,9 +36,16 @@ func (r *clueResolver) Category(ctx context.Context, obj *models.Clue) (*models.
 	return &category, nil
 }
 
-// CreateClue is the resolver for the createClue field.
-func (r *mutationResolver) CreateClue(ctx context.Context, input *model.ClueInput) (*models.Clue, error) {
-	panic(fmt.Errorf("not implemented: CreateClue - createClue"))
+// Clue is the resolver for the clue field.
+func (r *queryResolver) Clue(ctx context.Context, clueID int) (*models.Clue, error) {
+	context := common.GetContext(ctx)
+
+	var clue models.Clue
+	if err := context.Database.First(&clue, clueID).Error; err != nil {
+		return nil, err
+	}
+
+	return &clue, nil
 }
 
 // Clues is the resolver for the clues field.
@@ -52,18 +58,6 @@ func (r *queryResolver) Clues(ctx context.Context) ([]*models.Clue, error) {
 	}
 
 	return clues, nil
-}
-
-// Clue is the resolver for the clue field.
-func (r *queryResolver) Clue(ctx context.Context, clueID int) (*models.Clue, error) {
-	context := common.GetContext(ctx)
-
-	var clue models.Clue
-	if err := context.Database.First(&clue, clueID).Error; err != nil {
-		return nil, err
-	}
-
-	return &clue, nil
 }
 
 // Category is the resolver for the category field.
@@ -90,19 +84,39 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*models.Category, err
 	return categories, nil
 }
 
+// Season is the resolver for the season field.
+func (r *queryResolver) Season(ctx context.Context, seasonID int) (*model.Season, error) {
+	context := common.GetContext(ctx)
+
+	var season model.Season
+	if err := context.Database.First(&season, seasonID).Error; err != nil {
+		return nil, err
+	}
+
+	return &season, nil
+}
+
+// Seasons is the resolver for the seasons field.
+func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
+	context := common.GetContext(ctx)
+
+	var seasons []*model.Season
+	if err := context.Database.Find(&seasons).Error; err != nil {
+		return nil, err
+	}
+
+	return seasons, nil
+}
+
 // Category returns CategoryResolver implementation.
 func (r *Resolver) Category() CategoryResolver { return &categoryResolver{r} }
 
 // Clue returns ClueResolver implementation.
 func (r *Resolver) Clue() ClueResolver { return &clueResolver{r} }
 
-// Mutation returns MutationResolver implementation.
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type categoryResolver struct{ *Resolver }
 type clueResolver struct{ *Resolver }
-type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

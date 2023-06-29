@@ -5,28 +5,24 @@ type Clue {
   category: Category!
 }
 
-input ClueInput {
-  question: String!
-  answer: String!
-}
-
 type Category {
   id: ID!
   name: String!
   clues: [Clue!]!
 }
 
-input CategoryInput {
-  name: String!
-}
-
-type Mutation {
-  createClue(input: ClueInput): Clue!
+type Season {
+  id: ID!
+  number: Int!
+  startDate: String!
+  endDate: String!
 }
 
 type Query {
-  clues: [Clue!]!
   clue(clueID: ID!): Clue!
+  clues: [Clue!]!
   category(categoryID: ID!): Category!
   categories: [Category!]!
+  season(seasonID: ID!): Season!
+  seasons: [Season!]!
 }

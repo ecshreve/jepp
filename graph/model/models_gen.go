@@ -2,11 +2,9 @@
 
 package model
 
-type CategoryInput struct {
-	Name string `json:"name"`
-}
-
-type ClueInput struct {
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
+type Season struct {
+	ID        int    `json:"id"`
+	Number    int    `json:"number"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
 }
