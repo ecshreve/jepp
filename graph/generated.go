@@ -49,9 +49,9 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Category struct {
-		Clues func(childComplexity int) int
-		ID    func(childComplexity int) int
-		Name  func(childComplexity int) int
+		CluesConnection func(childComplexity int, first *int64, after *string) int
+		ID              func(childComplexity int) int
+		Name            func(childComplexity int) int
 	}
 
 	Clue struct {
@@ -107,7 +107,7 @@ type ComplexityRoot struct {
 }
 
 type CategoryResolver interface {
-	Clues(ctx context.Context, obj *models.Category) ([]*models.Clue, error)
+	CluesConnection(ctx context.Context, obj *models.Category, first *int64, after *string) (*model.CluesConnection, error)
 }
 type ClueResolver interface {
 	Category(ctx context.Context, obj *models.Clue) (*models.Category, error)
@@ -146,12 +146,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Category.clues":
-		if e.complexity.Category.Clues == nil {
+	case "Category.cluesConnection":
+		if e.complexity.Category.CluesConnection == nil {
 			break
 		}
 
-		return e.complexity.Category.Clues(childComplexity), true
+		args, err := ec.field_Category_cluesConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Category.CluesConnection(childComplexity, args["first"].(*int64), args["after"].(*string)), true
 
 	case "Category.id":
 		if e.complexity.Category.ID == nil {
@@ -490,7 +495,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "typedefs/schema.gql"
+//go:embed "typedefs/category.schema.gql" "typedefs/clue.schema.gql" "typedefs/game.schema.gql" "typedefs/schema.gql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -502,6 +507,9 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
+	{Name: "typedefs/category.schema.gql", Input: sourceData("typedefs/category.schema.gql"), BuiltIn: false},
+	{Name: "typedefs/clue.schema.gql", Input: sourceData("typedefs/clue.schema.gql"), BuiltIn: false},
+	{Name: "typedefs/game.schema.gql", Input: sourceData("typedefs/game.schema.gql"), BuiltIn: false},
 	{Name: "typedefs/schema.gql", Input: sourceData("typedefs/schema.gql"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -509,6 +517,30 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Category_cluesConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int64
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg0, err = ec.unmarshalOInt2ᚖint64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg1, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg1
+	return args, nil
+}
 
 func (ec *executionContext) field_Game_cluesConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -735,8 +767,8 @@ func (ec *executionContext) fieldContext_Category_name(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Category_clues(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_clues(ctx, field)
+func (ec *executionContext) _Category_cluesConnection(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_cluesConnection(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -749,24 +781,21 @@ func (ec *executionContext) _Category_clues(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Category().Clues(rctx, obj)
+		return ec.resolvers.Category().CluesConnection(rctx, obj, fc.Args["first"].(*int64), fc.Args["after"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Clue)
+	res := resTmp.(*model.CluesConnection)
 	fc.Result = res
-	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx, field.Selections, res)
+	return ec.marshalOCluesConnection2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCluesConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Category_clues(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Category_cluesConnection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Category",
 		Field:      field,
@@ -774,19 +803,24 @@ func (ec *executionContext) fieldContext_Category_clues(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Clue_id(ctx, field)
-			case "question":
-				return ec.fieldContext_Clue_question(ctx, field)
-			case "answer":
-				return ec.fieldContext_Clue_answer(ctx, field)
-			case "category":
-				return ec.fieldContext_Clue_category(ctx, field)
-			case "game":
-				return ec.fieldContext_Clue_game(ctx, field)
+			case "edges":
+				return ec.fieldContext_CluesConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_CluesConnection_pageInfo(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Clue", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CluesConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Category_cluesConnection_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -966,8 +1000,8 @@ func (ec *executionContext) fieldContext_Clue_category(ctx context.Context, fiel
 				return ec.fieldContext_Category_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Category_name(ctx, field)
-			case "clues":
-				return ec.fieldContext_Category_clues(ctx, field)
+			case "cluesConnection":
+				return ec.fieldContext_Category_cluesConnection(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -1815,8 +1849,8 @@ func (ec *executionContext) fieldContext_Query_category(ctx context.Context, fie
 				return ec.fieldContext_Category_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Category_name(ctx, field)
-			case "clues":
-				return ec.fieldContext_Category_clues(ctx, field)
+			case "cluesConnection":
+				return ec.fieldContext_Category_cluesConnection(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -1878,8 +1912,8 @@ func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, f
 				return ec.fieldContext_Category_id(ctx, field)
 			case "name":
 				return ec.fieldContext_Category_name(ctx, field)
-			case "clues":
-				return ec.fieldContext_Category_clues(ctx, field)
+			case "cluesConnection":
+				return ec.fieldContext_Category_cluesConnection(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -4240,7 +4274,7 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "clues":
+		case "cluesConnection":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -4249,10 +4283,7 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Category_clues(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
+				res = ec._Category_cluesConnection(ctx, field, obj)
 				return res
 			}
 

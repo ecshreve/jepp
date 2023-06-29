@@ -1,0 +1,9 @@
+type Game {
+  id: ID!
+  season: Season!
+  show: Int!
+  airDate: String!
+  tapeDate: String!
+  cluesConnection(first: Int = 65, after: ID): CluesConnection
+}
+
