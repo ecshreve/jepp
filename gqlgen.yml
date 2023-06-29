@@ -91,8 +91,17 @@ models:
     fields:
       clues:
         resolver: true
+        
   Clue:
     model: github.com/ecshreve/jepp/app/models.Clue
     fields:
       category:
+        resolver: true
+      game:
+        resolver: true
+
+  Game:
+    model: github.com/ecshreve/jepp/app/models.Game
+    fields:
+      clues:
         resolver: true

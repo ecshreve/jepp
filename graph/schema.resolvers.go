@@ -36,6 +36,66 @@ func (r *clueResolver) Category(ctx context.Context, obj *models.Clue) (*models.
 	return &category, nil
 }
 
+// Game is the resolver for the game field.
+func (r *clueResolver) Game(ctx context.Context, obj *models.Clue) (*models.Game, error) {
+	context := common.GetContext(ctx)
+
+	var game models.Game
+	if err := context.Database.First(&game, obj.GameID).Error; err != nil {
+		return nil, err
+	}
+
+	return &game, nil
+}
+
+// Season is the resolver for the season field.
+func (r *gameResolver) Season(ctx context.Context, obj *models.Game) (*model.Season, error) {
+	context := common.GetContext(ctx)
+
+	var season model.Season
+	if err := context.Database.First(&season, obj.SeasonID).Error; err != nil {
+		return nil, err
+	}
+
+	return &season, nil
+}
+
+// AirDate is the resolver for the airDate field.
+func (r *gameResolver) AirDate(ctx context.Context, obj *models.Game) (string, error) {
+	context := common.GetContext(ctx)
+
+	var game models.Game
+	if err := context.Database.First(&game, obj.ID).Error; err != nil {
+		return "", err
+	}
+
+	return game.AirDate.Format("2006-01-02"), nil
+}
+
+// TapeDate is the resolver for the tapeDate field.
+func (r *gameResolver) TapeDate(ctx context.Context, obj *models.Game) (string, error) {
+	context := common.GetContext(ctx)
+
+	var game models.Game
+	if err := context.Database.First(&game, obj.ID).Error; err != nil {
+		return "", err
+	}
+
+	return game.TapeDate.Format("2006-01-02"), nil
+}
+
+// Clues is the resolver for the clues field.
+func (r *gameResolver) Clues(ctx context.Context, obj *models.Game) ([]*models.Clue, error) {
+	context := common.GetContext(ctx)
+
+	var clues []*models.Clue
+	if err := context.Database.Find(&clues, &models.Clue{GameID: obj.ID}).Error; err != nil {
+		return nil, err
+	}
+
+	return clues, nil
+}
+
 // Clue is the resolver for the clue field.
 func (r *queryResolver) Clue(ctx context.Context, clueID int) (*models.Clue, error) {
 	context := common.GetContext(ctx)
@@ -108,15 +168,43 @@ func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
 	return seasons, nil
 }
 
+// Game is the resolver for the game field.
+func (r *queryResolver) Game(ctx context.Context, gameID int) (*models.Game, error) {
+	context := common.GetContext(ctx)
+
+	var game models.Game
+	if err := context.Database.First(&game, gameID).Error; err != nil {
+		return nil, err
+	}
+
+	return &game, nil
+}
+
+// Games is the resolver for the games field.
+func (r *queryResolver) Games(ctx context.Context) ([]*models.Game, error) {
+	context := common.GetContext(ctx)
+
+	var games []*models.Game
+	if err := context.Database.Find(&games).Error; err != nil {
+		return nil, err
+	}
+
+	return games, nil
+}
+
 // Category returns CategoryResolver implementation.
 func (r *Resolver) Category() CategoryResolver { return &categoryResolver{r} }
 
 // Clue returns ClueResolver implementation.
 func (r *Resolver) Clue() ClueResolver { return &clueResolver{r} }
 
+// Game returns GameResolver implementation.
+func (r *Resolver) Game() GameResolver { return &gameResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type categoryResolver struct{ *Resolver }
 type clueResolver struct{ *Resolver }
+type gameResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

@@ -3,6 +3,7 @@ type Clue {
   question: String!
   answer: String!
   category: Category!
+  game: Game!
 }
 
 type Category {
@@ -18,6 +19,15 @@ type Season {
   endDate: String!
 }
 
+type Game {
+  id: ID!
+  season: Season!
+  show: Int!
+  airDate: String!
+  tapeDate: String!
+  clues: [Clue!]!
+}
+
 type Query {
   clue(clueID: ID!): Clue!
   clues: [Clue!]!
@@ -25,4 +35,6 @@ type Query {
   categories: [Category!]!
   season(seasonID: ID!): Season!
   seasons: [Season!]!
+  game(gameID: ID!): Game!
+  games: [Game!]!
 }
