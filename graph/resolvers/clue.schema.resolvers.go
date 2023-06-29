@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"github.com/ecshreve/jepp/app/models"
+	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
 )
 
@@ -35,7 +36,7 @@ func (r *clueResolver) Game(ctx context.Context, obj *models.Clue) (*models.Game
 	return &game, nil
 }
 
-// Clue returns ClueResolver implementation.
-func (r *Resolver) Clue() ClueResolver { return &clueResolver{r} }
+// Clue returns graph.ClueResolver implementation.
+func (r *Resolver) Clue() graph.ClueResolver { return &clueResolver{r} }
 
 type clueResolver struct{ *Resolver }

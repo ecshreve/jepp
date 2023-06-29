@@ -1,6 +1,6 @@
 type Category {
   id: ID!
   name: String!
-  cluesConnection(first: Int = 5, after: ID): CluesConnection
+  clues: [Clue!]!
 }
 

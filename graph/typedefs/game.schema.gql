@@ -4,6 +4,6 @@ type Game {
   show: Int!
   airDate: String!
   tapeDate: String!
-  cluesConnection(first: Int = 65, after: ID): CluesConnection
+  clues: [Clue!]!
 }
 

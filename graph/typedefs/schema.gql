@@ -1,17 +1,13 @@
-type Season {
-  id: ID!
-  number: Int!
-  startDate: String!
-  endDate: String!
-}
-
 type Query {
-  clue(clueID: ID!): Clue!
-  clues: [Clue!]!
-  category(categoryID: ID!): Category!
-  categories: [Category!]!
   season(seasonID: ID!): Season!
   seasons: [Season!]!
+  
+  clue(clueID: ID!): Clue!
+  clues(first: Int = 10, after: ID): CluesConnection
+
+  category(categoryID: ID!): Category!
+  categories: [Category!]!
+
   game(gameID: ID!): Game!
   games: [Game!]!
 }

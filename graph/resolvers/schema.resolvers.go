@@ -6,11 +6,39 @@ package graph
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
+	"math"
 
 	"github.com/ecshreve/jepp/app/models"
+	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
 	"github.com/ecshreve/jepp/graph/model"
 )
+
+// Season is the resolver for the season field.
+func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Season, error) {
+	context := common.GetContext(ctx)
+
+	var season model.Season
+	if err := context.Database.First(&season, seasonID).Error; err != nil {
+		return nil, err
+	}
+
+	return &season, nil
+}
+
+// Seasons is the resolver for the seasons field.
+func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
+	context := common.GetContext(ctx)
+
+	var seasons []*model.Season
+	if err := context.Database.Find(&seasons).Error; err != nil {
+		return nil, err
+	}
+
+	return seasons, nil
+}
 
 // Clue is the resolver for the clue field.
 func (r *queryResolver) Clue(ctx context.Context, clueID string) (*models.Clue, error) {
@@ -25,15 +53,55 @@ func (r *queryResolver) Clue(ctx context.Context, clueID string) (*models.Clue, 
 }
 
 // Clues is the resolver for the clues field.
-func (r *queryResolver) Clues(ctx context.Context) ([]*models.Clue, error) {
+func (r *queryResolver) Clues(ctx context.Context, first *int64, after *string) (*model.CluesConnection, error) {
 	context := common.GetContext(ctx)
 
+	// The cursor is base64 encoded by convention, so we need to decode it first
+	var decodedCursor string
+	if after != nil {
+		b, err := base64.StdEncoding.DecodeString(*after)
+		if err != nil {
+			return nil, err
+		}
+		decodedCursor = string(b)
+	}
+
+	if decodedCursor == "" {
+		decodedCursor = "0"
+	}
+
+	// Here we could query the DB to get data, e.g.
+	var edges []*model.CluesEdge
+	hasNextPage := false
+
 	var clues []*models.Clue
-	if err := context.Database.Find(&clues).Error; err != nil {
+	if err := context.Database.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&clues).Error; err != nil {
 		return nil, err
 	}
 
-	return clues, nil
+	bound := int(math.Min(float64(int(*first)), float64(len(clues))))
+	for i := 0; i < bound; i++ {
+
+		edges = append(edges, &model.CluesEdge{
+			Cursor: base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%d", clues[i].ID))),
+			Node:   clues[i],
+		})
+	}
+
+	if len(edges) == int(1) && len(edges) < len(clues) {
+		hasNextPage = true
+	}
+
+	pageInfo := model.PageInfo{
+		StartCursor: base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%d", edges[0].Node.ID))),
+		EndCursor:   base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%d", edges[len(edges)-1].Node.ID))),
+		HasNextPage: &hasNextPage,
+	}
+
+	return &model.CluesConnection{
+		Edges:    edges,
+		PageInfo: &pageInfo,
+	}, nil
 }
 
 // Category is the resolver for the category field.
@@ -60,30 +128,6 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*models.Category, err
 	return categories, nil
 }
 
-// Season is the resolver for the season field.
-func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Season, error) {
-	context := common.GetContext(ctx)
-
-	var season model.Season
-	if err := context.Database.First(&season, seasonID).Error; err != nil {
-		return nil, err
-	}
-
-	return &season, nil
-}
-
-// Seasons is the resolver for the seasons field.
-func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
-	context := common.GetContext(ctx)
-
-	var seasons []*model.Season
-	if err := context.Database.Find(&seasons).Error; err != nil {
-		return nil, err
-	}
-
-	return seasons, nil
-}
-
 // Game is the resolver for the game field.
 func (r *queryResolver) Game(ctx context.Context, gameID string) (*models.Game, error) {
 	context := common.GetContext(ctx)
@@ -108,7 +152,7 @@ func (r *queryResolver) Games(ctx context.Context) ([]*models.Game, error) {
 	return games, nil
 }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+// Query returns graph.QueryResolver implementation.
+func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
