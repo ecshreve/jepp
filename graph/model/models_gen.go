@@ -3,7 +3,12 @@
 package model
 
 type Clue struct {
-	ID       string `json:"id"`
+	ID       int64  `json:"id"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+}
+
+type ClueInput struct {
 	Question string `json:"question"`
 	Answer   string `json:"answer"`
 }
