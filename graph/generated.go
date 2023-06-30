@@ -42,6 +42,7 @@ type ResolverRoot interface {
 	Clue() ClueResolver
 	Game() GameResolver
 	Query() QueryResolver
+	Season() SeasonResolver
 }
 
 type DirectiveRoot struct {
@@ -114,21 +115,25 @@ type ClueResolver interface {
 	Game(ctx context.Context, obj *models.Clue) (*models.Game, error)
 }
 type GameResolver interface {
-	Season(ctx context.Context, obj *models.Game) (*model.Season, error)
+	Season(ctx context.Context, obj *models.Game) (*models.Season, error)
 
 	AirDate(ctx context.Context, obj *models.Game) (string, error)
 	TapeDate(ctx context.Context, obj *models.Game) (string, error)
 	Clues(ctx context.Context, obj *models.Game) ([]*models.Clue, error)
 }
 type QueryResolver interface {
-	Season(ctx context.Context, seasonID string) (*model.Season, error)
-	Seasons(ctx context.Context) ([]*model.Season, error)
+	Season(ctx context.Context, seasonID string) (*models.Season, error)
+	Seasons(ctx context.Context) ([]*models.Season, error)
 	Clue(ctx context.Context, clueID string) (*models.Clue, error)
 	Clues(ctx context.Context, first *int64, after *string) (*model.CluesConnection, error)
 	Category(ctx context.Context, categoryID string) (*models.Category, error)
 	Categories(ctx context.Context) ([]*models.Category, error)
 	Game(ctx context.Context, gameID string) (*models.Game, error)
 	Games(ctx context.Context) ([]*models.Game, error)
+}
+type SeasonResolver interface {
+	StartDate(ctx context.Context, obj *models.Season) (string, error)
+	EndDate(ctx context.Context, obj *models.Season) (string, error)
 }
 
 type executableSchema struct {
@@ -1306,9 +1311,9 @@ func (ec *executionContext) _Game_season(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Season)
+	res := resTmp.(*models.Season)
 	fc.Result = res
-	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx, field.Selections, res)
+	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Game_season(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1677,9 +1682,9 @@ func (ec *executionContext) _Query_season(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Season)
+	res := resTmp.(*models.Season)
 	fc.Result = res
-	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx, field.Selections, res)
+	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_season(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1742,9 +1747,9 @@ func (ec *executionContext) _Query_seasons(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Season)
+	res := resTmp.([]*models.Season)
 	fc.Result = res
-	return ec.marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeasonᚄ(ctx, field.Selections, res)
+	return ec.marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeasonᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_seasons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2266,7 +2271,7 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_id(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_id(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2292,9 +2297,9 @@ func (ec *executionContext) _Season_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int64)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Season_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2310,7 +2315,7 @@ func (ec *executionContext) fieldContext_Season_id(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_number(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_number(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_number(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2354,7 +2359,7 @@ func (ec *executionContext) fieldContext_Season_number(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_startDate(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_startDate(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_startDate(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2368,7 +2373,7 @@ func (ec *executionContext) _Season_startDate(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.StartDate, nil
+		return ec.resolvers.Season().StartDate(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2389,8 +2394,8 @@ func (ec *executionContext) fieldContext_Season_startDate(ctx context.Context, f
 	fc = &graphql.FieldContext{
 		Object:     "Season",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -2398,7 +2403,7 @@ func (ec *executionContext) fieldContext_Season_startDate(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_endDate(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_endDate(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_endDate(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2412,7 +2417,7 @@ func (ec *executionContext) _Season_endDate(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.EndDate, nil
+		return ec.resolvers.Season().EndDate(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2433,8 +2438,8 @@ func (ec *executionContext) fieldContext_Season_endDate(ctx context.Context, fie
 	fc = &graphql.FieldContext{
 		Object:     "Season",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -4968,7 +4973,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var seasonImplementors = []string{"Season"}
 
-func (ec *executionContext) _Season(ctx context.Context, sel ast.SelectionSet, obj *model.Season) graphql.Marshaler {
+func (ec *executionContext) _Season(ctx context.Context, sel ast.SelectionSet, obj *models.Season) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, seasonImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -4980,23 +4985,85 @@ func (ec *executionContext) _Season(ctx context.Context, sel ast.SelectionSet, o
 		case "id":
 			out.Values[i] = ec._Season_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "number":
 			out.Values[i] = ec._Season_number(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "startDate":
-			out.Values[i] = ec._Season_startDate(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Season_startDate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "endDate":
-			out.Values[i] = ec._Season_endDate(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Season_endDate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5644,11 +5711,11 @@ func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋecshreveᚋjepp�
 	return ec._PageInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNSeason2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx context.Context, sel ast.SelectionSet, v model.Season) graphql.Marshaler {
+func (ec *executionContext) marshalNSeason2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx context.Context, sel ast.SelectionSet, v models.Season) graphql.Marshaler {
 	return ec._Season(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeasonᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Season) graphql.Marshaler {
+func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeasonᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Season) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5672,7 +5739,7 @@ func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjepp�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx, sel, v[i])
+			ret[i] = ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5692,7 +5759,7 @@ func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjepp�
 	return ret
 }
 
-func (ec *executionContext) marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx context.Context, sel ast.SelectionSet, v *model.Season) graphql.Marshaler {
+func (ec *executionContext) marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx context.Context, sel ast.SelectionSet, v *models.Season) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

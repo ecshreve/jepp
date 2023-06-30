@@ -66,7 +66,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/ecshreve/jepp/graph/model"
+  - "github.com/ecshreve/jepp/app/models"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -104,5 +104,13 @@ models:
     model: github.com/ecshreve/jepp/app/models.Game
     fields:
       clues:
+        resolver: true
+      season:
+        resolver: true
+
+  Season:
+    model: github.com/ecshreve/jepp/app/models.Season
+    fields:
+      games:
         resolver: true
 

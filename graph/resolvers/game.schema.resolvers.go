@@ -10,14 +10,13 @@ import (
 	"github.com/ecshreve/jepp/app/models"
 	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
-	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Season is the resolver for the season field.
-func (r *gameResolver) Season(ctx context.Context, obj *models.Game) (*model.Season, error) {
+func (r *gameResolver) Season(ctx context.Context, obj *models.Game) (*models.Season, error) {
 	context := common.GetContext(ctx)
 
-	var season model.Season
+	var season models.Season
 	if err := context.Database.First(&season, obj.SeasonID).Error; err != nil {
 		return nil, err
 	}

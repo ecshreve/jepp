@@ -21,10 +21,3 @@ type PageInfo struct {
 	EndCursor   string `json:"endCursor"`
 	HasNextPage *bool  `json:"hasNextPage,omitempty"`
 }
-
-type Season struct {
-	ID        string `json:"id"`
-	Number    int64  `json:"number"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
-}

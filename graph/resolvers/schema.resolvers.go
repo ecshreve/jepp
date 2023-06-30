@@ -17,10 +17,10 @@ import (
 )
 
 // Season is the resolver for the season field.
-func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Season, error) {
+func (r *queryResolver) Season(ctx context.Context, seasonID string) (*models.Season, error) {
 	context := common.GetContext(ctx)
 
-	var season model.Season
+	var season models.Season
 	if err := context.Database.First(&season, seasonID).Error; err != nil {
 		return nil, err
 	}
@@ -29,10 +29,10 @@ func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Sea
 }
 
 // Seasons is the resolver for the seasons field.
-func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
+func (r *queryResolver) Seasons(ctx context.Context) ([]*models.Season, error) {
 	context := common.GetContext(ctx)
 
-	var seasons []*model.Season
+	var seasons []*models.Season
 	if err := context.Database.Find(&seasons).Error; err != nil {
 		return nil, err
 	}

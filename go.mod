@@ -10,6 +10,7 @@ require (
 	github.com/kr/pretty v0.3.1
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/samsarahq/go/oops v0.0.0-20220211150445-4b291d6feac4
+	github.com/samsarahq/go/snapshotter v0.0.0-20220211150445-4b291d6feac4
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.3
 	github.com/swaggo/files v1.0.1
@@ -48,6 +49,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
