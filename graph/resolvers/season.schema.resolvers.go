@@ -7,29 +7,9 @@ package graph
 import (
 	"context"
 
-	graph1 "github.com/ecshreve/jepp/graph/generated"
+	graph "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
-
-// StartDate is the resolver for the startDate field.
-func (r *seasonResolver) StartDate(ctx context.Context, obj *model.Season) (string, error) {
-	var season model.Season
-	if err := r.DB.First(&season, obj.ID).Error; err != nil {
-		return "", err
-	}
-
-	return season.StartDate.Format("2006-01-02"), nil
-}
-
-// EndDate is the resolver for the endDate field.
-func (r *seasonResolver) EndDate(ctx context.Context, obj *model.Season) (string, error) {
-	var season model.Season
-	if err := r.DB.First(&season, obj.ID).Error; err != nil {
-		return "", err
-	}
-
-	return season.EndDate.Format("2006-01-02"), nil
-}
 
 // Games is the resolver for the games field.
 func (r *seasonResolver) Games(ctx context.Context, obj *model.Season) ([]*model.Game, error) {
@@ -41,7 +21,7 @@ func (r *seasonResolver) Games(ctx context.Context, obj *model.Season) ([]*model
 	return games, nil
 }
 
-// Season returns graph1.SeasonResolver implementation.
-func (r *Resolver) Season() graph1.SeasonResolver { return &seasonResolver{r} }
+// Season returns graph.SeasonResolver implementation.
+func (r *Resolver) Season() graph.SeasonResolver { return &seasonResolver{r} }
 
 type seasonResolver struct{ *Resolver }

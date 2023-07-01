@@ -7,7 +7,7 @@ package graph
 import (
 	"context"
 
-	graph1 "github.com/ecshreve/jepp/graph/generated"
+	graph "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
@@ -21,26 +21,6 @@ func (r *gameResolver) Season(ctx context.Context, obj *model.Game) (*model.Seas
 	return &season, nil
 }
 
-// AirDate is the resolver for the airDate field.
-func (r *gameResolver) AirDate(ctx context.Context, obj *model.Game) (string, error) {
-	var game model.Game
-	if err := r.DB.First(&game, obj.ID).Error; err != nil {
-		return "", err
-	}
-
-	return game.AirDate.Format("2006-01-02"), nil
-}
-
-// TapeDate is the resolver for the tapeDate field.
-func (r *gameResolver) TapeDate(ctx context.Context, obj *model.Game) (string, error) {
-	var game model.Game
-	if err := r.DB.First(&game, obj.ID).Error; err != nil {
-		return "", err
-	}
-
-	return game.TapeDate.Format("2006-01-02"), nil
-}
-
 // Clues is the resolver for the clues field.
 func (r *gameResolver) Clues(ctx context.Context, obj *model.Game) ([]*model.Clue, error) {
 	var clues []*model.Clue
@@ -51,7 +31,7 @@ func (r *gameResolver) Clues(ctx context.Context, obj *model.Game) ([]*model.Clu
 	return clues, nil
 }
 
-// Game returns graph1.GameResolver implementation.
-func (r *Resolver) Game() graph1.GameResolver { return &gameResolver{r} }
+// Game returns graph.GameResolver implementation.
+func (r *Resolver) Game() graph.GameResolver { return &gameResolver{r} }
 
 type gameResolver struct{ *Resolver }

@@ -80,11 +80,18 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
       - github.com/99designs/gqlgen/graphql.Int
+  
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
       - github.com/99designs/gqlgen/graphql.Int
+  
+  String:
+    model:
+      - github.com/99designs/gqlgen/graphql.String
+      - github.com/99designs/gqlgen/graphql.Time
+
 
   Category:
     model: github.com/ecshreve/jepp/graph/model.Category

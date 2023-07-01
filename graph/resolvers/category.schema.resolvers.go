@@ -7,7 +7,7 @@ package graph
 import (
 	"context"
 
-	graph1 "github.com/ecshreve/jepp/graph/generated"
+	graph "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
@@ -21,7 +21,7 @@ func (r *categoryResolver) Clues(ctx context.Context, obj *model.Category) ([]*m
 	return clues, nil
 }
 
-// Category returns graph1.CategoryResolver implementation.
-func (r *Resolver) Category() graph1.CategoryResolver { return &categoryResolver{r} }
+// Category returns graph.CategoryResolver implementation.
+func (r *Resolver) Category() graph.CategoryResolver { return &categoryResolver{r} }
 
 type categoryResolver struct{ *Resolver }

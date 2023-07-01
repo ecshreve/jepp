@@ -1,5 +1,6 @@
 package graph
 
+//go:generate go run generate.go
 import (
 	"log"
 
