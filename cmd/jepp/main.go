@@ -7,8 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
+	graph "github.com/ecshreve/jepp/graph/generated"
 	resolvers "github.com/ecshreve/jepp/graph/resolvers"
 )
 

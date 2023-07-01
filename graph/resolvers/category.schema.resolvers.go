@@ -7,16 +7,16 @@ package graph
 import (
 	"context"
 
-	"github.com/ecshreve/jepp/app/models"
-	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
+	graph1 "github.com/ecshreve/jepp/graph/generated"
+	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Clues is the resolver for the clues field.
-func (r *categoryResolver) Clues(ctx context.Context, obj *models.Category) ([]*models.Clue, error) {
+func (r *categoryResolver) Clues(ctx context.Context, obj *model.Category) ([]*model.Clue, error) {
 	context := common.GetContext(ctx)
 
-	var clues []*models.Clue
+	var clues []*model.Clue
 	if err := context.Database.Where("category_id = ?", obj.ID).Find(&clues).Error; err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (r *categoryResolver) Clues(ctx context.Context, obj *models.Category) ([]*
 	return clues, nil
 }
 
-// Category returns graph.CategoryResolver implementation.
-func (r *Resolver) Category() graph.CategoryResolver { return &categoryResolver{r} }
+// Category returns graph1.CategoryResolver implementation.
+func (r *Resolver) Category() graph1.CategoryResolver { return &categoryResolver{r} }
 
 type categoryResolver struct{ *Resolver }

@@ -2,18 +2,14 @@
 
 package model
 
-import (
-	"github.com/ecshreve/jepp/app/models"
-)
-
 type CluesConnection struct {
 	Edges    []*CluesEdge `json:"edges"`
 	PageInfo *PageInfo    `json:"pageInfo"`
 }
 
 type CluesEdge struct {
-	Cursor string       `json:"cursor"`
-	Node   *models.Clue `json:"node,omitempty"`
+	Cursor string `json:"cursor"`
+	Node   *Clue  `json:"node,omitempty"`
 }
 
 type PageInfo struct {

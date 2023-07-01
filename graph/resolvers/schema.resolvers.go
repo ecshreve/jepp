@@ -10,17 +10,16 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/ecshreve/jepp/app/models"
-	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
+	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Season is the resolver for the season field.
-func (r *queryResolver) Season(ctx context.Context, seasonID string) (*models.Season, error) {
+func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Season, error) {
 	context := common.GetContext(ctx)
 
-	var season models.Season
+	var season model.Season
 	if err := context.Database.First(&season, seasonID).Error; err != nil {
 		return nil, err
 	}
@@ -29,10 +28,10 @@ func (r *queryResolver) Season(ctx context.Context, seasonID string) (*models.Se
 }
 
 // Seasons is the resolver for the seasons field.
-func (r *queryResolver) Seasons(ctx context.Context) ([]*models.Season, error) {
+func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
 	context := common.GetContext(ctx)
 
-	var seasons []*models.Season
+	var seasons []*model.Season
 	if err := context.Database.Find(&seasons).Error; err != nil {
 		return nil, err
 	}
@@ -41,10 +40,10 @@ func (r *queryResolver) Seasons(ctx context.Context) ([]*models.Season, error) {
 }
 
 // Clue is the resolver for the clue field.
-func (r *queryResolver) Clue(ctx context.Context, clueID string) (*models.Clue, error) {
+func (r *queryResolver) Clue(ctx context.Context, clueID string) (*model.Clue, error) {
 	context := common.GetContext(ctx)
 
-	var clue models.Clue
+	var clue model.Clue
 	if err := context.Database.First(&clue, clueID).Error; err != nil {
 		return nil, err
 	}
@@ -74,7 +73,7 @@ func (r *queryResolver) Clues(ctx context.Context, first *int64, after *string) 
 	var edges []*model.CluesEdge
 	hasNextPage := false
 
-	var clues []*models.Clue
+	var clues []*model.Clue
 	if err := context.Database.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&clues).Error; err != nil {
 		return nil, err
 	}
@@ -105,10 +104,10 @@ func (r *queryResolver) Clues(ctx context.Context, first *int64, after *string) 
 }
 
 // Category is the resolver for the category field.
-func (r *queryResolver) Category(ctx context.Context, categoryID string) (*models.Category, error) {
+func (r *queryResolver) Category(ctx context.Context, categoryID string) (*model.Category, error) {
 	context := common.GetContext(ctx)
 
-	var category models.Category
+	var category model.Category
 	if err := context.Database.First(&category, categoryID).Error; err != nil {
 		return nil, err
 	}
@@ -117,10 +116,10 @@ func (r *queryResolver) Category(ctx context.Context, categoryID string) (*model
 }
 
 // Categories is the resolver for the categories field.
-func (r *queryResolver) Categories(ctx context.Context) ([]*models.Category, error) {
+func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
 	context := common.GetContext(ctx)
 
-	var categories []*models.Category
+	var categories []*model.Category
 	if err := context.Database.Find(&categories).Error; err != nil {
 		return nil, err
 	}
@@ -129,10 +128,10 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*models.Category, err
 }
 
 // Game is the resolver for the game field.
-func (r *queryResolver) Game(ctx context.Context, gameID string) (*models.Game, error) {
+func (r *queryResolver) Game(ctx context.Context, gameID string) (*model.Game, error) {
 	context := common.GetContext(ctx)
 
-	var game models.Game
+	var game model.Game
 	if err := context.Database.First(&game, gameID).Error; err != nil {
 		return nil, err
 	}
@@ -141,10 +140,10 @@ func (r *queryResolver) Game(ctx context.Context, gameID string) (*models.Game, 
 }
 
 // Games is the resolver for the games field.
-func (r *queryResolver) Games(ctx context.Context) ([]*models.Game, error) {
+func (r *queryResolver) Games(ctx context.Context) ([]*model.Game, error) {
 	context := common.GetContext(ctx)
 
-	var games []*models.Game
+	var games []*model.Game
 	if err := context.Database.Find(&games).Error; err != nil {
 		return nil, err
 	}
@@ -152,7 +151,7 @@ func (r *queryResolver) Games(ctx context.Context) ([]*models.Game, error) {
 	return games, nil
 }
 
-// Query returns graph.QueryResolver implementation.
-func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
+// Query returns graph1.QueryResolver implementation.
+func (r *Resolver) Query() graph1.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }

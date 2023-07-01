@@ -5,7 +5,6 @@ package graph
 import (
 	"bytes"
 	"context"
-	"embed"
 	"errors"
 	"fmt"
 	"strconv"
@@ -14,7 +13,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/ecshreve/jepp/app/models"
 	"github.com/ecshreve/jepp/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -109,33 +107,33 @@ type ComplexityRoot struct {
 }
 
 type CategoryResolver interface {
-	Clues(ctx context.Context, obj *models.Category) ([]*models.Clue, error)
+	Clues(ctx context.Context, obj *model.Category) ([]*model.Clue, error)
 }
 type ClueResolver interface {
-	Category(ctx context.Context, obj *models.Clue) (*models.Category, error)
-	Game(ctx context.Context, obj *models.Clue) (*models.Game, error)
+	Category(ctx context.Context, obj *model.Clue) (*model.Category, error)
+	Game(ctx context.Context, obj *model.Clue) (*model.Game, error)
 }
 type GameResolver interface {
-	Season(ctx context.Context, obj *models.Game) (*models.Season, error)
+	Season(ctx context.Context, obj *model.Game) (*model.Season, error)
 
-	AirDate(ctx context.Context, obj *models.Game) (string, error)
-	TapeDate(ctx context.Context, obj *models.Game) (string, error)
-	Clues(ctx context.Context, obj *models.Game) ([]*models.Clue, error)
+	AirDate(ctx context.Context, obj *model.Game) (string, error)
+	TapeDate(ctx context.Context, obj *model.Game) (string, error)
+	Clues(ctx context.Context, obj *model.Game) ([]*model.Clue, error)
 }
 type QueryResolver interface {
-	Season(ctx context.Context, seasonID string) (*models.Season, error)
-	Seasons(ctx context.Context) ([]*models.Season, error)
-	Clue(ctx context.Context, clueID string) (*models.Clue, error)
+	Season(ctx context.Context, seasonID string) (*model.Season, error)
+	Seasons(ctx context.Context) ([]*model.Season, error)
+	Clue(ctx context.Context, clueID string) (*model.Clue, error)
 	Clues(ctx context.Context, first *int64, after *string) (*model.CluesConnection, error)
-	Category(ctx context.Context, categoryID string) (*models.Category, error)
-	Categories(ctx context.Context) ([]*models.Category, error)
-	Game(ctx context.Context, gameID string) (*models.Game, error)
-	Games(ctx context.Context) ([]*models.Game, error)
+	Category(ctx context.Context, categoryID string) (*model.Category, error)
+	Categories(ctx context.Context) ([]*model.Category, error)
+	Game(ctx context.Context, gameID string) (*model.Game, error)
+	Games(ctx context.Context) ([]*model.Game, error)
 }
 type SeasonResolver interface {
-	StartDate(ctx context.Context, obj *models.Season) (string, error)
-	EndDate(ctx context.Context, obj *models.Season) (string, error)
-	Games(ctx context.Context, obj *models.Season) ([]*models.Game, error)
+	StartDate(ctx context.Context, obj *model.Season) (string, error)
+	EndDate(ctx context.Context, obj *model.Season) (string, error)
+	Games(ctx context.Context, obj *model.Season) ([]*model.Game, error)
 }
 
 type executableSchema struct {
@@ -504,23 +502,67 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "typedefs/category.schema.gql" "typedefs/clue.schema.gql" "typedefs/game.schema.gql" "typedefs/schema.gql" "typedefs/season.schema.gql"
-var sourcesFS embed.FS
-
-func sourceData(filename string) string {
-	data, err := sourcesFS.ReadFile(filename)
-	if err != nil {
-		panic(fmt.Sprintf("codegen problem: %s not available", filename))
-	}
-	return string(data)
+var sources = []*ast.Source{
+	{Name: "../typedefs/category.schema.gql", Input: `type Category {
+  id: ID!
+  name: String!
+  clues: [Clue!]!
 }
 
-var sources = []*ast.Source{
-	{Name: "typedefs/category.schema.gql", Input: sourceData("typedefs/category.schema.gql"), BuiltIn: false},
-	{Name: "typedefs/clue.schema.gql", Input: sourceData("typedefs/clue.schema.gql"), BuiltIn: false},
-	{Name: "typedefs/game.schema.gql", Input: sourceData("typedefs/game.schema.gql"), BuiltIn: false},
-	{Name: "typedefs/schema.gql", Input: sourceData("typedefs/schema.gql"), BuiltIn: false},
-	{Name: "typedefs/season.schema.gql", Input: sourceData("typedefs/season.schema.gql"), BuiltIn: false},
+`, BuiltIn: false},
+	{Name: "../typedefs/clue.schema.gql", Input: `type Clue {
+  id: ID!
+  question: String!
+  answer: String!
+  category: Category!
+  game: Game!
+}
+
+type CluesConnection {
+  edges: [CluesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CluesEdge {
+  cursor: ID!
+  node: Clue
+}
+
+type PageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean
+}`, BuiltIn: false},
+	{Name: "../typedefs/game.schema.gql", Input: `type Game {
+  id: ID!
+  season: Season!
+  show: Int!
+  airDate: String!
+  tapeDate: String!
+  clues: [Clue!]!
+}
+
+`, BuiltIn: false},
+	{Name: "../typedefs/schema.gql", Input: `type Query {
+  season(seasonID: ID!): Season!
+  seasons: [Season!]!
+  
+  clue(clueID: ID!): Clue!
+  clues(first: Int = 10, after: ID): CluesConnection
+
+  category(categoryID: ID!): Category!
+  categories: [Category!]!
+
+  game(gameID: ID!): Game!
+  games: [Game!]!
+}`, BuiltIn: false},
+	{Name: "../typedefs/season.schema.gql", Input: `type Season {
+  id: ID!
+  number: Int!
+  startDate: String!
+  endDate: String!
+  games: [Game!]!
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -665,7 +707,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Category_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -709,7 +751,7 @@ func (ec *executionContext) fieldContext_Category_id(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Category_name(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+func (ec *executionContext) _Category_name(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Category_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -753,7 +795,7 @@ func (ec *executionContext) fieldContext_Category_name(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Category_clues(ctx context.Context, field graphql.CollectedField, obj *models.Category) (ret graphql.Marshaler) {
+func (ec *executionContext) _Category_clues(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Category_clues(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -779,9 +821,9 @@ func (ec *executionContext) _Category_clues(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Clue)
+	res := resTmp.([]*model.Clue)
 	fc.Result = res
-	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx, field.Selections, res)
+	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Category_clues(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -809,7 +851,7 @@ func (ec *executionContext) fieldContext_Category_clues(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_id(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_id(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -853,7 +895,7 @@ func (ec *executionContext) fieldContext_Clue_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_question(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_question(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_question(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -897,7 +939,7 @@ func (ec *executionContext) fieldContext_Clue_question(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_answer(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_answer(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_answer(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -941,7 +983,7 @@ func (ec *executionContext) fieldContext_Clue_answer(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_category(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_category(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_category(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -967,9 +1009,9 @@ func (ec *executionContext) _Clue_category(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Category)
+	res := resTmp.(*model.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Clue_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -993,7 +1035,7 @@ func (ec *executionContext) fieldContext_Clue_category(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Clue_game(ctx context.Context, field graphql.CollectedField, obj *models.Clue) (ret graphql.Marshaler) {
+func (ec *executionContext) _Clue_game(ctx context.Context, field graphql.CollectedField, obj *model.Clue) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Clue_game(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1019,9 +1061,9 @@ func (ec *executionContext) _Clue_game(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Game)
+	res := resTmp.(*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGame(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Clue_game(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1220,9 +1262,9 @@ func (ec *executionContext) _CluesEdge_node(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*models.Clue)
+	res := resTmp.(*model.Clue)
 	fc.Result = res
-	return ec.marshalOClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx, field.Selections, res)
+	return ec.marshalOClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CluesEdge_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1250,7 +1292,7 @@ func (ec *executionContext) fieldContext_CluesEdge_node(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Game_id(ctx context.Context, field graphql.CollectedField, obj *models.Game) (ret graphql.Marshaler) {
+func (ec *executionContext) _Game_id(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Game_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1294,7 +1336,7 @@ func (ec *executionContext) fieldContext_Game_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Game_season(ctx context.Context, field graphql.CollectedField, obj *models.Game) (ret graphql.Marshaler) {
+func (ec *executionContext) _Game_season(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Game_season(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1320,9 +1362,9 @@ func (ec *executionContext) _Game_season(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Season)
+	res := resTmp.(*model.Season)
 	fc.Result = res
-	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx, field.Selections, res)
+	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Game_season(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1350,7 +1392,7 @@ func (ec *executionContext) fieldContext_Game_season(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Game_show(ctx context.Context, field graphql.CollectedField, obj *models.Game) (ret graphql.Marshaler) {
+func (ec *executionContext) _Game_show(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Game_show(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1394,7 +1436,7 @@ func (ec *executionContext) fieldContext_Game_show(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Game_airDate(ctx context.Context, field graphql.CollectedField, obj *models.Game) (ret graphql.Marshaler) {
+func (ec *executionContext) _Game_airDate(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Game_airDate(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1438,7 +1480,7 @@ func (ec *executionContext) fieldContext_Game_airDate(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Game_tapeDate(ctx context.Context, field graphql.CollectedField, obj *models.Game) (ret graphql.Marshaler) {
+func (ec *executionContext) _Game_tapeDate(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Game_tapeDate(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1482,7 +1524,7 @@ func (ec *executionContext) fieldContext_Game_tapeDate(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Game_clues(ctx context.Context, field graphql.CollectedField, obj *models.Game) (ret graphql.Marshaler) {
+func (ec *executionContext) _Game_clues(ctx context.Context, field graphql.CollectedField, obj *model.Game) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Game_clues(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1508,9 +1550,9 @@ func (ec *executionContext) _Game_clues(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Clue)
+	res := resTmp.([]*model.Clue)
 	fc.Result = res
-	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx, field.Selections, res)
+	return ec.marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Game_clues(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1693,9 +1735,9 @@ func (ec *executionContext) _Query_season(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Season)
+	res := resTmp.(*model.Season)
 	fc.Result = res
-	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx, field.Selections, res)
+	return ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_season(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1760,9 +1802,9 @@ func (ec *executionContext) _Query_seasons(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Season)
+	res := resTmp.([]*model.Season)
 	fc.Result = res
-	return ec.marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeasonᚄ(ctx, field.Selections, res)
+	return ec.marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeasonᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_seasons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1816,9 +1858,9 @@ func (ec *executionContext) _Query_clue(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Clue)
+	res := resTmp.(*model.Clue)
 	fc.Result = res
-	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx, field.Selections, res)
+	return ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_clue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1941,9 +1983,9 @@ func (ec *executionContext) _Query_category(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Category)
+	res := resTmp.(*model.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2004,9 +2046,9 @@ func (ec *executionContext) _Query_categories(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Category)
+	res := resTmp.([]*model.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2056,9 +2098,9 @@ func (ec *executionContext) _Query_game(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Game)
+	res := resTmp.(*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGame(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_game(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2125,9 +2167,9 @@ func (ec *executionContext) _Query_games(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Game)
+	res := resTmp.([]*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGameᚄ(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGameᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_games(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2286,7 +2328,7 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_id(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_id(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2330,7 +2372,7 @@ func (ec *executionContext) fieldContext_Season_id(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_number(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_number(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_number(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2374,7 +2416,7 @@ func (ec *executionContext) fieldContext_Season_number(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_startDate(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_startDate(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_startDate(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2418,7 +2460,7 @@ func (ec *executionContext) fieldContext_Season_startDate(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_endDate(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_endDate(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_endDate(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2462,7 +2504,7 @@ func (ec *executionContext) fieldContext_Season_endDate(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Season_games(ctx context.Context, field graphql.CollectedField, obj *models.Season) (ret graphql.Marshaler) {
+func (ec *executionContext) _Season_games(ctx context.Context, field graphql.CollectedField, obj *model.Season) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Season_games(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2488,9 +2530,9 @@ func (ec *executionContext) _Season_games(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Game)
+	res := resTmp.([]*model.Game)
 	fc.Result = res
-	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGameᚄ(ctx, field.Selections, res)
+	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGameᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Season_games(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4303,7 +4345,7 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 var categoryImplementors = []string{"Category"}
 
-func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet, obj *models.Category) graphql.Marshaler {
+func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet, obj *model.Category) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, categoryImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -4383,7 +4425,7 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 
 var clueImplementors = []string{"Clue"}
 
-func (ec *executionContext) _Clue(ctx context.Context, sel ast.SelectionSet, obj *models.Clue) graphql.Marshaler {
+func (ec *executionContext) _Clue(ctx context.Context, sel ast.SelectionSet, obj *model.Clue) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, clueImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -4589,7 +4631,7 @@ func (ec *executionContext) _CluesEdge(ctx context.Context, sel ast.SelectionSet
 
 var gameImplementors = []string{"Game"}
 
-func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj *models.Game) graphql.Marshaler {
+func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj *model.Game) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, gameImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -5046,7 +5088,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var seasonImplementors = []string{"Season"}
 
-func (ec *executionContext) _Season(ctx context.Context, sel ast.SelectionSet, obj *models.Season) graphql.Marshaler {
+func (ec *executionContext) _Season(ctx context.Context, sel ast.SelectionSet, obj *model.Season) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, seasonImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -5537,11 +5579,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCategory2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v models.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v model.Category) graphql.Marshaler {
 	return ec._Category(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Category) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5565,7 +5607,7 @@ func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjep
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx, sel, v[i])
+			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5585,7 +5627,7 @@ func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjep
 	return ret
 }
 
-func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐCategory(ctx context.Context, sel ast.SelectionSet, v *models.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5595,11 +5637,11 @@ func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjepp�
 	return ec._Category(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNClue2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx context.Context, sel ast.SelectionSet, v models.Clue) graphql.Marshaler {
+func (ec *executionContext) marshalNClue2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx context.Context, sel ast.SelectionSet, v model.Clue) graphql.Marshaler {
 	return ec._Clue(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClueᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Clue) graphql.Marshaler {
+func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClueᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Clue) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5623,7 +5665,7 @@ func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx, sel, v[i])
+			ret[i] = ec.marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5643,7 +5685,7 @@ func (ec *executionContext) marshalNClue2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx context.Context, sel ast.SelectionSet, v *models.Clue) graphql.Marshaler {
+func (ec *executionContext) marshalNClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx context.Context, sel ast.SelectionSet, v *model.Clue) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5707,11 +5749,11 @@ func (ec *executionContext) marshalNCluesEdge2ᚖgithubᚗcomᚋecshreveᚋjepp�
 	return ec._CluesEdge(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNGame2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGame(ctx context.Context, sel ast.SelectionSet, v models.Game) graphql.Marshaler {
+func (ec *executionContext) marshalNGame2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v model.Game) graphql.Marshaler {
 	return ec._Game(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGameᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Game) graphql.Marshaler {
+func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGameᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Game) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5735,7 +5777,7 @@ func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGame(ctx, sel, v[i])
+			ret[i] = ec.marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5755,7 +5797,7 @@ func (ec *executionContext) marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐGame(ctx context.Context, sel ast.SelectionSet, v *models.Game) graphql.Marshaler {
+func (ec *executionContext) marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5820,11 +5862,11 @@ func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋecshreveᚋjepp�
 	return ec._PageInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNSeason2githubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx context.Context, sel ast.SelectionSet, v models.Season) graphql.Marshaler {
+func (ec *executionContext) marshalNSeason2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx context.Context, sel ast.SelectionSet, v model.Season) graphql.Marshaler {
 	return ec._Season(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeasonᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Season) graphql.Marshaler {
+func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeasonᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Season) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5848,7 +5890,7 @@ func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjepp�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx, sel, v[i])
+			ret[i] = ec.marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5868,7 +5910,7 @@ func (ec *executionContext) marshalNSeason2ᚕᚖgithubᚗcomᚋecshreveᚋjepp�
 	return ret
 }
 
-func (ec *executionContext) marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐSeason(ctx context.Context, sel ast.SelectionSet, v *models.Season) graphql.Marshaler {
+func (ec *executionContext) marshalNSeason2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐSeason(ctx context.Context, sel ast.SelectionSet, v *model.Season) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -6172,7 +6214,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋappᚋmodelsᚐClue(ctx context.Context, sel ast.SelectionSet, v *models.Clue) graphql.Marshaler {
+func (ec *executionContext) marshalOClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx context.Context, sel ast.SelectionSet, v *model.Clue) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

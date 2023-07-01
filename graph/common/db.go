@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/ecshreve/jepp/app/models"
+	"github.com/ecshreve/jepp/graph/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -15,6 +15,6 @@ func InitDb() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&models.Clue{}, &models.Category{}, &models.Game{}, &models.Season{})
+	db.AutoMigrate(&model.Clue{}, &model.Category{}, &model.Game{}, &model.Season{})
 	return db, nil
 }

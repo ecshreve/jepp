@@ -12,9 +12,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/benbjohnson/clock"
-	"github.com/ecshreve/jepp/app/models"
-	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
+	graph "github.com/ecshreve/jepp/graph/generated"
+	"github.com/ecshreve/jepp/graph/model"
 	resolvers "github.com/ecshreve/jepp/graph/resolvers"
 	"github.com/samsarahq/go/snapshotter"
 	"github.com/stretchr/testify/assert"
@@ -45,7 +45,7 @@ func SetupTestEnv(t *testing.T) *TestEnv {
 	// Setup Database
 	db, err := gorm.Open(sqlite.Open("./gorm.db"), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
 	require.NoError(t, err)
-	err = db.AutoMigrate(&models.Clue{}, &models.Category{}, &models.Game{}, &models.Season{})
+	err = db.AutoMigrate(&model.Clue{}, &model.Category{}, &model.Game{}, &model.Season{})
 	require.NoError(t, err)
 	env.db = db
 
@@ -75,31 +75,31 @@ func SetupTestEnv(t *testing.T) *TestEnv {
 // Run After All Test Done
 func (e *TestEnv) Cleanup(t *testing.T) {
 	// Drop Tables
-	for _, val := range []interface{}{&models.Clue{}, &models.Category{}, &models.Game{}, &models.Season{}} {
+	for _, val := range []interface{}{&model.Clue{}, &model.Category{}, &model.Game{}, &model.Season{}} {
 		e.db.Migrator().DropTable(val)
 	}
 }
 
 func (e *TestEnv) SeedData(t *testing.T) {
-	seasons := []models.Season{
+	seasons := []model.Season{
 		{ID: 1, Number: 1, StartDate: e.clk.Now(), EndDate: e.clk.Now().Add(time.Hour * 24 * 30)},
 		{ID: 2, Number: 2, StartDate: e.clk.Now().Add(time.Hour * 24 * 31), EndDate: e.clk.Now().Add(time.Hour * 24 * 60)},
 		{ID: 3, Number: 3, StartDate: e.clk.Now().Add(time.Hour * 24 * 61), EndDate: e.clk.Now().Add(time.Hour * 24 * 90)},
 	}
 
-	games := []models.Game{
+	games := []model.Game{
 		{ID: 1, SeasonID: 1, Show: 1, AirDate: e.clk.Now().Add(time.Hour * 24 * 2), TapeDate: e.clk.Now()},
 		{ID: 2, SeasonID: 1, Show: 2, AirDate: e.clk.Now().Add(time.Hour * 24 * 4), TapeDate: e.clk.Now().Add(time.Hour * 24 * 3)},
 		{ID: 3, SeasonID: 1, Show: 3, AirDate: e.clk.Now().Add(time.Hour * 24 * 6), TapeDate: e.clk.Now().Add(time.Hour * 24 * 5)},
 	}
 
-	categories := []models.Category{
+	categories := []model.Category{
 		{ID: 1, Name: "Category 1"},
 		{ID: 2, Name: "Category 2"},
 		{ID: 3, Name: "Category 3"},
 	}
 
-	clues := []models.Clue{
+	clues := []model.Clue{
 		{ID: 1, CategoryID: 1, GameID: 1, Question: "Question 1", Answer: "Answer 1"},
 		{ID: 2, CategoryID: 1, GameID: 1, Question: "Question 2", Answer: "Answer 2"},
 		{ID: 3, CategoryID: 1, GameID: 1, Question: "Question 3", Answer: "Answer 3"},

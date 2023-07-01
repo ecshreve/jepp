@@ -7,16 +7,16 @@ package graph
 import (
 	"context"
 
-	"github.com/ecshreve/jepp/app/models"
-	"github.com/ecshreve/jepp/graph"
 	"github.com/ecshreve/jepp/graph/common"
+	graph1 "github.com/ecshreve/jepp/graph/generated"
+	"github.com/ecshreve/jepp/graph/model"
 )
 
 // StartDate is the resolver for the startDate field.
-func (r *seasonResolver) StartDate(ctx context.Context, obj *models.Season) (string, error) {
+func (r *seasonResolver) StartDate(ctx context.Context, obj *model.Season) (string, error) {
 	context := common.GetContext(ctx)
 
-	var season models.Season
+	var season model.Season
 	if err := context.Database.First(&season, obj.ID).Error; err != nil {
 		return "", err
 	}
@@ -25,10 +25,10 @@ func (r *seasonResolver) StartDate(ctx context.Context, obj *models.Season) (str
 }
 
 // EndDate is the resolver for the endDate field.
-func (r *seasonResolver) EndDate(ctx context.Context, obj *models.Season) (string, error) {
+func (r *seasonResolver) EndDate(ctx context.Context, obj *model.Season) (string, error) {
 	context := common.GetContext(ctx)
 
-	var season models.Season
+	var season model.Season
 	if err := context.Database.First(&season, obj.ID).Error; err != nil {
 		return "", err
 	}
@@ -37,10 +37,10 @@ func (r *seasonResolver) EndDate(ctx context.Context, obj *models.Season) (strin
 }
 
 // Games is the resolver for the games field.
-func (r *seasonResolver) Games(ctx context.Context, obj *models.Season) ([]*models.Game, error) {
+func (r *seasonResolver) Games(ctx context.Context, obj *model.Season) ([]*model.Game, error) {
 	context := common.GetContext(ctx)
 
-	var games []*models.Game
+	var games []*model.Game
 	if err := context.Database.Where("season_id = ?", obj.ID).Find(&games).Error; err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (r *seasonResolver) Games(ctx context.Context, obj *models.Season) ([]*mode
 	return games, nil
 }
 
-// Season returns graph.SeasonResolver implementation.
-func (r *Resolver) Season() graph.SeasonResolver { return &seasonResolver{r} }
+// Season returns graph1.SeasonResolver implementation.
+func (r *Resolver) Season() graph1.SeasonResolver { return &seasonResolver{r} }
 
 type seasonResolver struct{ *Resolver }
