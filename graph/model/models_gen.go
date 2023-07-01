@@ -22,6 +22,16 @@ type CluesEdge struct {
 	Node   *Clue  `json:"node,omitempty"`
 }
 
+type GamesConnection struct {
+	Edges    []*GamesEdge `json:"edges"`
+	PageInfo *PageInfo    `json:"pageInfo"`
+}
+
+type GamesEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Game  `json:"node,omitempty"`
+}
+
 type PageInfo struct {
 	StartCursor string `json:"startCursor"`
 	EndCursor   string `json:"endCursor"`

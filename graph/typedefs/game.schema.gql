@@ -7,3 +7,12 @@ type Game {
   clues: [Clue!]!
 }
 
+type GamesConnection {
+  edges: [GamesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type GamesEdge {
+  cursor: ID!
+  node: Game
+}

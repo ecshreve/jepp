@@ -9,7 +9,7 @@ type Query {
   categories(first: Int = 10, after: ID): CategoriesConnection
 
   game(gameID: ID!): Game!
-  games: [Game!]!
+  games(first: Int = 10, after: ID): GamesConnection
 }
 
 type PageInfo {

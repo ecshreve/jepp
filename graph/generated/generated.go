@@ -90,6 +90,16 @@ type ComplexityRoot struct {
 		TapeDate func(childComplexity int) int
 	}
 
+	GamesConnection struct {
+		Edges    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
+	}
+
+	GamesEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	PageInfo struct {
 		EndCursor   func(childComplexity int) int
 		HasNextPage func(childComplexity int) int
@@ -102,7 +112,7 @@ type ComplexityRoot struct {
 		Clue       func(childComplexity int, clueID string) int
 		Clues      func(childComplexity int, first *int64, after *string) int
 		Game       func(childComplexity int, gameID string) int
-		Games      func(childComplexity int) int
+		Games      func(childComplexity int, first *int64, after *string) int
 		Season     func(childComplexity int, seasonID string) int
 		Seasons    func(childComplexity int) int
 	}
@@ -138,7 +148,7 @@ type QueryResolver interface {
 	Category(ctx context.Context, categoryID string) (*model.Category, error)
 	Categories(ctx context.Context, first *int64, after *string) (*model.CategoriesConnection, error)
 	Game(ctx context.Context, gameID string) (*model.Game, error)
-	Games(ctx context.Context) ([]*model.Game, error)
+	Games(ctx context.Context, first *int64, after *string) (*model.GamesConnection, error)
 }
 type SeasonResolver interface {
 	StartDate(ctx context.Context, obj *model.Season) (string, error)
@@ -315,6 +325,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Game.TapeDate(childComplexity), true
 
+	case "GamesConnection.edges":
+		if e.complexity.GamesConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.GamesConnection.Edges(childComplexity), true
+
+	case "GamesConnection.pageInfo":
+		if e.complexity.GamesConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.GamesConnection.PageInfo(childComplexity), true
+
+	case "GamesEdge.cursor":
+		if e.complexity.GamesEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.GamesEdge.Cursor(childComplexity), true
+
+	case "GamesEdge.node":
+		if e.complexity.GamesEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.GamesEdge.Node(childComplexity), true
+
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
 			break
@@ -401,7 +439,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Games(childComplexity), true
+		args, err := ec.field_Query_games_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Games(childComplexity, args["first"].(*int64), args["after"].(*string)), true
 
 	case "Query.season":
 		if e.complexity.Query.Season == nil {
@@ -587,7 +630,15 @@ type CluesEdge {
   clues: [Clue!]!
 }
 
-`, BuiltIn: false},
+type GamesConnection {
+  edges: [GamesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type GamesEdge {
+  cursor: ID!
+  node: Game
+}`, BuiltIn: false},
 	{Name: "../typedefs/schema.gql", Input: `type Query {
   season(seasonID: ID!): Season!
   seasons: [Season!]!
@@ -599,7 +650,7 @@ type CluesEdge {
   categories(first: Int = 10, after: ID): CategoriesConnection
 
   game(gameID: ID!): Game!
-  games: [Game!]!
+  games(first: Int = 10, after: ID): GamesConnection
 }
 
 type PageInfo {
@@ -726,6 +777,30 @@ func (ec *executionContext) field_Query_game_args(ctx context.Context, rawArgs m
 		}
 	}
 	args["gameID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_games_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int64
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg0, err = ec.unmarshalOInt2ᚖint64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg1, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg1
 	return args, nil
 }
 
@@ -1850,6 +1925,207 @@ func (ec *executionContext) fieldContext_Game_clues(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _GamesConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.GamesConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GamesConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.GamesEdge)
+	fc.Result = res
+	return ec.marshalNGamesEdge2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGamesEdgeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GamesConnection_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GamesConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_GamesEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_GamesEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GamesEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GamesConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.GamesConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GamesConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GamesConnection_pageInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GamesConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GamesEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.GamesEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GamesEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GamesEdge_cursor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GamesEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GamesEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.GamesEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GamesEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Game)
+	fc.Result = res
+	return ec.marshalOGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GamesEdge_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GamesEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Game_id(ctx, field)
+			case "season":
+				return ec.fieldContext_Game_season(ctx, field)
+			case "show":
+				return ec.fieldContext_Game_show(ctx, field)
+			case "airDate":
+				return ec.fieldContext_Game_airDate(ctx, field)
+			case "tapeDate":
+				return ec.fieldContext_Game_tapeDate(ctx, field)
+			case "clues":
+				return ec.fieldContext_Game_clues(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Game", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_startCursor(ctx, field)
 	if err != nil {
@@ -2431,21 +2707,18 @@ func (ec *executionContext) _Query_games(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Games(rctx)
+		return ec.resolvers.Query().Games(rctx, fc.Args["first"].(*int64), fc.Args["after"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Game)
+	res := resTmp.(*model.GamesConnection)
 	fc.Result = res
-	return ec.marshalNGame2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGameᚄ(ctx, field.Selections, res)
+	return ec.marshalOGamesConnection2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGamesConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_games(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2456,21 +2729,24 @@ func (ec *executionContext) fieldContext_Query_games(ctx context.Context, field 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Game_id(ctx, field)
-			case "season":
-				return ec.fieldContext_Game_season(ctx, field)
-			case "show":
-				return ec.fieldContext_Game_show(ctx, field)
-			case "airDate":
-				return ec.fieldContext_Game_airDate(ctx, field)
-			case "tapeDate":
-				return ec.fieldContext_Game_tapeDate(ctx, field)
-			case "clues":
-				return ec.fieldContext_Game_clues(ctx, field)
+			case "edges":
+				return ec.fieldContext_GamesConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_GamesConnection_pageInfo(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Game", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GamesConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_games_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -5178,6 +5454,91 @@ func (ec *executionContext) _Game(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var gamesConnectionImplementors = []string{"GamesConnection"}
+
+func (ec *executionContext) _GamesConnection(ctx context.Context, sel ast.SelectionSet, obj *model.GamesConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gamesConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GamesConnection")
+		case "edges":
+			out.Values[i] = ec._GamesConnection_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._GamesConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var gamesEdgeImplementors = []string{"GamesEdge"}
+
+func (ec *executionContext) _GamesEdge(ctx context.Context, sel ast.SelectionSet, obj *model.GamesEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, gamesEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GamesEdge")
+		case "cursor":
+			out.Values[i] = ec._GamesEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "node":
+			out.Values[i] = ec._GamesEdge_node(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var pageInfoImplementors = []string{"PageInfo"}
 
 func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.PageInfo) graphql.Marshaler {
@@ -5401,9 +5762,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_games(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -6175,6 +6533,60 @@ func (ec *executionContext) marshalNGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgra
 	return ec._Game(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNGamesEdge2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGamesEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.GamesEdge) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGamesEdge2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGamesEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNGamesEdge2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGamesEdge(ctx context.Context, sel ast.SelectionSet, v *model.GamesEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GamesEdge(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNID2int64(ctx context.Context, v interface{}) (int64, error) {
 	res, err := graphql.UnmarshalInt64(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6608,6 +7020,20 @@ func (ec *executionContext) marshalOCluesConnection2ᚖgithubᚗcomᚋecshreve�
 		return graphql.Null
 	}
 	return ec._CluesConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGame2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGame(ctx context.Context, sel ast.SelectionSet, v *model.Game) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Game(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGamesConnection2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐGamesConnection(ctx context.Context, sel ast.SelectionSet, v *model.GamesConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._GamesConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
