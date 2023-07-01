@@ -1,11 +1,11 @@
 package graph
 
-//go:generate go run generate.go
+//go:generate go run github.com/99designs/gqlgen generate
 import (
 	"log"
 
-	"github.com/ecshreve/jepp/graph/common"
-	graph "github.com/ecshreve/jepp/graph/generated"
+	"github.com/ecshreve/jepp/pkg/graph/common"
+	graph "github.com/ecshreve/jepp/pkg/graph/generated"
 	"gorm.io/gorm"
 )
 

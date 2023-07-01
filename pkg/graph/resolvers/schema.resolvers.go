@@ -10,8 +10,8 @@ import (
 	"fmt"
 	"math"
 
-	graph1 "github.com/ecshreve/jepp/graph/generated"
-	"github.com/ecshreve/jepp/graph/model"
+	graph1 "github.com/ecshreve/jepp/pkg/graph/generated"
+	"github.com/ecshreve/jepp/pkg/graph/model"
 )
 
 // Season is the resolver for the season field.

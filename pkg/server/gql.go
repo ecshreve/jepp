@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	graph "github.com/ecshreve/jepp/graph/generated"
-	resolvers "github.com/ecshreve/jepp/graph/resolvers"
+	graph "github.com/ecshreve/jepp/pkg/graph/generated"
+	resolvers "github.com/ecshreve/jepp/pkg/graph/resolvers"
 	"github.com/gin-gonic/gin"
 )
 

@@ -7,8 +7,8 @@ package graph
 import (
 	"context"
 
-	graph "github.com/ecshreve/jepp/graph/generated"
-	"github.com/ecshreve/jepp/graph/model"
+	graph "github.com/ecshreve/jepp/pkg/graph/generated"
+	"github.com/ecshreve/jepp/pkg/graph/model"
 )
 
 // Category is the resolver for the category field.

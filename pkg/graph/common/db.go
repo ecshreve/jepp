@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/ecshreve/jepp/graph/model"
+	"github.com/ecshreve/jepp/pkg/graph/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
