@@ -15,9 +15,3 @@ type CluesEdge {
   cursor: ID!
   node: Clue
 }
-
-type PageInfo {
-  startCursor: ID!
-  endCursor: ID!
-  hasNextPage: Boolean
-}

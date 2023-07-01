@@ -47,6 +47,16 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	CategoriesConnection struct {
+		Edges    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
+	}
+
+	CategoriesEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	Category struct {
 		Clues func(childComplexity int) int
 		ID    func(childComplexity int) int
@@ -87,7 +97,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Categories func(childComplexity int) int
+		Categories func(childComplexity int, first *int64, after *string) int
 		Category   func(childComplexity int, categoryID string) int
 		Clue       func(childComplexity int, clueID string) int
 		Clues      func(childComplexity int, first *int64, after *string) int
@@ -126,7 +136,7 @@ type QueryResolver interface {
 	Clue(ctx context.Context, clueID string) (*model.Clue, error)
 	Clues(ctx context.Context, first *int64, after *string) (*model.CluesConnection, error)
 	Category(ctx context.Context, categoryID string) (*model.Category, error)
-	Categories(ctx context.Context) ([]*model.Category, error)
+	Categories(ctx context.Context, first *int64, after *string) (*model.CategoriesConnection, error)
 	Game(ctx context.Context, gameID string) (*model.Game, error)
 	Games(ctx context.Context) ([]*model.Game, error)
 }
@@ -150,6 +160,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "CategoriesConnection.edges":
+		if e.complexity.CategoriesConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.CategoriesConnection.Edges(childComplexity), true
+
+	case "CategoriesConnection.pageInfo":
+		if e.complexity.CategoriesConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.CategoriesConnection.PageInfo(childComplexity), true
+
+	case "CategoriesEdge.cursor":
+		if e.complexity.CategoriesEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.CategoriesEdge.Cursor(childComplexity), true
+
+	case "CategoriesEdge.node":
+		if e.complexity.CategoriesEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.CategoriesEdge.Node(childComplexity), true
 
 	case "Category.clues":
 		if e.complexity.Category.Clues == nil {
@@ -303,7 +341,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Categories(childComplexity), true
+		args, err := ec.field_Query_categories_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Categories(childComplexity, args["first"].(*int64), args["after"].(*string)), true
 
 	case "Query.category":
 		if e.complexity.Query.Category == nil {
@@ -509,7 +552,15 @@ var sources = []*ast.Source{
   clues: [Clue!]!
 }
 
-`, BuiltIn: false},
+type CategoriesConnection {
+  edges: [CategoriesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CategoriesEdge {
+  cursor: ID!
+  node: Category
+}`, BuiltIn: false},
 	{Name: "../typedefs/clue.schema.gql", Input: `type Clue {
   id: ID!
   question: String!
@@ -526,12 +577,6 @@ type CluesConnection {
 type CluesEdge {
   cursor: ID!
   node: Clue
-}
-
-type PageInfo {
-  startCursor: ID!
-  endCursor: ID!
-  hasNextPage: Boolean
 }`, BuiltIn: false},
 	{Name: "../typedefs/game.schema.gql", Input: `type Game {
   id: ID!
@@ -551,10 +596,16 @@ type PageInfo {
   clues(first: Int = 10, after: ID): CluesConnection
 
   category(categoryID: ID!): Category!
-  categories: [Category!]!
+  categories(first: Int = 10, after: ID): CategoriesConnection
 
   game(gameID: ID!): Game!
   games: [Game!]!
+}
+
+type PageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean
 }`, BuiltIn: false},
 	{Name: "../typedefs/season.schema.gql", Input: `type Season {
   id: ID!
@@ -582,6 +633,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_categories_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *int64
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg0, err = ec.unmarshalOInt2ᚖint64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg1, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg1
 	return args, nil
 }
 
@@ -706,6 +781,201 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _CategoriesConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.CategoriesConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CategoriesConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.CategoriesEdge)
+	fc.Result = res
+	return ec.marshalNCategoriesEdge2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoriesEdgeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CategoriesConnection_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CategoriesConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cursor":
+				return ec.fieldContext_CategoriesEdge_cursor(ctx, field)
+			case "node":
+				return ec.fieldContext_CategoriesEdge_node(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CategoriesEdge", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CategoriesConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.CategoriesConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CategoriesConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CategoriesConnection_pageInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CategoriesConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CategoriesEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.CategoriesEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CategoriesEdge_cursor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CategoriesEdge_cursor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CategoriesEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CategoriesEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.CategoriesEdge) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CategoriesEdge_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Category)
+	fc.Result = res
+	return ec.marshalOCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CategoriesEdge_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CategoriesEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "clues":
+				return ec.fieldContext_Category_clues(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *model.Category) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Category_id(ctx, field)
@@ -2034,21 +2304,18 @@ func (ec *executionContext) _Query_categories(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Categories(rctx)
+		return ec.resolvers.Query().Categories(rctx, fc.Args["first"].(*int64), fc.Args["after"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Category)
+	res := resTmp.(*model.CategoriesConnection)
 	fc.Result = res
-	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalOCategoriesConnection2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoriesConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2059,15 +2326,24 @@ func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, f
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "clues":
-				return ec.fieldContext_Category_clues(ctx, field)
+			case "edges":
+				return ec.fieldContext_CategoriesConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_CategoriesConnection_pageInfo(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CategoriesConnection", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_categories_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -4343,6 +4619,91 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** object.gotpl ****************************
 
+var categoriesConnectionImplementors = []string{"CategoriesConnection"}
+
+func (ec *executionContext) _CategoriesConnection(ctx context.Context, sel ast.SelectionSet, obj *model.CategoriesConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, categoriesConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CategoriesConnection")
+		case "edges":
+			out.Values[i] = ec._CategoriesConnection_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._CategoriesConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var categoriesEdgeImplementors = []string{"CategoriesEdge"}
+
+func (ec *executionContext) _CategoriesEdge(ctx context.Context, sel ast.SelectionSet, obj *model.CategoriesEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, categoriesEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CategoriesEdge")
+		case "cursor":
+			out.Values[i] = ec._CategoriesEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "node":
+			out.Values[i] = ec._CategoriesEdge_node(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var categoryImplementors = []string{"Category"}
 
 func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet, obj *model.Category) graphql.Marshaler {
@@ -4999,9 +5360,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_categories(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -5579,11 +5937,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCategory2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v model.Category) graphql.Marshaler {
-	return ec._Category(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategoriesEdge2ᚕᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoriesEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CategoriesEdge) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5607,7 +5961,7 @@ func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjep
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx, sel, v[i])
+			ret[i] = ec.marshalNCategoriesEdge2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoriesEdge(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5625,6 +5979,20 @@ func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋecshreveᚋjep
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalNCategoriesEdge2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoriesEdge(ctx context.Context, sel ast.SelectionSet, v *model.CategoriesEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CategoriesEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCategory2githubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v model.Category) graphql.Marshaler {
+	return ec._Category(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
@@ -6212,6 +6580,20 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	}
 	res := graphql.MarshalBoolean(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOCategoriesConnection2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategoriesConnection(ctx context.Context, sel ast.SelectionSet, v *model.CategoriesConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CategoriesConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCategory2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Category(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOClue2ᚖgithubᚗcomᚋecshreveᚋjeppᚋgraphᚋmodelᚐClue(ctx context.Context, sel ast.SelectionSet, v *model.Clue) graphql.Marshaler {

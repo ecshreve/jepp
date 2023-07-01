@@ -4,3 +4,12 @@ type Category {
   clues: [Clue!]!
 }
 
+type CategoriesConnection {
+  edges: [CategoriesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CategoriesEdge {
+  cursor: ID!
+  node: Category
+}

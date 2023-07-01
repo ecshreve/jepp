@@ -116,15 +116,55 @@ func (r *queryResolver) Category(ctx context.Context, categoryID string) (*model
 }
 
 // Categories is the resolver for the categories field.
-func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
+func (r *queryResolver) Categories(ctx context.Context, first *int64, after *string) (*model.CategoriesConnection, error) {
 	context := common.GetContext(ctx)
 
+	// The cursor is base64 encoded by convention, so we need to decode it first
+	var decodedCursor string
+	if after != nil {
+		b, err := base64.StdEncoding.DecodeString(*after)
+		if err != nil {
+			return nil, err
+		}
+		decodedCursor = string(b)
+	}
+
+	if decodedCursor == "" {
+		decodedCursor = "0"
+	}
+
+	// Here we could query the DB to get data, e.g.
+	var edges []*model.CategoriesEdge
+	hasNextPage := false
+
 	var categories []*model.Category
-	if err := context.Database.Find(&categories).Error; err != nil {
+	if err := context.Database.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&categories).Error; err != nil {
 		return nil, err
 	}
 
-	return categories, nil
+	bound := int(math.Min(float64(int(*first)), float64(len(categories))))
+	for i := 0; i < bound; i++ {
+
+		edges = append(edges, &model.CategoriesEdge{
+			Cursor: base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%d", categories[i].ID))),
+			Node:   categories[i],
+		})
+	}
+
+	if len(edges) == int(1) && len(edges) < len(categories) {
+		hasNextPage = true
+	}
+
+	pageInfo := model.PageInfo{
+		StartCursor: base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%d", edges[0].Node.ID))),
+		EndCursor:   base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%d", edges[len(edges)-1].Node.ID))),
+		HasNextPage: &hasNextPage,
+	}
+
+	return &model.CategoriesConnection{
+		Edges:    edges,
+		PageInfo: &pageInfo,
+	}, nil
 }
 
 // Game is the resolver for the game field.

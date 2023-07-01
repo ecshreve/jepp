@@ -2,6 +2,16 @@
 
 package model
 
+type CategoriesConnection struct {
+	Edges    []*CategoriesEdge `json:"edges"`
+	PageInfo *PageInfo         `json:"pageInfo"`
+}
+
+type CategoriesEdge struct {
+	Cursor string    `json:"cursor"`
+	Node   *Category `json:"node,omitempty"`
+}
+
 type CluesConnection struct {
 	Edges    []*CluesEdge `json:"edges"`
 	PageInfo *PageInfo    `json:"pageInfo"`

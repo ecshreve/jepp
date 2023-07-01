@@ -6,8 +6,14 @@ type Query {
   clues(first: Int = 10, after: ID): CluesConnection
 
   category(categoryID: ID!): Category!
-  categories: [Category!]!
+  categories(first: Int = 10, after: ID): CategoriesConnection
 
   game(gameID: ID!): Game!
   games: [Game!]!
+}
+
+type PageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean
 }
