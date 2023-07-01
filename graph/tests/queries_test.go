@@ -30,15 +30,24 @@ func TestBasicQueries(t *testing.T) {
 		{
 			q: `query {
 				games {
-					id
-					season {
-						id
+					edges {
+						node {
+							id
+							season {
+								id
+							}
+							show
+							airDate
+							tapeDate
+							clues {
+								id
+							}
+						}
 					}
-					show
-					airDate
-					tapeDate
-					clues {
-						id
+					pageInfo {
+						startCursor
+						endCursor
+						hasNextPage
 					}
 				}
 			}`,
@@ -46,10 +55,19 @@ func TestBasicQueries(t *testing.T) {
 		{
 			q: `query {
 				categories {
-					id
-					name
-					clues {
-						id
+					edges {
+						node {
+							id
+							name
+							clues {
+								id
+							}
+						}
+					}
+					pageInfo {
+						startCursor
+						endCursor
+						hasNextPage
 					}
 				}
 			}`,
@@ -104,24 +122,33 @@ func TestComplexQueries(t *testing.T) {
 		{
 			q: `query {
 				categories {
-					id
-					name
-					clues {
-						id
-						question
-						answer
-						game {
+					edges {
+						node {
 							id
-							season {
+							name
+							clues {
 								id
-								number
-								startDate
-								endDate
+								question
+								answer
+								game {
+									id
+									season {
+										id
+										number
+										startDate
+										endDate
+									}
+									show
+									airDate
+									tapeDate
+								}
 							}
-							show
-							airDate
-							tapeDate
 						}
+					}
+					pageInfo {
+						startCursor
+						endCursor
+						hasNextPage
 					}
 				}
 			}`,

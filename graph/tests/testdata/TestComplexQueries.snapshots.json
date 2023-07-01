@@ -4,366 +4,379 @@
     "Values": [
       {
         "data": {
-          "categories": [
-            {
-              "clues": [
-                {
-                  "answer": "Answer 1",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
+          "categories": {
+            "edges": [
+              {
+                "node": {
+                  "clues": [
+                    {
+                      "answer": "Answer 1",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
                       "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
+                      "question": "Question 1"
                     },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
+                    {
+                      "answer": "Answer 2",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 2,
+                      "question": "Question 2"
+                    },
+                    {
+                      "answer": "Answer 3",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 3,
+                      "question": "Question 3"
+                    },
+                    {
+                      "answer": "Answer 10",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 10,
+                      "question": "Question 10"
+                    },
+                    {
+                      "answer": "Answer 11",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 11,
+                      "question": "Question 11"
+                    },
+                    {
+                      "answer": "Answer 12",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 12,
+                      "question": "Question 12"
+                    },
+                    {
+                      "answer": "Answer 19",
+                      "game": {
+                        "airDate": "2021-01-07",
+                        "id": 3,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 3,
+                        "tapeDate": "2021-01-06"
+                      },
+                      "id": 19,
+                      "question": "Question 19"
+                    },
+                    {
+                      "answer": "Answer 20",
+                      "game": {
+                        "airDate": "2021-01-07",
+                        "id": 3,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 3,
+                        "tapeDate": "2021-01-06"
+                      },
+                      "id": 20,
+                      "question": "Question 20"
+                    }
+                  ],
                   "id": 1,
-                  "question": "Question 1"
-                },
-                {
-                  "answer": "Answer 2",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
+                  "name": "Category 1"
+                }
+              },
+              {
+                "node": {
+                  "clues": [
+                    {
+                      "answer": "Answer 4",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 4,
+                      "question": "Question 4"
                     },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
+                    {
+                      "answer": "Answer 5",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 5,
+                      "question": "Question 5"
+                    },
+                    {
+                      "answer": "Answer 6",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 6,
+                      "question": "Question 6"
+                    },
+                    {
+                      "answer": "Answer 13",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 13,
+                      "question": "Question 13"
+                    },
+                    {
+                      "answer": "Answer 14",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 14,
+                      "question": "Question 14"
+                    },
+                    {
+                      "answer": "Answer 15",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 15,
+                      "question": "Question 15"
+                    }
+                  ],
                   "id": 2,
-                  "question": "Question 2"
-                },
-                {
-                  "answer": "Answer 3",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
+                  "name": "Category 2"
+                }
+              },
+              {
+                "node": {
+                  "clues": [
+                    {
+                      "answer": "Answer 7",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 7,
+                      "question": "Question 7"
                     },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
+                    {
+                      "answer": "Answer 8",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 8,
+                      "question": "Question 8"
+                    },
+                    {
+                      "answer": "Answer 9",
+                      "game": {
+                        "airDate": "2021-01-03",
+                        "id": 1,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 1,
+                        "tapeDate": "2021-01-01"
+                      },
+                      "id": 9,
+                      "question": "Question 9"
+                    },
+                    {
+                      "answer": "Answer 16",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 16,
+                      "question": "Question 16"
+                    },
+                    {
+                      "answer": "Answer 17",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 17,
+                      "question": "Question 17"
+                    },
+                    {
+                      "answer": "Answer 18",
+                      "game": {
+                        "airDate": "2021-01-05",
+                        "id": 2,
+                        "season": {
+                          "endDate": "2021-01-31",
+                          "id": 1,
+                          "number": 1,
+                          "startDate": "2021-01-01"
+                        },
+                        "show": 2,
+                        "tapeDate": "2021-01-04"
+                      },
+                      "id": 18,
+                      "question": "Question 18"
+                    }
+                  ],
                   "id": 3,
-                  "question": "Question 3"
-                },
-                {
-                  "answer": "Answer 10",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 10,
-                  "question": "Question 10"
-                },
-                {
-                  "answer": "Answer 11",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 11,
-                  "question": "Question 11"
-                },
-                {
-                  "answer": "Answer 12",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 12,
-                  "question": "Question 12"
-                },
-                {
-                  "answer": "Answer 19",
-                  "game": {
-                    "airDate": "2021-01-07",
-                    "id": 3,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 3,
-                    "tapeDate": "2021-01-06"
-                  },
-                  "id": 19,
-                  "question": "Question 19"
-                },
-                {
-                  "answer": "Answer 20",
-                  "game": {
-                    "airDate": "2021-01-07",
-                    "id": 3,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 3,
-                    "tapeDate": "2021-01-06"
-                  },
-                  "id": 20,
-                  "question": "Question 20"
+                  "name": "Category 3"
                 }
-              ],
-              "id": 1,
-              "name": "Category 1"
-            },
-            {
-              "clues": [
-                {
-                  "answer": "Answer 4",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
-                  "id": 4,
-                  "question": "Question 4"
-                },
-                {
-                  "answer": "Answer 5",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
-                  "id": 5,
-                  "question": "Question 5"
-                },
-                {
-                  "answer": "Answer 6",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
-                  "id": 6,
-                  "question": "Question 6"
-                },
-                {
-                  "answer": "Answer 13",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 13,
-                  "question": "Question 13"
-                },
-                {
-                  "answer": "Answer 14",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 14,
-                  "question": "Question 14"
-                },
-                {
-                  "answer": "Answer 15",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 15,
-                  "question": "Question 15"
-                }
-              ],
-              "id": 2,
-              "name": "Category 2"
-            },
-            {
-              "clues": [
-                {
-                  "answer": "Answer 7",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
-                  "id": 7,
-                  "question": "Question 7"
-                },
-                {
-                  "answer": "Answer 8",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
-                  "id": 8,
-                  "question": "Question 8"
-                },
-                {
-                  "answer": "Answer 9",
-                  "game": {
-                    "airDate": "2021-01-03",
-                    "id": 1,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 1,
-                    "tapeDate": "2021-01-01"
-                  },
-                  "id": 9,
-                  "question": "Question 9"
-                },
-                {
-                  "answer": "Answer 16",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 16,
-                  "question": "Question 16"
-                },
-                {
-                  "answer": "Answer 17",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 17,
-                  "question": "Question 17"
-                },
-                {
-                  "answer": "Answer 18",
-                  "game": {
-                    "airDate": "2021-01-05",
-                    "id": 2,
-                    "season": {
-                      "endDate": "2021-01-31",
-                      "id": 1,
-                      "number": 1,
-                      "startDate": "2021-01-01"
-                    },
-                    "show": 2,
-                    "tapeDate": "2021-01-04"
-                  },
-                  "id": 18,
-                  "question": "Question 18"
-                }
-              ],
-              "id": 3,
-              "name": "Category 3"
+              }
+            ],
+            "pageInfo": {
+              "endCursor": "Mw==",
+              "hasNextPage": false,
+              "startCursor": "MQ=="
             }
-          ]
+          }
         }
       }
     ]
