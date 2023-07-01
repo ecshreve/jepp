@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"time"
 
 	"github.com/ecshreve/jepp/app/models"
 	"github.com/ecshreve/jepp/graph"
@@ -22,7 +21,7 @@ func (r *seasonResolver) StartDate(ctx context.Context, obj *models.Season) (str
 		return "", err
 	}
 
-	return season.StartDate.Format(time.RFC3339), nil
+	return season.StartDate.Format("2006-01-02"), nil
 }
 
 // EndDate is the resolver for the endDate field.
@@ -34,7 +33,19 @@ func (r *seasonResolver) EndDate(ctx context.Context, obj *models.Season) (strin
 		return "", err
 	}
 
-	return season.EndDate.Format(time.RFC3339), nil
+	return season.EndDate.Format("2006-01-02"), nil
+}
+
+// Games is the resolver for the games field.
+func (r *seasonResolver) Games(ctx context.Context, obj *models.Season) ([]*models.Game, error) {
+	context := common.GetContext(ctx)
+
+	var games []*models.Game
+	if err := context.Database.Where("season_id = ?", obj.ID).Find(&games).Error; err != nil {
+		return nil, err
+	}
+
+	return games, nil
 }
 
 // Season returns graph.SeasonResolver implementation.

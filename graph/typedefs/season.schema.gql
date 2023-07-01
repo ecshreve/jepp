@@ -3,4 +3,5 @@ type Season {
   number: Int!
   startDate: String!
   endDate: String!
+  games: [Game!]!
 }
