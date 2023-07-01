@@ -586,7 +586,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../typedefs/category.schema.gql", Input: `type Category {
+	{Name: "../schema/category.schema.gql", Input: `type Category {
   id: ID!
   name: String!
   clues: [Clue!]!
@@ -601,7 +601,7 @@ type CategoriesEdge {
   cursor: ID!
   node: Category
 }`, BuiltIn: false},
-	{Name: "../typedefs/clue.schema.gql", Input: `type Clue {
+	{Name: "../schema/clue.schema.gql", Input: `type Clue {
   id: ID!
   question: String!
   answer: String!
@@ -618,7 +618,7 @@ type CluesEdge {
   cursor: ID!
   node: Clue
 }`, BuiltIn: false},
-	{Name: "../typedefs/game.schema.gql", Input: `type Game {
+	{Name: "../schema/game.schema.gql", Input: `type Game {
   id: ID!
   season: Season!
   show: Int!
@@ -636,7 +636,7 @@ type GamesEdge {
   cursor: ID!
   node: Game
 }`, BuiltIn: false},
-	{Name: "../typedefs/schema.gql", Input: `type Query {
+	{Name: "../schema/schema.gql", Input: `type Query {
   season(seasonID: ID!): Season!
   seasons: [Season!]!
   
@@ -655,7 +655,7 @@ type PageInfo {
   endCursor: ID!
   hasNextPage: Boolean
 }`, BuiltIn: false},
-	{Name: "../typedefs/season.schema.gql", Input: `type Season {
+	{Name: "../schema/season.schema.gql", Input: `type Season {
   id: ID!
   number: Int!
   startDate: String!

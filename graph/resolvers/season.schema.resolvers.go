@@ -7,7 +7,7 @@ package graph
 import (
 	"context"
 
-	graph "github.com/ecshreve/jepp/graph/generated"
+	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
@@ -21,7 +21,7 @@ func (r *seasonResolver) Games(ctx context.Context, obj *model.Season) ([]*model
 	return games, nil
 }
 
-// Season returns graph.SeasonResolver implementation.
-func (r *Resolver) Season() graph.SeasonResolver { return &seasonResolver{r} }
+// Season returns graph1.SeasonResolver implementation.
+func (r *Resolver) Season() graph1.SeasonResolver { return &seasonResolver{r} }
 
 type seasonResolver struct{ *Resolver }

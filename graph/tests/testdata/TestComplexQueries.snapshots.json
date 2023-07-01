@@ -12,16 +12,16 @@
                     {
                       "answer": "Answer 1",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 1,
                       "question": "Question 1"
@@ -29,16 +29,16 @@
                     {
                       "answer": "Answer 2",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 2,
                       "question": "Question 2"
@@ -46,16 +46,16 @@
                     {
                       "answer": "Answer 3",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 3,
                       "question": "Question 3"
@@ -63,16 +63,16 @@
                     {
                       "answer": "Answer 10",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 10,
                       "question": "Question 10"
@@ -80,16 +80,16 @@
                     {
                       "answer": "Answer 11",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 11,
                       "question": "Question 11"
@@ -97,16 +97,16 @@
                     {
                       "answer": "Answer 12",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 12,
                       "question": "Question 12"
@@ -114,16 +114,16 @@
                     {
                       "answer": "Answer 19",
                       "game": {
-                        "airDate": "2021-01-07",
+                        "airDate": "2021-01-07T00:00:00Z",
                         "id": 3,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 3,
-                        "tapeDate": "2021-01-06"
+                        "tapeDate": "2021-01-06T00:00:00Z"
                       },
                       "id": 19,
                       "question": "Question 19"
@@ -131,16 +131,16 @@
                     {
                       "answer": "Answer 20",
                       "game": {
-                        "airDate": "2021-01-07",
+                        "airDate": "2021-01-07T00:00:00Z",
                         "id": 3,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 3,
-                        "tapeDate": "2021-01-06"
+                        "tapeDate": "2021-01-06T00:00:00Z"
                       },
                       "id": 20,
                       "question": "Question 20"
@@ -156,16 +156,16 @@
                     {
                       "answer": "Answer 4",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 4,
                       "question": "Question 4"
@@ -173,16 +173,16 @@
                     {
                       "answer": "Answer 5",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 5,
                       "question": "Question 5"
@@ -190,16 +190,16 @@
                     {
                       "answer": "Answer 6",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 6,
                       "question": "Question 6"
@@ -207,16 +207,16 @@
                     {
                       "answer": "Answer 13",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 13,
                       "question": "Question 13"
@@ -224,16 +224,16 @@
                     {
                       "answer": "Answer 14",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 14,
                       "question": "Question 14"
@@ -241,16 +241,16 @@
                     {
                       "answer": "Answer 15",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 15,
                       "question": "Question 15"
@@ -266,16 +266,16 @@
                     {
                       "answer": "Answer 7",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 7,
                       "question": "Question 7"
@@ -283,16 +283,16 @@
                     {
                       "answer": "Answer 8",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 8,
                       "question": "Question 8"
@@ -300,16 +300,16 @@
                     {
                       "answer": "Answer 9",
                       "game": {
-                        "airDate": "2021-01-03",
+                        "airDate": "2021-01-03T00:00:00Z",
                         "id": 1,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 1,
-                        "tapeDate": "2021-01-01"
+                        "tapeDate": "2021-01-01T00:00:00Z"
                       },
                       "id": 9,
                       "question": "Question 9"
@@ -317,16 +317,16 @@
                     {
                       "answer": "Answer 16",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 16,
                       "question": "Question 16"
@@ -334,16 +334,16 @@
                     {
                       "answer": "Answer 17",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 17,
                       "question": "Question 17"
@@ -351,16 +351,16 @@
                     {
                       "answer": "Answer 18",
                       "game": {
-                        "airDate": "2021-01-05",
+                        "airDate": "2021-01-05T00:00:00Z",
                         "id": 2,
                         "season": {
-                          "endDate": "2021-01-31",
+                          "endDate": "2021-01-31T00:00:00Z",
                           "id": 1,
                           "number": 1,
-                          "startDate": "2021-01-01"
+                          "startDate": "2021-01-01T00:00:00Z"
                         },
                         "show": 2,
-                        "tapeDate": "2021-01-04"
+                        "tapeDate": "2021-01-04T00:00:00Z"
                       },
                       "id": 18,
                       "question": "Question 18"
@@ -388,10 +388,10 @@
         "data": {
           "seasons": [
             {
-              "endDate": "2021-01-31",
+              "endDate": "2021-01-31T00:00:00Z",
               "games": [
                 {
-                  "airDate": "2021-01-03",
+                  "airDate": "2021-01-03T00:00:00Z",
                   "clues": [
                     {
                       "answer": "Answer 1",
@@ -477,10 +477,10 @@
                   ],
                   "id": 1,
                   "show": 1,
-                  "tapeDate": "2021-01-01"
+                  "tapeDate": "2021-01-01T00:00:00Z"
                 },
                 {
-                  "airDate": "2021-01-05",
+                  "airDate": "2021-01-05T00:00:00Z",
                   "clues": [
                     {
                       "answer": "Answer 10",
@@ -566,10 +566,10 @@
                   ],
                   "id": 2,
                   "show": 2,
-                  "tapeDate": "2021-01-04"
+                  "tapeDate": "2021-01-04T00:00:00Z"
                 },
                 {
-                  "airDate": "2021-01-07",
+                  "airDate": "2021-01-07T00:00:00Z",
                   "clues": [
                     {
                       "answer": "Answer 19",
@@ -592,26 +592,26 @@
                   ],
                   "id": 3,
                   "show": 3,
-                  "tapeDate": "2021-01-06"
+                  "tapeDate": "2021-01-06T00:00:00Z"
                 }
               ],
               "id": 1,
               "number": 1,
-              "startDate": "2021-01-01"
+              "startDate": "2021-01-01T00:00:00Z"
             },
             {
-              "endDate": "2021-03-02",
+              "endDate": "2021-03-02T00:00:00Z",
               "games": [],
               "id": 2,
               "number": 2,
-              "startDate": "2021-02-01"
+              "startDate": "2021-02-01T00:00:00Z"
             },
             {
-              "endDate": "2021-04-01",
+              "endDate": "2021-04-01T00:00:00Z",
               "games": [],
               "id": 3,
               "number": 3,
-              "startDate": "2021-03-03"
+              "startDate": "2021-03-03T00:00:00Z"
             }
           ]
         }

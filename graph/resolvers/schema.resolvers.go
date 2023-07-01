@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"math"
 
-	graph "github.com/ecshreve/jepp/graph/generated"
+	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
@@ -214,7 +214,7 @@ func (r *queryResolver) Games(ctx context.Context, first *int64, after *string) 
 	}, nil
 }
 
-// Query returns graph.QueryResolver implementation.
-func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
+// Query returns graph1.QueryResolver implementation.
+func (r *Resolver) Query() graph1.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
