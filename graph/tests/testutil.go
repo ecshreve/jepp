@@ -51,7 +51,9 @@ func SetupTestEnv(t *testing.T) *TestEnv {
 
 	// Setup GraphQL Server
 	os.Setenv("PORT", "4000")
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &resolvers.Resolver{}}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &resolvers.Resolver{
+		DB: db,
+	}}))
 	require.NotNil(t, srv)
 	env.gqlserver = srv
 

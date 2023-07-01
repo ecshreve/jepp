@@ -7,17 +7,14 @@ package graph
 import (
 	"context"
 
-	"github.com/ecshreve/jepp/graph/common"
 	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
 // StartDate is the resolver for the startDate field.
 func (r *seasonResolver) StartDate(ctx context.Context, obj *model.Season) (string, error) {
-	context := common.GetContext(ctx)
-
 	var season model.Season
-	if err := context.Database.First(&season, obj.ID).Error; err != nil {
+	if err := r.DB.First(&season, obj.ID).Error; err != nil {
 		return "", err
 	}
 
@@ -26,10 +23,8 @@ func (r *seasonResolver) StartDate(ctx context.Context, obj *model.Season) (stri
 
 // EndDate is the resolver for the endDate field.
 func (r *seasonResolver) EndDate(ctx context.Context, obj *model.Season) (string, error) {
-	context := common.GetContext(ctx)
-
 	var season model.Season
-	if err := context.Database.First(&season, obj.ID).Error; err != nil {
+	if err := r.DB.First(&season, obj.ID).Error; err != nil {
 		return "", err
 	}
 
@@ -38,10 +33,8 @@ func (r *seasonResolver) EndDate(ctx context.Context, obj *model.Season) (string
 
 // Games is the resolver for the games field.
 func (r *seasonResolver) Games(ctx context.Context, obj *model.Season) ([]*model.Game, error) {
-	context := common.GetContext(ctx)
-
 	var games []*model.Game
-	if err := context.Database.Where("season_id = ?", obj.ID).Find(&games).Error; err != nil {
+	if err := r.DB.Where("season_id = ?", obj.ID).Find(&games).Error; err != nil {
 		return nil, err
 	}
 

@@ -1,6 +1,9 @@
 package server
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/benbjohnson/clock"
 	_ "github.com/ecshreve/jepp/docs"
 	"github.com/ecshreve/jepp/pkg/models"
@@ -47,6 +50,7 @@ func registerHandlers() *gin.Engine {
 	// Explicitly setting to debug mode, surfaces extra logging.
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
+	r.Use(GinContextToContextMiddleware())
 
 	r.StaticFile("style.css", "./static/site/style.css")
 	r.StaticFile("favicon.ico", "./static/site/favicon.ico")
@@ -54,6 +58,10 @@ func registerHandlers() *gin.Engine {
 
 	r.GET("/", BaseUIHandler)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	gql := r.Group("/gql")
+	gql.POST("/query", graphqlHandler())
+	gql.GET("/", playgroundHandler())
 
 	api := r.Group("/api")
 	api.GET("/clue", ClueHandler)
@@ -71,4 +79,27 @@ func registerHandlers() *gin.Engine {
 	}
 
 	return r
+}
+
+func GinContextToContextMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := context.WithValue(c.Request.Context(), "GinContextKey", c)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
+
+func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
+	ginContext := ctx.Value("GinContextKey")
+	if ginContext == nil {
+		err := fmt.Errorf("could not retrieve gin.Context")
+		return nil, err
+	}
+
+	gc, ok := ginContext.(*gin.Context)
+	if !ok {
+		err := fmt.Errorf("gin.Context has wrong type")
+		return nil, err
+	}
+	return gc, nil
 }

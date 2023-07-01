@@ -7,17 +7,14 @@ package graph
 import (
 	"context"
 
-	"github.com/ecshreve/jepp/graph/common"
 	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Category is the resolver for the category field.
 func (r *clueResolver) Category(ctx context.Context, obj *model.Clue) (*model.Category, error) {
-	context := common.GetContext(ctx)
-
 	var category model.Category
-	if err := context.Database.First(&category, obj.CategoryID).Error; err != nil {
+	if err := r.DB.First(&category, obj.CategoryID).Error; err != nil {
 		return nil, err
 	}
 
@@ -26,10 +23,8 @@ func (r *clueResolver) Category(ctx context.Context, obj *model.Clue) (*model.Ca
 
 // Game is the resolver for the game field.
 func (r *clueResolver) Game(ctx context.Context, obj *model.Clue) (*model.Game, error) {
-	context := common.GetContext(ctx)
-
 	var game model.Game
-	if err := context.Database.First(&game, obj.GameID).Error; err != nil {
+	if err := r.DB.First(&game, obj.GameID).Error; err != nil {
 		return nil, err
 	}
 

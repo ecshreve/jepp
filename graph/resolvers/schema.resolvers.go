@@ -10,17 +10,14 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/ecshreve/jepp/graph/common"
 	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Season is the resolver for the season field.
 func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Season, error) {
-	context := common.GetContext(ctx)
-
 	var season model.Season
-	if err := context.Database.First(&season, seasonID).Error; err != nil {
+	if err := r.DB.First(&season, seasonID).Error; err != nil {
 		return nil, err
 	}
 
@@ -29,10 +26,8 @@ func (r *queryResolver) Season(ctx context.Context, seasonID string) (*model.Sea
 
 // Seasons is the resolver for the seasons field.
 func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
-	context := common.GetContext(ctx)
-
 	var seasons []*model.Season
-	if err := context.Database.Find(&seasons).Error; err != nil {
+	if err := r.DB.Find(&seasons).Error; err != nil {
 		return nil, err
 	}
 
@@ -41,10 +36,8 @@ func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
 
 // Clue is the resolver for the clue field.
 func (r *queryResolver) Clue(ctx context.Context, clueID string) (*model.Clue, error) {
-	context := common.GetContext(ctx)
-
 	var clue model.Clue
-	if err := context.Database.First(&clue, clueID).Error; err != nil {
+	if err := r.DB.First(&clue, clueID).Error; err != nil {
 		return nil, err
 	}
 
@@ -53,8 +46,6 @@ func (r *queryResolver) Clue(ctx context.Context, clueID string) (*model.Clue, e
 
 // Clues is the resolver for the clues field.
 func (r *queryResolver) Clues(ctx context.Context, first *int64, after *string) (*model.CluesConnection, error) {
-	context := common.GetContext(ctx)
-
 	// The cursor is base64 encoded by convention, so we need to decode it first
 	var decodedCursor string
 	if after != nil {
@@ -74,7 +65,7 @@ func (r *queryResolver) Clues(ctx context.Context, first *int64, after *string) 
 	hasNextPage := false
 
 	var clues []*model.Clue
-	if err := context.Database.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&clues).Error; err != nil {
+	if err := r.DB.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&clues).Error; err != nil {
 		return nil, err
 	}
 
@@ -105,10 +96,8 @@ func (r *queryResolver) Clues(ctx context.Context, first *int64, after *string) 
 
 // Category is the resolver for the category field.
 func (r *queryResolver) Category(ctx context.Context, categoryID string) (*model.Category, error) {
-	context := common.GetContext(ctx)
-
 	var category model.Category
-	if err := context.Database.First(&category, categoryID).Error; err != nil {
+	if err := r.DB.First(&category, categoryID).Error; err != nil {
 		return nil, err
 	}
 
@@ -117,8 +106,6 @@ func (r *queryResolver) Category(ctx context.Context, categoryID string) (*model
 
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context, first *int64, after *string) (*model.CategoriesConnection, error) {
-	context := common.GetContext(ctx)
-
 	// The cursor is base64 encoded by convention, so we need to decode it first
 	var decodedCursor string
 	if after != nil {
@@ -138,7 +125,7 @@ func (r *queryResolver) Categories(ctx context.Context, first *int64, after *str
 	hasNextPage := false
 
 	var categories []*model.Category
-	if err := context.Database.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&categories).Error; err != nil {
+	if err := r.DB.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&categories).Error; err != nil {
 		return nil, err
 	}
 
@@ -169,10 +156,8 @@ func (r *queryResolver) Categories(ctx context.Context, first *int64, after *str
 
 // Game is the resolver for the game field.
 func (r *queryResolver) Game(ctx context.Context, gameID string) (*model.Game, error) {
-	context := common.GetContext(ctx)
-
 	var game model.Game
-	if err := context.Database.First(&game, gameID).Error; err != nil {
+	if err := r.DB.First(&game, gameID).Error; err != nil {
 		return nil, err
 	}
 
@@ -181,8 +166,6 @@ func (r *queryResolver) Game(ctx context.Context, gameID string) (*model.Game, e
 
 // Games is the resolver for the games field.
 func (r *queryResolver) Games(ctx context.Context, first *int64, after *string) (*model.GamesConnection, error) {
-	context := common.GetContext(ctx)
-
 	// The cursor is base64 encoded by convention, so we need to decode it first
 	var decodedCursor string
 	if after != nil {
@@ -202,7 +185,7 @@ func (r *queryResolver) Games(ctx context.Context, first *int64, after *string) 
 	hasNextPage := false
 
 	var games []*model.Game
-	if err := context.Database.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&games).Error; err != nil {
+	if err := r.DB.Limit(1000).Order("id asc").Where("id > ?", decodedCursor).Find(&games).Error; err != nil {
 		return nil, err
 	}
 

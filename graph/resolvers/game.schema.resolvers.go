@@ -7,17 +7,14 @@ package graph
 import (
 	"context"
 
-	"github.com/ecshreve/jepp/graph/common"
 	graph1 "github.com/ecshreve/jepp/graph/generated"
 	"github.com/ecshreve/jepp/graph/model"
 )
 
 // Season is the resolver for the season field.
 func (r *gameResolver) Season(ctx context.Context, obj *model.Game) (*model.Season, error) {
-	context := common.GetContext(ctx)
-
 	var season model.Season
-	if err := context.Database.First(&season, obj.SeasonID).Error; err != nil {
+	if err := r.DB.First(&season, obj.SeasonID).Error; err != nil {
 		return nil, err
 	}
 
@@ -26,10 +23,8 @@ func (r *gameResolver) Season(ctx context.Context, obj *model.Game) (*model.Seas
 
 // AirDate is the resolver for the airDate field.
 func (r *gameResolver) AirDate(ctx context.Context, obj *model.Game) (string, error) {
-	context := common.GetContext(ctx)
-
 	var game model.Game
-	if err := context.Database.First(&game, obj.ID).Error; err != nil {
+	if err := r.DB.First(&game, obj.ID).Error; err != nil {
 		return "", err
 	}
 
@@ -38,10 +33,8 @@ func (r *gameResolver) AirDate(ctx context.Context, obj *model.Game) (string, er
 
 // TapeDate is the resolver for the tapeDate field.
 func (r *gameResolver) TapeDate(ctx context.Context, obj *model.Game) (string, error) {
-	context := common.GetContext(ctx)
-
 	var game model.Game
-	if err := context.Database.First(&game, obj.ID).Error; err != nil {
+	if err := r.DB.First(&game, obj.ID).Error; err != nil {
 		return "", err
 	}
 
@@ -50,10 +43,8 @@ func (r *gameResolver) TapeDate(ctx context.Context, obj *model.Game) (string, e
 
 // Clues is the resolver for the clues field.
 func (r *gameResolver) Clues(ctx context.Context, obj *model.Game) ([]*model.Clue, error) {
-	context := common.GetContext(ctx)
-
 	var clues []*model.Clue
-	if err := context.Database.Where("game_id = ?", obj.ID).Find(&clues).Error; err != nil {
+	if err := r.DB.Where("game_id = ?", obj.ID).Find(&clues).Error; err != nil {
 		return nil, err
 	}
 
