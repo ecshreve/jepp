@@ -3,10 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/benbjohnson/clock"
 	_ "github.com/ecshreve/jepp/docs"
-	"github.com/ecshreve/jepp/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/samsarahq/go/oops"
 	log "github.com/sirupsen/logrus"
@@ -27,13 +27,7 @@ func NewServer() *Server {
 		ID:    "SERVER",
 		Clock: clock.New(),
 	}
-	models.NewJeppDB()
 	s.Router = registerHandlers()
-
-	// TODO: fix this
-	// if os.Getenv("JEPP_ENV") == "dev" {
-	// 	registerDevHandlers()
-	// }
 
 	log.Infof("Server %#v created", s)
 	return s
@@ -54,25 +48,28 @@ func registerHandlers() *gin.Engine {
 
 	r.StaticFile("style.css", "./static/site/style.css")
 	r.StaticFile("favicon.ico", "./static/site/favicon.ico")
-	r.LoadHTMLGlob("pkg/server/templates/prod/*")
 
-	r.GET("/", BaseUIHandler)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	if os.Getenv("JEPP_ENV") != "test" {
+		r.LoadHTMLGlob("pkg/server/templates/prod/*")
+
+		r.GET("/", BaseUIHandler)
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	gql := r.Group("/gql")
 	gql.POST("/query", graphqlHandler())
 	gql.GET("/", playgroundHandler())
 
-	api := r.Group("/api")
-	api.GET("/clue", ClueHandler)
-	api.GET("/game", GameHandler)
-	api.GET("/category", CategoryHandler)
+	// api := r.Group("/api")
+	// api.GET("/clue", ClueHandler)
+	// api.GET("/game", GameHandler)
+	// api.GET("/category", CategoryHandler)
 
 	// Basic health check endpoint.
 	// TODO: pull into isolated handler with docs
-	api.GET("/status", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"status": "ok"})
-	})
+	// api.GET("/status", func(ctx *gin.Context) {
+	// 	ctx.JSON(200, gin.H{"status": "ok"})
+	// })
 
 	if err := r.SetTrustedProxies(nil); err != nil {
 		log.Error(oops.Wrapf(err, "unable to set proxies"))

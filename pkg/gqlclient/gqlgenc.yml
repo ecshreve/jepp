@@ -1,0 +1,8 @@
+model:
+  filename: ./gen/models_gen.go
+client:
+  filename: ./gen/client.go
+schema:
+  - "../graph/schema/*.graphql" # Where is your schema located?
+query:
+  - "./query/*.graphql" # Where are all the query files located?

@@ -1,0 +1,47 @@
+[
+  {
+    "Name": "tc #1",
+    "Values": [
+      {
+        "data": {
+          "games": {
+            "nodes": [
+              {
+                "airDate": "2021-01-03T00:00:00Z",
+                "id": 1,
+                "season": {
+                  "id": 1
+                },
+                "show": 1,
+                "tapeDate": "2021-01-01T00:00:00Z"
+              },
+              {
+                "airDate": "2021-01-05T00:00:00Z",
+                "id": 2,
+                "season": {
+                  "id": 1
+                },
+                "show": 2,
+                "tapeDate": "2021-01-04T00:00:00Z"
+              },
+              {
+                "airDate": "2021-01-07T00:00:00Z",
+                "id": 3,
+                "season": {
+                  "id": 1
+                },
+                "show": 3,
+                "tapeDate": "2021-01-06T00:00:00Z"
+              }
+            ],
+            "pageInfo": {
+              "endCursor": 3,
+              "hasNextPage": false,
+              "startCursor": 1
+            }
+          }
+        }
+      }
+    ]
+  }
+]

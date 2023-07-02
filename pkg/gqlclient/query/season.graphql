@@ -1,0 +1,17 @@
+query GetSeason($id: ID!) {
+  season(seasonID: $id) {
+    id
+    number
+    startDate
+    endDate
+  }
+}
+
+query GetSeasons {
+  seasons {
+    id
+    number
+    startDate
+    endDate
+  }
+}

@@ -1,0 +1,240 @@
+[
+  {
+    "Name": "tc #3",
+    "Values": [
+      {
+        "data": {
+          "clues": {
+            "nodes": [
+              {
+                "answer": "Answer 1",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 1,
+                "question": "Question 1"
+              },
+              {
+                "answer": "Answer 2",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 2,
+                "question": "Question 2"
+              },
+              {
+                "answer": "Answer 3",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 3,
+                "question": "Question 3"
+              },
+              {
+                "answer": "Answer 4",
+                "category": {
+                  "id": 2
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 4,
+                "question": "Question 4"
+              },
+              {
+                "answer": "Answer 5",
+                "category": {
+                  "id": 2
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 5,
+                "question": "Question 5"
+              },
+              {
+                "answer": "Answer 6",
+                "category": {
+                  "id": 2
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 6,
+                "question": "Question 6"
+              },
+              {
+                "answer": "Answer 7",
+                "category": {
+                  "id": 3
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 7,
+                "question": "Question 7"
+              },
+              {
+                "answer": "Answer 8",
+                "category": {
+                  "id": 3
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 8,
+                "question": "Question 8"
+              },
+              {
+                "answer": "Answer 9",
+                "category": {
+                  "id": 3
+                },
+                "game": {
+                  "id": 1
+                },
+                "id": 9,
+                "question": "Question 9"
+              },
+              {
+                "answer": "Answer 10",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 10,
+                "question": "Question 10"
+              },
+              {
+                "answer": "Answer 11",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 11,
+                "question": "Question 11"
+              },
+              {
+                "answer": "Answer 12",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 12,
+                "question": "Question 12"
+              },
+              {
+                "answer": "Answer 13",
+                "category": {
+                  "id": 2
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 13,
+                "question": "Question 13"
+              },
+              {
+                "answer": "Answer 14",
+                "category": {
+                  "id": 2
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 14,
+                "question": "Question 14"
+              },
+              {
+                "answer": "Answer 15",
+                "category": {
+                  "id": 2
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 15,
+                "question": "Question 15"
+              },
+              {
+                "answer": "Answer 16",
+                "category": {
+                  "id": 3
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 16,
+                "question": "Question 16"
+              },
+              {
+                "answer": "Answer 17",
+                "category": {
+                  "id": 3
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 17,
+                "question": "Question 17"
+              },
+              {
+                "answer": "Answer 18",
+                "category": {
+                  "id": 3
+                },
+                "game": {
+                  "id": 2
+                },
+                "id": 18,
+                "question": "Question 18"
+              },
+              {
+                "answer": "Answer 19",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 3
+                },
+                "id": 19,
+                "question": "Question 19"
+              },
+              {
+                "answer": "Answer 20",
+                "category": {
+                  "id": 1
+                },
+                "game": {
+                  "id": 3
+                },
+                "id": 20,
+                "question": "Question 20"
+              }
+            ],
+            "pageInfo": {
+              "endCursor": 20,
+              "hasNextPage": false,
+              "startCursor": 1
+            }
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+package models
+
+import "time"
+
+type Category struct {
+	ID   int64  `gorm:"primary key;autoIncrement" json:"id" example:"3462"`
+	Name string `json:"name" example:"HISTORY"`
+}
+
+type Season struct {
+	ID        int64     `gorm:"primary key;autoIncrement" json:"id" example:"38"`
+	Number    int64     `json:"number" example:"38"`
+	StartDate time.Time `json:"startDate" example:"2019-01-01"`
+	EndDate   time.Time `json:"endDate" example:"2019-01-01"`
+}
+
+type Game struct {
+	ID       int64     `gorm:"primary key;autoIncrement" json:"id" example:"8040"`
+	SeasonID int64     `json:"seasonID" example:"38"`
+	Season   *Season   `gorm:"foreignKey:SeasonID" json:"season"`
+	Show     int64     `json:"showNum" example:"4532"`
+	AirDate  time.Time `json:"airDate" example:"2019-01-01"`
+	TapeDate time.Time `json:"tapeDate" example:"2019-01-01"`
+}
+
+type Clue struct {
+	ID         int64     `gorm:"primary key;autoIncrement" json:"id" example:"804002032"`
+	GameID     int64     `json:"gameID" example:"8040"`
+	Game       *Game     `gorm:"foreignKey:GameID" json:"game"`
+	CategoryID int64     `json:"categoryID" example:"3462"`
+	Category   *Category `gorm:"foreignKey:CategoryID" json:"category"`
+	Question   string    `json:"question" example:"This is the question."`
+	Answer     string    `json:"answer" example:"This is the answer."`
+}

@@ -1,0 +1,30 @@
+type Category {
+  id: ID!
+  name: String!
+  clues: [Clue!]!
+}
+
+type Clue {
+  id: ID!
+  question: String!
+  answer: String!
+  category: Category! 
+  game: Game!
+}
+
+type Game {
+  id: ID!
+  season: Season!
+  show: Int!
+  airDate: String!
+  tapeDate: String!
+  clues: [Clue!]!
+}
+
+type Season {
+  id: ID!
+  number: Int!
+  startDate: String!
+  endDate: String!
+  games: [Game!]!
+}

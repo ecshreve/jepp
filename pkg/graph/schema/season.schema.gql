@@ -1,7 +1,0 @@
-type Season {
-  id: ID!
-  number: Int!
-  startDate: String!
-  endDate: String!
-  games: [Game!]!
-}

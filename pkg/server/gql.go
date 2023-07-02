@@ -3,15 +3,15 @@ package server
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	graph "github.com/ecshreve/jepp/pkg/graph/generated"
-	resolvers "github.com/ecshreve/jepp/pkg/graph/resolvers"
+	resolvers "github.com/ecshreve/jepp/graphql/server"
+	gqlserver "github.com/ecshreve/jepp/graphql/server/generated"
 	"github.com/gin-gonic/gin"
 )
 
 // Defining the Graphql handler
 func graphqlHandler() gin.HandlerFunc {
 
-	h := handler.NewDefaultServer(graph.NewExecutableSchema(*resolvers.New()))
+	h := handler.NewDefaultServer(gqlserver.NewExecutableSchema(*resolvers.New()))
 
 	return func(c *gin.Context) {
 		h.ServeHTTP(c.Writer, c.Request)

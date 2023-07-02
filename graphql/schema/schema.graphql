@@ -1,0 +1,34 @@
+type PageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean
+}
+
+type CategoriesPaginated {
+  nodes: [Category!]!
+  pageInfo: PageInfo!
+}
+
+type CluesPaginated {
+  nodes: [Clue!]!
+  pageInfo: PageInfo!
+}
+
+type GamesPaginated {
+  nodes: [Game!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  season(seasonID: ID!): Season!
+  seasons: [Season!]!
+  
+  clue(clueID: ID!): Clue!
+  clues(first: Int = 10, after: ID = 0): CluesPaginated
+
+  category(categoryID: ID!): Category!
+  categories(first: Int = 10, after: ID = 0): CategoriesPaginated
+
+  game(gameID: ID!): Game!
+  games(first: Int = 10, after: ID = 0): GamesPaginated
+}
