@@ -9,4 +9,4 @@ services:
     environment:
       JEPP_ENV: ${JEPP_ENV}
     ports:
-      - 8880:8880
+      - 8082:8082

@@ -1,0 +1,25 @@
+input PaginationParams {
+  after: Cursor
+  before: Cursor
+  limit: Int = 10
+}
+
+extend type Query {
+  seasons(pager: PaginationParams, where: SeasonWhereInput, orderBy: SeasonOrder): SeasonConnection!
+  categories(pager: PaginationParams, where: CategoryWhereInput, orderBy: CategoryOrder): CategoryConnection!
+  games(pager: PaginationParams, where: GameWhereInput, orderBy: GameOrder): GameConnection!
+  clues(pager: PaginationParams, where: ClueWhereInput, orderBy: ClueOrder): ClueConnection!
+}
+
+extend type Game {
+  clues(pager: PaginationParams, where: ClueWhereInput, orderBy: ClueOrder): ClueConnection!
+}
+
+extend type Season {
+  games(pager: PaginationParams, where: GameWhereInput, orderBy: GameOrder): GameConnection!
+}
+
+extend type Category {
+  clues(pager: PaginationParams, where: ClueWhereInput, orderBy: ClueOrder): ClueConnection!
+}
+

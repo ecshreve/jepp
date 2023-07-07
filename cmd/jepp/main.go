@@ -1,32 +1,27 @@
 package main
 
 import (
-	"os"
-
-	"github.com/ecshreve/jepp/docs"
-	"github.com/ecshreve/jepp/pkg/server"
+	"github.com/ecshreve/jepp/internal/apiserver"
+	"github.com/ecshreve/jepp/internal/gqlserver"
+	jeppui "github.com/ecshreve/jepp/internal/jeppgenui"
+	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 )
 
-// @title			Jepp API Documentation
-// @description	This is a simple api to access jeopardy data.
-// @version		1.0
-// @BasePath		/api
-//
-// @contact.name	shreve
-//
-// @license.name	MIT License
-// @license.url	https://github.com/ecshreve/jepp/blob/main/LICENSE
 func main() {
-	if os.Getenv("JEPP_ENV") == "prod" {
-		docs.SwaggerInfo.Host = "jepp.app"
-	}
-
 	log.SetLevel(log.DebugLevel)
-	log.Info("Starting Jepp API server...")
+	r := gin.Default()
 
-	srv := server.NewServer()
-	if err := srv.Router.Run(":8880"); err != nil {
-		log.Fatal(err)
+	jeppui.NewUI(r)
+
+	// Register routes and initialize servers.
+	apiserver.NewServer(r)
+	gqlserver.NewServer(r)
+
+	// Run the ui.
+	log.Info("listening on :8082")
+	if err := r.Run(":8082"); err != nil {
+		log.Fatal("http server terminated", err)
 	}
 }

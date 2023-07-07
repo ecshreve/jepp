@@ -1,0 +1,28 @@
+schema:
+  - gqlschema/schema.graphql
+  - gqlschema/ent.graphql
+
+exec:
+  filename: internal/gqlserver/gen/generated.go
+  package: gqlserver
+
+model:
+  filename: internal/gqlserver/gen/models_gen.go
+  package: gqlserver
+
+resolver:
+  layout: follow-schema
+  dir: internal/gqlserver/resolvers
+  package: gqlserver
+  filename_template: "{name}.resolvers.go"
+
+autobind:
+  - github.com/ecshreve/jepp/internal/ent
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.IntID
+  Node:
+    model:
+      - github.com/ecshreve/jepp/internal/ent.Noder

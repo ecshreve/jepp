@@ -1,0 +1,7 @@
+h1:kjjohZDnpmKZtMtNyDvfIl62rTQwq7P5Dx+m/o1fshI=
+20230706060159_base.sql h1:W2FbjHUnv9aEjXhUQXZSugZEKr8oWLVqpO4E6VpWvrc=
+20230706060254_backfill-seasons.sql h1:ZBpU8r4nHJ479yrJ/ZQW8tKl0LzJXP1kRxkmtMyFfBg=
+20230706060701_backfill-categories.sql h1:4HTeN/Bz15IPwy/acDHGPjFkqYWQFijNWArterJ4mDA=
+20230706063439_add-fk-fields.sql h1:Yp2NJBR1RgQhfJW12pBH2mrwHbitv5R4E7zECX7PqDE=
+20230706063826_backfill-games.sql h1:6L+8IDJ2/ogCEkohh7U1BbGyoK/GVpSo8RtvTbznDhw=
+20230706064200_backfill-clues.sql h1:depJ64KBMUZOdCRKmpQBZMBT2blrU7MNHHpwAyY+rfs=

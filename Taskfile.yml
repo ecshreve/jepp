@@ -4,9 +4,6 @@ dotenv: ['.env', '{{.ENV}}/.env.', '{{.HOME}}/.env']
 
 includes:
   docker: ./taskfiles/docker-tasks.yml
-  jepp:
-    taskfile: ./taskfiles/go-tasks.yml
-    vars: {CMD_NAME: jepp}
   
 tasks:
   default:
@@ -14,27 +11,39 @@ tasks:
     cmds:
       - task --list-all
 
+  generate:
+    desc: Generates code.
+    cmds:
+      - go generate ./...
+    generates:
+      - internal/gqlserver/gen/generated.go
+    sources:
+      - internal/ent/entc.go
+      - internal/ent/schema/*.go
+      - gqlgen.yml
+      - gqlschema/*.graphql
+
   build:
-    desc: Builds all binaries.
+    desc: Builds jepp binary.
     deps:
-      - task: jepp:build
+      - task: generate
+    cmds:
+      - go build -o bin/jepp github.com/ecshreve/jepp/cmd/jepp
+    generates:
+      - bin/jepp
+    sources:
+      - cmd/jepp/*
+      - internal/apiserver/apiserver.go
+      - internal/gqlserver/gqlserver.go
     
   test:
-    desc: Runs all tests.
-    deps:
-      - task: jepp:test
+    desc: Runs go tests.
     cmds:
       - go test ./...
 
   serve:
-    desc: Runs the server.
+    desc: Runs ui and servers.
     deps:
-      - task: jepp:build
-    sources:
-      - cmd/jepp/*
-      - pkg/server/*.go
-      - pkg/server/templates/**/*
-      - pkg/models/*
-      - pkg/utils/*
+      - task: build
     cmds:
       - ./bin/jepp

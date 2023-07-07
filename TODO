@@ -1,29 +1,23 @@
 JEPP TODOS:
-  tweaks:
-    ✔ swap columns on homepage @done(23-06-28 23:04)
-    ✔ add "info" card above example on homepage @done(23-06-28 23:03)
 
   features:
-    pagination:
-      tried to implement this with some randome gin middleware and it didn't work
-      ☐ add pagination to list endpoints
-
-    search:
-      ☐ add search to list endpoints
-
     metrics:
       ☐ get some basic metrics exported
       ☐ requests per route
 
     rate-limiting:
-      ✔ add rate limiting to api @done(23-06-28 23:03)
         - maybe not needed, rate limiting done via cloudflare
     
   chores:
     ☐ add test coverage
-    ✔ godoc comments / release package @done(23-06-28 23:03)
       - added github action to dump sql and attach to release
     ☐ give endpoint descriptions a once over
     ☐ add codecov
     ☐ document deploy pipeline
     ☐ update postman collection and add to repo
+
+Archive:
+  ✔ swap columns on homepage @done(23-06-28 23:04) @project(JEPP TODOS.tweaks)
+  ✔ add "info" card above example on homepage @done(23-06-28 23:03) @project(JEPP TODOS.tweaks)
+  ✔ add rate limiting to api @done(23-06-28 23:03) @project(JEPP TODOS.features.rate-limiting)
+  ✔ godoc comments / release package @done(23-06-28 23:03) @project(JEPP TODOS.chores)
