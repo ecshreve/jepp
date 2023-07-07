@@ -31,6 +31,8 @@ type CategoryEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
+
+	namedClues map[string][]*Clue
 }
 
 // CluesOrErr returns the Clues value or an error if the edge
@@ -123,6 +125,30 @@ func (c *Category) String() string {
 	builder.WriteString(c.Name)
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedClues returns the Clues named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (c *Category) NamedClues(name string) ([]*Clue, error) {
+	if c.Edges.namedClues == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := c.Edges.namedClues[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (c *Category) appendNamedClues(name string, edges ...*Clue) {
+	if c.Edges.namedClues == nil {
+		c.Edges.namedClues = make(map[string][]*Clue)
+	}
+	if len(edges) == 0 {
+		c.Edges.namedClues[name] = []*Clue{}
+	} else {
+		c.Edges.namedClues[name] = append(c.Edges.namedClues[name], edges...)
+	}
 }
 
 // Categories is a parsable slice of Category.

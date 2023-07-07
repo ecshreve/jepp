@@ -1,5 +1,4 @@
 //go:build ignore
-// +build ignore
 
 package main
 
@@ -9,6 +8,7 @@ import (
 	"ariga.io/ogent"
 	"entgo.io/contrib/entgql"
 	"entgo.io/contrib/entoas"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"github.com/ogen-go/ogen"
@@ -20,7 +20,7 @@ func main() {
 		entgql.WithSchemaGenerator(),
 		entgql.WithSchemaPath("gqlschema/ent.graphql"),
 		entgql.WithWhereInputs(true),
-		entgql.WithNodeDescriptor(true),
+		entgql.WithNodeDescriptor(false),
 	)
 	if err != nil {
 		log.Fatalf("creating entgql extension: %v", err)
@@ -34,11 +34,6 @@ func main() {
 				SetDescription("Jepp API").
 				SetVersion("0.0.1")
 
-			spec.AddServers(&ogen.Server{
-				URL:         "http://localhost:8082",
-				Description: "local apiserver",
-			})
-
 			return nil
 		}),
 	)
@@ -50,8 +45,13 @@ func main() {
 		log.Fatalf("creating ogent extension: %v", err)
 	}
 
+	ep, err := entproto.NewExtension()
+	if err != nil {
+		log.Fatalf("creating entproto extension: %v", err)
+	}
+
 	opts := []entc.Option{
-		entc.Extensions(ogentext, oas, ex),
+		entc.Extensions(ogentext, oas, ex, ep),
 	}
 
 	if err := entc.Generate("./internal/ent/schema", &gen.Config{}, opts...); err != nil {

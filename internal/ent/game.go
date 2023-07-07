@@ -41,6 +41,10 @@ type GameEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
+	// totalCount holds the count of the edges above.
+	totalCount [1]map[string]int
+
+	namedClues map[string][]*Clue
 }
 
 // SeasonOrErr returns the Season value or an error if the edge
@@ -178,6 +182,30 @@ func (ga *Game) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ga.SeasonID))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedClues returns the Clues named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (ga *Game) NamedClues(name string) ([]*Clue, error) {
+	if ga.Edges.namedClues == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := ga.Edges.namedClues[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (ga *Game) appendNamedClues(name string, edges ...*Clue) {
+	if ga.Edges.namedClues == nil {
+		ga.Edges.namedClues = make(map[string][]*Clue)
+	}
+	if len(edges) == 0 {
+		ga.Edges.namedClues[name] = []*Clue{}
+	} else {
+		ga.Edges.namedClues[name] = append(ga.Edges.namedClues[name], edges...)
+	}
 }
 
 // Games is a parsable slice of Game.
