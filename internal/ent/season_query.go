@@ -19,14 +19,11 @@ import (
 // SeasonQuery is the builder for querying Season entities.
 type SeasonQuery struct {
 	config
-	ctx            *QueryContext
-	order          []season.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.Season
-	withGames      *GameQuery
-	modifiers      []func(*sql.Selector)
-	loadTotal      []func(context.Context, []*Season) error
-	withNamedGames map[string]*GameQuery
+	ctx        *QueryContext
+	order      []season.OrderOption
+	inters     []Interceptor
+	predicates []predicate.Season
+	withGames  *GameQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -386,9 +383,6 @@ func (sq *SeasonQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Seaso
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if len(sq.modifiers) > 0 {
-		_spec.Modifiers = sq.modifiers
-	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -402,18 +396,6 @@ func (sq *SeasonQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Seaso
 		if err := sq.loadGames(ctx, query, nodes,
 			func(n *Season) { n.Edges.Games = []*Game{} },
 			func(n *Season, e *Game) { n.Edges.Games = append(n.Edges.Games, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range sq.withNamedGames {
-		if err := sq.loadGames(ctx, query, nodes,
-			func(n *Season) { n.appendNamedGames(name) },
-			func(n *Season, e *Game) { n.appendNamedGames(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for i := range sq.loadTotal {
-		if err := sq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -453,9 +435,6 @@ func (sq *SeasonQuery) loadGames(ctx context.Context, query *GameQuery, nodes []
 
 func (sq *SeasonQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
-	if len(sq.modifiers) > 0 {
-		_spec.Modifiers = sq.modifiers
-	}
 	_spec.Node.Columns = sq.ctx.Fields
 	if len(sq.ctx.Fields) > 0 {
 		_spec.Unique = sq.ctx.Unique != nil && *sq.ctx.Unique
@@ -533,20 +512,6 @@ func (sq *SeasonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedGames tells the query-builder to eager-load the nodes that are connected to the "games"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (sq *SeasonQuery) WithNamedGames(name string, opts ...func(*GameQuery)) *SeasonQuery {
-	query := (&GameClient{config: sq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if sq.withNamedGames == nil {
-		sq.withNamedGames = make(map[string]*GameQuery)
-	}
-	sq.withNamedGames[name] = query
-	return sq
 }
 
 // SeasonGroupBy is the group-by builder for Season entities.

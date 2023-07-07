@@ -36,8 +36,6 @@ type SeasonEdges struct {
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
-
-	namedGames map[string][]*Game
 }
 
 // GamesOrErr returns the Games value or an error if the edge
@@ -148,30 +146,6 @@ func (s *Season) String() string {
 	builder.WriteString(s.EndDate.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedGames returns the Games named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (s *Season) NamedGames(name string) ([]*Game, error) {
-	if s.Edges.namedGames == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := s.Edges.namedGames[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (s *Season) appendNamedGames(name string, edges ...*Game) {
-	if s.Edges.namedGames == nil {
-		s.Edges.namedGames = make(map[string][]*Game)
-	}
-	if len(edges) == 0 {
-		s.Edges.namedGames[name] = []*Game{}
-	} else {
-		s.Edges.namedGames[name] = append(s.Edges.namedGames[name], edges...)
-	}
 }
 
 // Seasons is a parsable slice of Season.

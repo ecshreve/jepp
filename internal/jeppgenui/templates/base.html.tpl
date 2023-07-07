@@ -64,7 +64,7 @@
     <a href="/" style="text-decoration: none; color: black;">
       <h1>Jepp</h1>
     </a>
-    <p>access to <strong>{{.NumClues}}</strong> jeopardy clues via rest api</p>
+    <p>access to <strong>{{.NumClues}}</strong> jeopardy clues via graphql and rest api</p>
     <a class="ghcustom" href="https://github.com/ecshreve/jepp"><i class="fa fa-brands fa-github"
         style="font-size: xx-large; text-decoration: none; color: black;"></i></a>
   </div>

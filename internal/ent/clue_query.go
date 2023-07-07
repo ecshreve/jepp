@@ -25,8 +25,6 @@ type ClueQuery struct {
 	predicates   []predicate.Clue
 	withCategory *CategoryQuery
 	withGame     *GameQuery
-	modifiers    []func(*sql.Selector)
-	loadTotal    []func(context.Context, []*Clue) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -421,9 +419,6 @@ func (cq *ClueQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Clue, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if len(cq.modifiers) > 0 {
-		_spec.Modifiers = cq.modifiers
-	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -442,11 +437,6 @@ func (cq *ClueQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Clue, e
 	if query := cq.withGame; query != nil {
 		if err := cq.loadGame(ctx, query, nodes, nil,
 			func(n *Clue, e *Game) { n.Edges.Game = e }); err != nil {
-			return nil, err
-		}
-	}
-	for i := range cq.loadTotal {
-		if err := cq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -514,9 +504,6 @@ func (cq *ClueQuery) loadGame(ctx context.Context, query *GameQuery, nodes []*Cl
 
 func (cq *ClueQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
-	if len(cq.modifiers) > 0 {
-		_spec.Modifiers = cq.modifiers
-	}
 	_spec.Node.Columns = cq.ctx.Fields
 	if len(cq.ctx.Fields) > 0 {
 		_spec.Unique = cq.ctx.Unique != nil && *cq.ctx.Unique

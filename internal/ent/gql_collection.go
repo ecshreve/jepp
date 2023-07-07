@@ -130,7 +130,7 @@ func (c *ClueQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				path  = append(path, alias)
 				query = (&CategoryClient{config: c.config}).Query()
 			)
-			if err := query.collectField(ctx, opCtx, field, path, satisfies...); err != nil {
+			if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, categoryImplementors)...); err != nil {
 				return err
 			}
 			c.withCategory = query
@@ -144,7 +144,7 @@ func (c *ClueQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 				path  = append(path, alias)
 				query = (&GameClient{config: c.config}).Query()
 			)
-			if err := query.collectField(ctx, opCtx, field, path, satisfies...); err != nil {
+			if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, gameImplementors)...); err != nil {
 				return err
 			}
 			c.withGame = query
@@ -252,7 +252,7 @@ func (ga *GameQuery) collectField(ctx context.Context, opCtx *graphql.OperationC
 				path  = append(path, alias)
 				query = (&SeasonClient{config: ga.config}).Query()
 			)
-			if err := query.collectField(ctx, opCtx, field, path, satisfies...); err != nil {
+			if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, seasonImplementors)...); err != nil {
 				return err
 			}
 			ga.withSeason = query
@@ -513,15 +513,16 @@ func limitRows(partitionBy string, limit int, orderBy ...sql.Querier) func(s *sq
 }
 
 // mayAddCondition appends another type condition to the satisfies list
-// if condition is enabled (Node/Nodes) and it does not exist in the list.
-func mayAddCondition(satisfies []string, typeCond string) []string {
-	if len(satisfies) == 0 {
-		return satisfies
-	}
-	for _, s := range satisfies {
-		if typeCond == s {
-			return satisfies
+// if it does not exist in the list.
+func mayAddCondition(satisfies []string, typeCond []string) []string {
+Cond:
+	for _, c := range typeCond {
+		for _, s := range satisfies {
+			if c == s {
+				continue Cond
+			}
 		}
+		satisfies = append(satisfies, c)
 	}
-	return append(satisfies, typeCond)
+	return satisfies
 }

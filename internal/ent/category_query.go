@@ -19,14 +19,11 @@ import (
 // CategoryQuery is the builder for querying Category entities.
 type CategoryQuery struct {
 	config
-	ctx            *QueryContext
-	order          []category.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.Category
-	withClues      *ClueQuery
-	modifiers      []func(*sql.Selector)
-	loadTotal      []func(context.Context, []*Category) error
-	withNamedClues map[string]*ClueQuery
+	ctx        *QueryContext
+	order      []category.OrderOption
+	inters     []Interceptor
+	predicates []predicate.Category
+	withClues  *ClueQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -386,9 +383,6 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if len(cq.modifiers) > 0 {
-		_spec.Modifiers = cq.modifiers
-	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -402,18 +396,6 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 		if err := cq.loadClues(ctx, query, nodes,
 			func(n *Category) { n.Edges.Clues = []*Clue{} },
 			func(n *Category, e *Clue) { n.Edges.Clues = append(n.Edges.Clues, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range cq.withNamedClues {
-		if err := cq.loadClues(ctx, query, nodes,
-			func(n *Category) { n.appendNamedClues(name) },
-			func(n *Category, e *Clue) { n.appendNamedClues(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for i := range cq.loadTotal {
-		if err := cq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -453,9 +435,6 @@ func (cq *CategoryQuery) loadClues(ctx context.Context, query *ClueQuery, nodes 
 
 func (cq *CategoryQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
-	if len(cq.modifiers) > 0 {
-		_spec.Modifiers = cq.modifiers
-	}
 	_spec.Node.Columns = cq.ctx.Fields
 	if len(cq.ctx.Fields) > 0 {
 		_spec.Unique = cq.ctx.Unique != nil && *cq.ctx.Unique
@@ -533,20 +512,6 @@ func (cq *CategoryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedClues tells the query-builder to eager-load the nodes that are connected to the "clues"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (cq *CategoryQuery) WithNamedClues(name string, opts ...func(*ClueQuery)) *CategoryQuery {
-	query := (&ClueClient{config: cq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if cq.withNamedClues == nil {
-		cq.withNamedClues = make(map[string]*ClueQuery)
-	}
-	cq.withNamedClues[name] = query
-	return cq
 }
 
 // CategoryGroupBy is the group-by builder for Category entities.

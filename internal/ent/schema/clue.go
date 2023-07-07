@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/contrib/entoas"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -18,18 +19,23 @@ type Clue struct {
 func (Clue) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("id").Positive().Unique().Annotations(
+			entproto.Field(1),
 			entgql.OrderField("ID"),
 		),
 		field.Text("question").Annotations(
+			entproto.Field(2),
 			entgql.OrderField("QUESTION"),
 		),
 		field.Text("answer").Annotations(
+			entproto.Field(3),
 			entgql.OrderField("ANSWER"),
 		),
 		field.Int("category_id").Annotations(
+			entproto.Field(4),
 			entgql.Skip(),
 		),
 		field.Int("game_id").Annotations(
+			entproto.Field(5),
 			entgql.Skip(),
 		),
 	}
@@ -43,18 +49,23 @@ func (Clue) Edges() []ent.Edge {
 			Field("category_id").
 			Unique().
 			Required().Annotations(
+			entproto.Field(6),
 			entgql.OrderField("CATEGORY_NAME"),
 		),
 		edge.From("game", Game.Type).
 			Ref("clues").
 			Field("game_id").
 			Unique().
-			Required(),
+			Required().Annotations(
+			entproto.Field(7),
+		),
 	}
 }
 
 func (Clue) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entproto.Message(),
+		entproto.Service(),
 		entgql.RelayConnection(),
 		entoas.ReadOperation(
 			entoas.OperationPolicy(entoas.PolicyExpose),

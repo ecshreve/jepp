@@ -20,15 +20,12 @@ import (
 // GameQuery is the builder for querying Game entities.
 type GameQuery struct {
 	config
-	ctx            *QueryContext
-	order          []game.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.Game
-	withSeason     *SeasonQuery
-	withClues      *ClueQuery
-	modifiers      []func(*sql.Selector)
-	loadTotal      []func(context.Context, []*Game) error
-	withNamedClues map[string]*ClueQuery
+	ctx        *QueryContext
+	order      []game.OrderOption
+	inters     []Interceptor
+	predicates []predicate.Game
+	withSeason *SeasonQuery
+	withClues  *ClueQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -423,9 +420,6 @@ func (gq *GameQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Game, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
-	if len(gq.modifiers) > 0 {
-		_spec.Modifiers = gq.modifiers
-	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -445,18 +439,6 @@ func (gq *GameQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Game, e
 		if err := gq.loadClues(ctx, query, nodes,
 			func(n *Game) { n.Edges.Clues = []*Clue{} },
 			func(n *Game, e *Clue) { n.Edges.Clues = append(n.Edges.Clues, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range gq.withNamedClues {
-		if err := gq.loadClues(ctx, query, nodes,
-			func(n *Game) { n.appendNamedClues(name) },
-			func(n *Game, e *Clue) { n.appendNamedClues(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for i := range gq.loadTotal {
-		if err := gq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
@@ -525,9 +507,6 @@ func (gq *GameQuery) loadClues(ctx context.Context, query *ClueQuery, nodes []*G
 
 func (gq *GameQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := gq.querySpec()
-	if len(gq.modifiers) > 0 {
-		_spec.Modifiers = gq.modifiers
-	}
 	_spec.Node.Columns = gq.ctx.Fields
 	if len(gq.ctx.Fields) > 0 {
 		_spec.Unique = gq.ctx.Unique != nil && *gq.ctx.Unique
@@ -608,20 +587,6 @@ func (gq *GameQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedClues tells the query-builder to eager-load the nodes that are connected to the "clues"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (gq *GameQuery) WithNamedClues(name string, opts ...func(*ClueQuery)) *GameQuery {
-	query := (&ClueClient{config: gq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if gq.withNamedClues == nil {
-		gq.withNamedClues = make(map[string]*ClueQuery)
-	}
-	gq.withNamedClues[name] = query
-	return gq
 }
 
 // GameGroupBy is the group-by builder for Game entities.

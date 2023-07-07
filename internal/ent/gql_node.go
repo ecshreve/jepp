@@ -27,17 +27,25 @@ type Noder interface {
 	IsNode()
 }
 
-// IsNode implements the Node interface check for GQLGen.
-func (n *Category) IsNode() {}
+var categoryImplementors = []string{"Category", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
-func (n *Clue) IsNode() {}
+func (*Category) IsNode() {}
+
+var clueImplementors = []string{"Clue", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
-func (n *Game) IsNode() {}
+func (*Clue) IsNode() {}
+
+var gameImplementors = []string{"Game", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
-func (n *Season) IsNode() {}
+func (*Game) IsNode() {}
+
+var seasonImplementors = []string{"Season", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Season) IsNode() {}
 
 var errNodeInvalidID = &NotFoundError{"node"}
 
@@ -100,7 +108,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 	case category.Table:
 		query := c.Category.Query().
 			Where(category.ID(id))
-		query, err := query.CollectFields(ctx, "Category")
+		query, err := query.CollectFields(ctx, categoryImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -112,7 +120,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 	case clue.Table:
 		query := c.Clue.Query().
 			Where(clue.ID(id))
-		query, err := query.CollectFields(ctx, "Clue")
+		query, err := query.CollectFields(ctx, clueImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -124,7 +132,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 	case game.Table:
 		query := c.Game.Query().
 			Where(game.ID(id))
-		query, err := query.CollectFields(ctx, "Game")
+		query, err := query.CollectFields(ctx, gameImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +144,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 	case season.Table:
 		query := c.Season.Query().
 			Where(season.ID(id))
-		query, err := query.CollectFields(ctx, "Season")
+		query, err := query.CollectFields(ctx, seasonImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -221,7 +229,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 	case category.Table:
 		query := c.Category.Query().
 			Where(category.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "Category")
+		query, err := query.CollectFields(ctx, categoryImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -237,7 +245,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 	case clue.Table:
 		query := c.Clue.Query().
 			Where(clue.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "Clue")
+		query, err := query.CollectFields(ctx, clueImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -253,7 +261,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 	case game.Table:
 		query := c.Game.Query().
 			Where(game.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "Game")
+		query, err := query.CollectFields(ctx, gameImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -269,7 +277,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 	case season.Table:
 		query := c.Season.Query().
 			Where(season.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "Season")
+		query, err := query.CollectFields(ctx, seasonImplementors...)
 		if err != nil {
 			return nil, err
 		}
