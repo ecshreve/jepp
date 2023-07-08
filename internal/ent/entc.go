@@ -11,6 +11,7 @@ import (
 	"entgo.io/contrib/entproto"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
+	"github.com/hedwigz/entviz"
 	"github.com/ogen-go/ogen"
 )
 
@@ -50,8 +51,10 @@ func main() {
 		log.Fatalf("creating entproto extension: %v", err)
 	}
 
+	viz := entviz.Extension{}
+
 	opts := []entc.Option{
-		entc.Extensions(ogentext, oas, ex, ep),
+		entc.Extensions(ogentext, oas, ex, ep, viz),
 	}
 
 	if err := entc.Generate("./internal/ent/schema", &gen.Config{}, opts...); err != nil {

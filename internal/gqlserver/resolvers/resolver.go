@@ -4,6 +4,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/ecshreve/jepp/internal/ent"
 	gqlserver "github.com/ecshreve/jepp/internal/gqlserver/gen"
+	_ "github.com/hedwigz/entviz"
 )
 
 // This file will not be regenerated automatically.

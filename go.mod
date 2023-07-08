@@ -17,7 +17,6 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/ogen-go/ogen v0.70.1
-	github.com/rotemtam/ent-grpc-example v0.0.0-20230216211830-b6d08af965ad
 	github.com/samsarahq/go/oops v0.0.0-20220211150445-4b291d6feac4
 	github.com/sirupsen/logrus v1.9.3
 	github.com/vektah/gqlparser/v2 v2.5.6
@@ -57,6 +56,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.4 // indirect
 	github.com/hashicorp/hcl/v2 v2.17.0 // indirect
+	github.com/hedwigz/entviz v0.0.0-20221011080911-9d47f6f1d818
 	github.com/jhump/protoreflect v1.15.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect

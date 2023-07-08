@@ -1,15 +1,17 @@
 package main
 
 import (
-	"github.com/ecshreve/jepp/internal/jeppserver"
+	"net/http"
+
+	"github.com/ecshreve/jepp/internal/ent"
 	_ "github.com/mattn/go-sqlite3"
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	log.SetLevel(log.TraceLevel)
-	ss := jeppserver.NewServer()
-	ss.Start()
+	http.ListenAndServe("localhost:3002", ent.ServeEntviz())
+	// log.SetLevel(log.TraceLevel)
+	// ss := jeppserver.NewServer()
+	// ss.Start()
 	// log.SetLevel(log.DebugLevel)
 	// r := gin.Default()
 

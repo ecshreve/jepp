@@ -48,3 +48,10 @@ tasks:
       - task: build
     cmds:
       - ./bin/jepp
+
+  migrate:plan:
+    desc: Generates migration plan.
+    cmds: 
+      - atlas migrate diff {{.MIGRATION_NAME}} --dir "file://internal/ent/migrate/migrations" --to "ent://internal/ent/schema" --dev-url "sqlite://file?mode=memory&_fk=1"
+    vars:
+      MIGRATION_NAME: "default-migration"
