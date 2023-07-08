@@ -1,0 +1,45 @@
+.progress {
+	flex: 1;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.my-modal {
+	margin-top: 5%;
+	font-family: "Korinna";
+}
+
+.my-modal .modal-dialog {
+	max-width: 75%;
+}
+
+.my-modal .modal-header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	font-size: 1.5rem;
+	word-spacing: -10px;
+	background-color: #f2f2f2;
+}
+
+.my-modal .modal-body {
+	font-size: 3rem;
+	word-spacing: -10px;
+	background: #031297;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 25px;
+}
+
+.my-modal .modal-footer {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	background-color: lightgreen;
+	font-size: 2rem;
+	word-spacing: -10px;
+}
+
+.footer-item {
+	margin: 5px;
+}
