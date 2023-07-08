@@ -17,6 +17,7 @@ tasks:
       - go generate ./...
     generates:
       - internal/gqlserver/gen/generated.go
+      - internal/ent/proto/*.pb.go
     sources:
       - internal/ent/entc.go
       - internal/ent/schema/*.go

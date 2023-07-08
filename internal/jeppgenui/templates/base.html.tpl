@@ -13,7 +13,7 @@
   </script>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@3.52.5/swagger-ui-bundle.js"></script>
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css" />
   <script>
     window.onload = function () {
@@ -55,9 +55,8 @@
           document.getElementById("newTab").className += " active";
         }
       }
-    </script>
+  </script>
 </head>
-
 <body>
   <div
     style="display: flex; justify-content: space-between; align-items: center; padding-left: 10px; padding-right: 20px;">
@@ -152,7 +151,7 @@
     <div class="card-boring">
       <div class="tab">
         <button id="defaultOpen" class="tablinks" onclick="openView(event, 'swagger-ui')">Swagger</button>
-        <button class="tablinks" onclick="openView(event, 'graphiql')">GraphQL</button>
+        <button id="openGQL" class="tablinks" onclick="openView(event, 'graphiql')">GraphQL</button>
         <button id="newTab" class="tablinks" onclick="window.open('/graphql')">
           <svg xmlns="http://www.w3.org/2000/svg" height="1em"
             viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -169,11 +168,11 @@
       </div>
     </div>
   </div>
-  <div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/graphiql@2.0.7/graphiql.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/graphiql@2.0.7/graphiql.min.js" crossorigin="anonymous"></script>
+  <script>
+    const myTimeout = setTimeout(renderGQL, 1000);
 
-    <script>
+    function renderGQL() {
       const url = "/query"
       const subscriptionUrl = "";
 
@@ -186,10 +185,10 @@
         }),
         document.getElementById('graphiql'),
       );
-    </script>
-  </div>
+    }
+  </script>
+  <script>
+    document.getElementById("defaultOpen").click();
+  </script>
 </body>
-<script>
-  document.getElementById("defaultOpen").click();
-</script>
 </html>
