@@ -66,7 +66,9 @@ func (Clue) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
 		entproto.Service(),
+
 		entgql.RelayConnection(),
+
 		entoas.ReadOperation(
 			entoas.OperationPolicy(entoas.PolicyExpose),
 		),

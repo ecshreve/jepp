@@ -53,9 +53,11 @@ func (Game) Edges() []ent.Edge {
 		),
 		edge.To("clues", Clue.Type).Annotations(
 			entproto.Field(7),
+
 			entgql.RelayConnection(),
 			entgql.OrderField("CLUE_ID"),
 			entgql.Skip(),
+
 			entoas.ListOperation(
 				entoas.OperationPolicy(entoas.PolicyExpose),
 			),
@@ -67,7 +69,9 @@ func (Game) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
 		entproto.Service(),
+
 		entgql.RelayConnection(),
+
 		entoas.ReadOperation(
 			entoas.OperationPolicy(entoas.PolicyExpose),
 		),

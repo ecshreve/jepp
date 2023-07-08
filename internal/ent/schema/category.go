@@ -34,8 +34,10 @@ func (Category) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("clues", Clue.Type).Annotations(
 			entproto.Field(3),
+
 			entgql.RelayConnection(),
 			entgql.Skip(),
+
 			entoas.ListOperation(
 				entoas.OperationPolicy(entoas.PolicyExpose),
 			)),
@@ -46,7 +48,9 @@ func (Category) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
 		entproto.Service(),
+
 		entgql.RelayConnection(),
+
 		entoas.ReadOperation(
 			entoas.OperationPolicy(entoas.PolicyExpose),
 		),

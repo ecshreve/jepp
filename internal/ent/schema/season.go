@@ -42,8 +42,10 @@ func (Season) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("games", Game.Type).Annotations(
 			entproto.Field(5),
+
 			entgql.RelayConnection(),
 			entgql.Skip(),
+
 			entoas.ListOperation(
 				entoas.OperationPolicy(entoas.PolicyExpose),
 			),
