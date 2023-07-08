@@ -1,0 +1,41 @@
+.jepp-button {
+  font-weight: 700;
+  border: 0;
+  border-radius: 3em;
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1;
+}
+
+.jepp-button--primary {
+  color: white;
+  background-color: #1ea7fd;
+}
+
+.jepp-button--secondary {
+  color: #333;
+  background-color: transparent;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 0px 1px inset;
+}
+
+.jepp-button--custom {
+  color: white;
+  background-color: #031297;
+  /* background-color: rgb(225,160,50); */
+}
+
+.jepp-button--custom:hover {
+  box-shadow: 3px 3px 3px 3px rgba(0,0,0,0.5);
+  transition: 0.3s;  
+  cursor: pointer;
+}
+
+.jepp-button--sm {
+  font-size: 12px;
+  padding: 10px 16px;
+}
+
+.jepp-button--lg {
+  font-size: 16px;
+  padding: 12px 24px;
+}

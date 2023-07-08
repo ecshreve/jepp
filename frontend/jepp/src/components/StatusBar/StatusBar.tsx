@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Button } from "../Button/Button";
 
 import "./StatusBar.css";
 
@@ -12,22 +12,24 @@ type StatusBarProps = {
 export const StatusBar = (props: StatusBarProps) => {
   return (
     <div className="status-bar">
-      <div style={{ paddingTop: "3px" }}>{props.gameTitle}</div>
+      <div style={{ paddingTop: "3px" }}><strong>{props.gameTitle}</strong></div>
       <div>
         <Button
           style={{
             marginRight: "5px",
-            background: "#031297",
           }}
           onClick={props.handleClickRestart}
+          label="Restart"
+          size="sm"
+          className="jepp-button jepp-button--sm jepp-button--custom"
         >
-          Restart
         </Button>
         <Button
-          style={{ background: "#031297" }}
           onClick={props.handleClickNewGame}
+          label="New Game"
+          size="sm"
+          className="jepp-button jepp-button--sm jepp-button--custom"
         >
-          New Game
         </Button>
       </div>
     </div>
