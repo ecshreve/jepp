@@ -1,33 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
 	Button,
 	ButtonGroup,
 	Card,
 	Dropdown,
-	Form,
-	InputGroup,
 	OverlayTrigger,
 	ToggleButton,
 	Tooltip,
 } from "react-bootstrap";
 
-import "bootstrap/dist/css/bootstrap.css";
 import "./Config.css";
 
 import {
 	setCurrentGameId,
-	setAllGameIds,
 	setGameActive,
-} from "../config/configSlice";
-import { replacePlayers } from "../player/playerSlice";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { getGameIds } from "../../requests";
+} from "./configSlice";
+import { useAppDispatch } from "../../app/hooks";
 import { YEARS, MONTHS, DEVELOPMENT_GAME_ID } from "../../consts";
 
 export default function Config() {
-	const [player1Name, setPlayer1Name] = useState("");
-	const [player2Name, setPlayer2Name] = useState("");
-	const [player3Name, setPlayer3Name] = useState("");
 	const [yearSelection, setYearSelection] = useState(YEARS[0]);
 	const [monthSelection, setMonthSelection] = useState(MONTHS[0]);
 	const [showNumberSelection, setShowNumberSelection] = useState("Show Number");
@@ -35,55 +26,6 @@ export default function Config() {
 	const [gameModeSelection, setGameModeSelection] = useState("RANDOM");
 
 	const dispatch = useAppDispatch();
-
-	// Only fetch the full list of game ids once when the component mounts.
-	useEffect(() => {
-		getGameIds().then((result) => dispatch(setAllGameIds(result)));
-	}, [dispatch]);
-
-	const renderPlayerNameInput = () => {
-		return (
-			<>
-				<label className="config-pane-playerName-label">
-					Enter up to 3 Player Names
-				</label>
-				<div id="player-names" className="config-pane-playerNames">
-					<InputGroup size="lg" className="config-pane-playerNameInput">
-						<InputGroup.Prepend>
-							<InputGroup.Text> </InputGroup.Text>
-						</InputGroup.Prepend>
-						<Form.Control
-							placeholder="Player 1 Name"
-							onChange={(e) => setPlayer1Name(e.target.value)}
-						/>
-					</InputGroup>
-					{player1Name !== "" && (
-						<InputGroup size="lg" className="config-pane-playerNameInput">
-							<InputGroup.Prepend>
-								<InputGroup.Text> </InputGroup.Text>
-							</InputGroup.Prepend>
-							<Form.Control
-								placeholder="Player 2 Name"
-								onChange={(e) => setPlayer2Name(e.target.value)}
-							/>
-						</InputGroup>
-					)}
-					{player2Name !== "" && (
-						<InputGroup size="lg" className="config-pane-playerNameInput">
-							<InputGroup.Prepend>
-								<InputGroup.Text> </InputGroup.Text>
-							</InputGroup.Prepend>
-							<Form.Control
-								placeholder="Player 3 Name"
-								onChange={(e) => setPlayer3Name(e.target.value)}
-							/>
-						</InputGroup>
-					)}
-				</div>
-			</>
-		);
-	};
-
 	const renderGameModeSelection = () => {
 		const gameModeRadios = [
 			{ name: "Random Game", value: "RANDOM" },
@@ -97,7 +39,7 @@ export default function Config() {
 
 		return (
 			<div>
-				<ButtonGroup toggle className="config-gameModeSelection-container">
+				<ButtonGroup className="config-gameModeSelection-container">
 					{gameModeRadios.map((radio, idx) => (
 						<OverlayTrigger
 							key={`overlay=${idx}`}
@@ -109,6 +51,7 @@ export default function Config() {
 							}
 						>
 							<ToggleButton
+								id={`toggle-but-${idx}`}
 								key={`toggle-but-${idx}`}
 								className="config-gameModeSelection-item"
 								type="radio"
@@ -127,29 +70,32 @@ export default function Config() {
 		);
 	};
 
-	const parsedGameIds = useAppSelector((state) => {
-		const gids = state.config.allParsedGameIds;
-		return gids.filter(
-			(g) => g.year === yearSelection && g.month === monthSelection
-		);
-	});
+	const parsed = [{ year: "2020", month: "January", raw: DEVELOPMENT_GAME_ID, showNumber: "#3966"}]
+	// const parsedGameIds = useAppSelector((state) => {
+		// const gids = state.config.allParsedGameIds;
+	// 	return gids.filter(
+	// 		(g) => g.year === yearSelection && g.month === monthSelection
+	// 	);
+	// });
+
 	const renderGameSelection = () => {
 		const yearDropdownItems = YEARS.map((y) => {
 			return (
-				<Dropdown.Item onSelect={() => setYearSelection(y)}>{y}</Dropdown.Item>
+				<Dropdown.Item key={y} onClick={() => setYearSelection(y)}>{y}</Dropdown.Item>
 			);
 		});
 
 		const monthDropdownItems = MONTHS.map((m) => {
 			return (
-				<Dropdown.Item onSelect={() => setMonthSelection(m)}>{m}</Dropdown.Item>
+				<Dropdown.Item key={m} onClick={() => setMonthSelection(m)}>{m}</Dropdown.Item>
 			);
 		});
 
-		const showNumberDropdownItems = parsedGameIds.map((g) => {
+		const showNumberDropdownItems = parsed.map((g, idx) => {
 			return (
 				<Dropdown.Item
-					onSelect={() => {
+					key={`showNumberDropdownItem-${idx}`}
+					onClick={() => {
 						setShowNumberSelection(g.showNumber);
 						setSelectedGameId(g.raw);
 					}}
@@ -165,9 +111,9 @@ export default function Config() {
 			{ selection: showNumberSelection, items: showNumberDropdownItems },
 		];
 
-		const gameSelectionDropdowns = gameSelectionDropdownInfo.map((s) => {
+		const gameSelectionDropdowns = gameSelectionDropdownInfo.map((s, idx) => {
 			return (
-				<Dropdown as={ButtonGroup} className="config-gameSelection-dropdown">
+				<Dropdown id={`dd-${idx}`} key={`dd-${idx}`} as={ButtonGroup} className="config-gameSelection-dropdown">
 					<Button
 						className="config-gameSelection-dropdown-val"
 						variant="success"
@@ -177,7 +123,6 @@ export default function Config() {
 					<Dropdown.Toggle
 						split
 						variant="info"
-						id="dropdown-basic"
 					></Dropdown.Toggle>
 					<Dropdown.Menu>{s.items}</Dropdown.Menu>
 				</Dropdown>
@@ -198,9 +143,9 @@ export default function Config() {
 				<Button
 					key="saveConfig"
 					variant="primary"
-					disabled={player1Name === ""}
+					disabled={selectedGameId === ""}
 					onClick={() => {
-						dispatch(replacePlayers([player1Name, player2Name, player3Name]));
+						console.log(yearSelection, monthSelection, showNumberSelection, selectedGameId)
 						dispatch(
 							setCurrentGameId(
 								gameModeSelection === "SELECT"
@@ -217,6 +162,8 @@ export default function Config() {
 		);
 	};
 
+	console.log(gameModeSelection)
+
 	return (
 		<>
 			<div className="config-container">
@@ -226,8 +173,6 @@ export default function Config() {
 					<div className="config-pane-content">
 						<Card>
 							<Card.Body>
-								{renderPlayerNameInput()}
-								<hr />
 								{renderGameModeSelection()}
 								{gameModeSelection === "SELECT" && renderGameSelection()}
 								<hr />

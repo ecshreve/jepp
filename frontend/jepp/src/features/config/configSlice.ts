@@ -7,7 +7,8 @@ type ParsedGameId = {
 	month: string;
 	showNumber: string;
 };
-interface ConfigState {
+
+export interface ConfigState {
 	gameActive: boolean;
 	allGameIds: string[];
 	allParsedGameIds: ParsedGameId[];

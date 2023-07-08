@@ -1,12 +1,25 @@
-import React from 'react';
-import './App.css';
-import { StatusBar } from './components/StatusBar/StatusBar';
+import React from "react";
+import "./App.css";
+import { StatusBar } from "./features/status-bar/StatusBar";
+
+import {useAppSelector} from "./app/hooks";
+
+import Config from "./features/config/Config";
 
 function App() {
+  const config = useAppSelector((state) => state.config);
+  // const config = useAppSelector((state) => state.config);
   return (
     <div className="App">
-      <header className="App-header">app header</header>
-      <StatusBar gameTitle={"hello"} handleClickNewGame={()=>{}} handleClickRestart={()=>{}}/>
+      {!config.gameActive ? (
+        <Config />
+      ) : (
+        <StatusBar
+          gameTitle={"hello"}
+          handleClickNewGame={() => {}}
+          handleClickRestart={() => {}}
+        />
+      )}
     </div>
   );
 }

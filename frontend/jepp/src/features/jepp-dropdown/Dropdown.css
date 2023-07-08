@@ -1,0 +1,10 @@
+.dropdown {
+	display: flex;
+	padding: 5px;
+	width: 33%;
+}
+
+.dropdown-val {
+	width: 80%;
+	pointer-events: none;
+}
