@@ -2,11 +2,11 @@
 	
 	"name": "Jepp Development",
 	"build": {
-		"dockerfile": "Dockerfile",
+		"dockerfile": "Dockerfile"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/go:1": {
-			"version": "1.20.2",
+			"version": "1.20.2"
 		},
 		"ghcr.io/eitsupi/devcontainer-features/go-task:1": {},
 		"ghcr.io/devcontainers/features/node:1": {},
